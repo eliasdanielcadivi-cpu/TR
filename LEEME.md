@@ -1,42 +1,61 @@
-# TR - Terminal Remote Operations Nexus (INTELIGENTE)
+# 🛰 TR - Terminal Remote Operations Nexus (TRON)
 
-**TR** es un orquestador inteligente diseñado para transformar la terminal Kitty en una estación de trabajo de alta productividad aumentada por IA (Ollama/DeepSeek). Actúa como el cerebro táctico para el control de ventanas, sesiones, multimedia y flujos de trabajo de programación.
+**Tron** es un orquestador táctico diseñado para transformar la terminal Kitty en una estación de trabajo de alta productividad aumentada por IA. Actúa como el cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación de alto rendimiento.
 
-## 1. INFRAESTRUCTURA (Higiene Organizacional)
+## 🚀 ACCESO RÁPIDO (LAUNCHER)
+El proyecto está encapsulado y disponible globalmente mediante el comando `tr`.
+- **Producción:** `/usr/bin/tr` (Lanzador gestionado por `ini`).
+- **Ayuda Inteligente:** Ejecuta `tr` solo para abrir el navegador de ayuda **Broot**.
 
-*   `src/`: Lógica de ejecución (Python 3.12+).
-*   `config/`: Archivos YAML de configuración (LLMs, Kitty, Openbox).
-*   `docs/`: Documentación técnica y bitácoras de requerimientos.
-*   `data/`: Almacenamiento de sesiones (JSON).
-*   `logs/`: Registro de operaciones (`logs/session.jsonl`).
-*   `db/`: Persistencia (SQLite para historial y búsqueda vectorial ligera).
-*   `bin/`: Binarios y scripts auxiliares.
-*   `venv/`: Entorno virtual gestionado por **UV** (SIN PUNTO).
+## 🧠 COMANDOS MAESTROS
+- `tr p "pregunta"`: Consulta a la IA Tron (Gemma 3 / DeepSeek).
+- `tr plan`: Despliegue táctico de pestañas, diagnósticos y multimedia.
+- `tr model <alias>`: Cambia el cerebro de IA (gemma, deepseek).
+- `tr status`: Diagnóstico del socket Kitty y estado del sistema.
+- `tr view <ruta>`: Visualización multimedia HQ (icat/mpv).
+- `tr color <ruta>`: Aplica color Hacker Neon a pestaña según archivo (módulo color).
 
-## 2. PILARES TECNOLÓGICOS
+## 🏗 ARQUITECTURA MODULAR (Anti-Entropía)
+Siguiendo la regla de **máximo 3 funcionalidades por módulo** para facilitar el *vibe coding*:
 
-1.  **Terminal:** [Kitty](https://sw.kovidgoyal.net/kitty/) con Remote Control (RC) vía Unix Socket.
-2.  **Entorno:** [Openbox](http://openbox.org/) para posicionamiento de ventanas.
-3.  **IA:** 
-    *   **Ollama:** Modelos locales (Gemma 3, Qwen 2.5, Llama 3.2).
-    *   **DeepSeek:** API de alto rendimiento con Context Caching.
-4.  **Utilidades:** `gum`, `fzf`, `icat`, `mpv`.
+- `src/main.py`: Punto de entrada CLI y despachador de comandos.
+- `src/config.py`: Gestión de contexto, rutas y persistencia YAML.
+- `src/kitty.py`: Socket Remote Control, diagnóstico y lanzamiento.
+- `src/engine.py`: Motores de IA (Ollama/DeepSeek) y plantillas de prompt.
+- `src/plan.py`: Orquestador de flujos de trabajo y verificación de Handshake.
+- `modules/color/`: Módulo de coloreado de pestañas con set-tab-color (Hacker Neon).
+- `bin/tr-video`: Herramienta independiente de video HQ para Kitty.
+- `bin/tr-color`: CLI independiente para coloreado de pestañas.
 
-## 3. LANZADOR GLOBAL
-
-El proyecto utiliza el comando `ini` para desplegar un wrapper en `/usr/bin/tr` que apunta a este entorno encapsulado.
-
+## 📂 ORGANIZACIÓN DEL DIRECTORIO
 ```bash
-# Para actualizar o crear el lanzador:
-cd ~/tron/programas/TR
-ini
+TR/
+├── bin/          # Herramientas auxiliares (tr-video, tr-color)
+├── config/       # Configuración (kitty.conf, config.yaml, zsh/)
+├── data/         # Persistencia de sesiones y handshakes
+├── docs/         # DOCUMENTACIÓN NAVEGABLE (Broot help)
+├── modules/      # Módulos independientes (color/)
+├── src/          # Código fuente modularizado
+├── tests/        # Pruebas automatizadas
+└── venv/         # Entorno virtual Python (Visible/UV)
 ```
 
-## 4. DOCUMENTACIÓN CLAVE
+## 📄 DOCUMENTACIÓN TÉCNICA (docs/)
+Accede a estos documentos mediante `tr help` o `broot docs/`:
+1.  **INDEX.md**: Mapa de componentes del proyecto.
+2.  **MANUAL.md**: Guía de usuario y comandos extendidos.
+3.  **Shortcuts.md**: Tabla de compatibilidad de atajos (Kitty + Zsh).
+4.  **Requerimientos.md**: Bitácora de 150+ tareas de desarrollo.
+5.  **ZSH/Trucos.md**: Optimización del shell y plugins.
+6.  **modulo-colores-y-diseno.md**: Documentación del módulo de color (set-tab-color, Hacker Neon).
+7.  **COLOR_MODULE.md**: Documentación técnica del módulo tr-color.
 
-*   [Requerimientos Extensivos](docs/Requerimientos.md)
-*   [API DeepSeek](docs/Apideepseek.md)
-*   [Manual Kitty RC](docs/Controlar%20a%20Kitty%20desde%20scripts%20(1).md)
+## ⌨️ ATAJOS CLAVE (WOW FACTOR)
+- `Ctrl+Shift+T`: Nueva Pestaña.
+- `Ctrl+Shift+W`: Cerrar Pestaña.
+- `Ctrl+Shift+PgUp/PgDn`: Navegar pestañas.
+- `Ctrl+Shift+C/V`: Copiar y Pegar.
+- **Mouse:** Soporte completo de ratón habilitado en Kitty.
 
 ---
-*Ultima actualización: Jueves, 26 de Febrero de 2026*
+*Tron: Smart Always. Boba Nunca.*

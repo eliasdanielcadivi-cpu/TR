@@ -1,0 +1,231 @@
+#!/bin/bash
+# tr-color - Módulo de coloreado de pestañas Kitty
+# ==================================================
+# CLI independiente para gestión de colores de pestañas
+# basado en rutas de archivos o patrones.
+#
+# USO:
+#   tr-color <ruta>              # Aplica color según ruta
+#   tr-color --auto              # Detecta archivo reciente en PWD
+#   tr-color --list              # Lista reglas configuradas
+#   tr-color --test <ruta>       # Muestra regla sin aplicar
+#   tr-color --help              # Muestra esta ayuda
+#
+# EJEMPLOS:
+#   tr-color /home/daniel/Escritorio/QT5/elAsunto.md
+#   tr-color --auto
+#   tr-color --list
+#
+# NOTA: Requiere kitty corriendo con socket en /tmp/mykitty
+
+set -e
+
+# Directorio base de TR
+TR_BASE="/home/daniel/tron/programas/TR"
+cd "$TR_BASE"
+
+# Función para mostrar ayuda
+show_help() {
+    cat << 'EOF'
+tr-color - Coloreado automático de pestañas Kitty
+===================================================
+
+USO:
+    tr-color [OPCIONES] [RUTA]
+
+OPCIONES:
+    --auto          Detecta archivo más reciente en directorio actual
+                    y aplica color según su ruta
+
+    --list          Lista todas las reglas configuradas con sus
+                    colores y títulos
+
+    --test <ruta>   Muestra qué regla se aplicaría sin ejecutarla
+                    (útil para depuración)
+
+    --title <ruta>  Solo muestra el título que se aplicaría
+
+    --color <ruta>  Solo muestra el color que se aplicaría
+
+    --help, -h      Muestra esta ayuda
+
+ARGUMENTOS:
+    RUTA            Ruta del archivo para determinar el color
+                    (obligatorio si no se usa --auto, --list, --test)
+
+EJEMPLOS:
+    tr-color /home/daniel/Escritorio/QT5/elAsunto.md
+        Aplica color naranja (#ff6600) y título "EL ASUNTO"
+
+    tr-color --auto
+        Detecta archivo reciente en PWD y colorea pestaña
+
+    tr-color --test archivo.md
+        Muestra qué regla coincidiría sin aplicar cambios
+
+    tr-color --list
+        Muestra todas las reglas configuradas
+
+INTEGRACIÓN CON TR:
+    Este comando puede ser llamado desde la IA de TR:
+    tr p "colorea la pestaña con el archivo elAsunto.md"
+
+    O directamente desde shell:
+    tr-color /ruta/al/archivo
+
+NOTAS:
+    - Requiere kitty corriendo con socket en /tmp/mykitty
+    - El color persiste mientras la pestaña esté abierta
+    - SelectorHacker maneja colores del sistema (qt5ct), no kitty
+
+VERSIÓN: 1.0.0
+EOF
+}
+
+# Función para listar reglas
+list_rules() {
+    uv run --quiet python -c "
+from modules.color import ColorEngine
+engine = ColorEngine('modules/color/config.yaml')
+rules = engine.list_rules()
+print('REGLAS CONFIGURADAS:')
+print('=' * 60)
+for i, rule in enumerate(rules, 1):
+    print(f\"{i:2}. {rule['pattern']}\")
+    print(f\"    Color: {rule['color']}  |  Título: {rule['title']}  |  Prioridad: {rule['priority']}\")
+print('=' * 60)
+print(f'Total: {len(rules)} reglas')
+"
+}
+
+# Función para testear regla (sin aplicar)
+test_rule() {
+    local path="$1"
+    uv run --quiet python -c "
+from modules.color import ColorEngine
+engine = ColorEngine('modules/color/config.yaml')
+rule = engine.get_rule_for_path('$path')
+print('RESULTADO DEL TEST:')
+print('=' * 60)
+print(f\"Ruta:    $path\")
+print(f\"Color:   {rule['color']}\")
+print(f\"Título:  {rule['title']}\")
+print(f\"Patrón:  {rule['pattern']}\")
+print(f\"Prioridad: {rule['priority']}\")
+print('=' * 60)
+"
+}
+
+# Función para obtener solo título
+get_title() {
+    local path="$1"
+    uv run --quiet python -c "
+from modules.color import ColorEngine
+engine = ColorEngine('modules/color/config.yaml')
+print(engine.get_title_for_path('$path'))
+"
+}
+
+# Función para obtener solo color
+get_color() {
+    local path="$1"
+    uv run --quiet python -c "
+from modules.color import ColorEngine
+engine = ColorEngine('modules/color/config.yaml')
+print(engine.get_color_for_path('$path'))
+"
+}
+
+# Función para aplicar color
+apply_color() {
+    local path="$1"
+    uv run --quiet python -c "
+import sys
+from modules.color import ColorEngine
+
+engine = ColorEngine('modules/color/config.yaml')
+success = engine.apply('$path')
+
+if success:
+    rule = engine.get_rule_for_path('$path')
+    print(f\"✓ Color aplicado: {rule['color']} | Título: {rule['title']}\")
+    sys.exit(0)
+else:
+    print('✗ Error: No se pudo aplicar el color')
+    print('  Posibles causas:')
+    print('  - Kitty no está corriendo')
+    print('  - Socket /tmp/mykitty no existe')
+    print('  - Permiso denegado')
+    sys.exit(1)
+"
+}
+
+# Función para auto-detectar archivo reciente
+auto_detect() {
+    # Obtener archivo más reciente en PWD
+    local file=$(ls -t 2>/dev/null | head -1)
+    
+    if [ -z "$file" ]; then
+        echo "✗ No se encontraron archivos en el directorio actual"
+        exit 1
+    fi
+    
+    local fullpath="$PWD/$file"
+    echo "📁 Archivo detectado: $file"
+    echo "📍 Ruta completa: $fullpath"
+    echo ""
+    apply_color "$fullpath"
+}
+
+# Parsear argumentos
+case "${1:-}" in
+    --help|-h)
+        show_help
+        ;;
+    --list)
+        list_rules
+        ;;
+    --test)
+        if [ -n "${2:-}" ]; then
+            test_rule "$2"
+        else
+            echo "✗ Error: --test requiere una ruta"
+            echo "Uso: tr-color --test <ruta>"
+            exit 1
+        fi
+        ;;
+    --title)
+        if [ -n "${2:-}" ]; then
+            get_title "$2"
+        else
+            echo "✗ Error: --title requiere una ruta"
+            exit 1
+        fi
+        ;;
+    --color)
+        if [ -n "${2:-}" ]; then
+            get_color "$2"
+        else
+            echo "✗ Error: --color requiere una ruta"
+            exit 1
+        fi
+        ;;
+    --auto)
+        auto_detect
+        ;;
+    "")
+        echo "✗ Error: Se requiere una ruta o opción"
+        echo ""
+        show_help
+        exit 1
+        ;;
+    *)
+        # Asumir que es una ruta
+        if [ -e "$1" ] || [[ "$1" == /* ]]; then
+            apply_color "$1"
+        else
+            echo "✗ Error: Ruta no válida: $1"
+            exit 1
+        fi
+        ;;
+esac

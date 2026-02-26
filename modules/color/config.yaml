@@ -1,0 +1,132 @@
+# TR Color Module - Configuración de Reglas
+# ==========================================
+# Este archivo define las reglas de coloreado automático de pestañas kitty
+# basadas en rutas de archivos o patrones de directorios.
+#
+# Formato de cada regla:
+#   - pattern: Patrón fnmatch (ruta absoluta o patrón con wildcards)
+#     color: Color hexadecimal (#RRGGBB)
+#     title: Título visible en la pestaña
+#     priority: Prioridad (mayor número = más prioritario)
+#
+# Notas:
+# - Las reglas se evalúan en orden de prioridad (mayor a menor)
+# - La primera regla que coincide es la que se aplica
+# - Usar patrones absolutos para mayor precisión
+# - SelectorHacker maneja colores del sistema (qt5ct), NO de kitty
+
+rules:
+  # ============================================================
+  # ARCHIVOS ESPECÍFICOS - QT5 (Prioridad Alta: 10)
+  # ============================================================
+  
+  - pattern: "/home/daniel/Escritorio/QT5/elAsunto.md"
+    color: "#ff6600"
+    title: "EL ASUNTO"
+    priority: 10
+
+  - pattern: "/home/daniel/Escritorio/QT5/PRUEBAS_MAPA.md"
+    color: "#00ccff"
+    title: "PRUEBAS MAPA"
+    priority: 10
+
+  - pattern: "/home/daniel/Escritorio/QT5/solucion-del-blanco-rebelde.md"
+    color: "#ff0066"
+    title: "BLANCO REBELDE"
+    priority: 10
+
+  # ============================================================
+  # SELECTORHACKER - Archivos del proyecto (Prioridad: 10)
+  # ============================================================
+  
+  - pattern: "/home/daniel/Escritorio/QT5/SelectorHacker/index.html"
+    color: "#00ff00"
+    title: "SELECTOR HTML"
+    priority: 10
+
+  - pattern: "/home/daniel/Escritorio/QT5/SelectorHacker/server.js"
+    color: "#ffff00"
+    title: "SELECTOR SERVER"
+    priority: 10
+
+  # ============================================================
+  # DIRECTORIOS - Reglas generales (Prioridad Media: 5)
+  # ============================================================
+  
+  - pattern: "/home/daniel/Escritorio/QT5/*"
+    color: "#39ff14"
+    title: "QT5"
+    priority: 5
+
+  - pattern: "/home/daniel/Escritorio/QT5/**"
+    color: "#39ff14"
+    title: "QT5"
+    priority: 5
+
+  - pattern: "/home/daniel/tron/*"
+    color: "#00ffff"
+    title: "TRON"
+    priority: 5
+
+  - pattern: "/home/daniel/tron/**"
+    color: "#00ffff"
+    title: "TRON"
+    priority: 5
+
+  - pattern: "/home/daniel/Escritorio/*"
+    color: "#ff9900"
+    title: "ESCRITORIO"
+    priority: 3
+
+  # ============================================================
+  # ARCHIVOS POR EXTENSIÓN - Reglas de respaldo (Prioridad: 2)
+  # ============================================================
+  
+  - pattern: "*.md"
+    color: "#66ccff"
+    title: "MARKDOWN"
+    priority: 2
+
+  - pattern: "*.py"
+    color: "#ffcc00"
+    title: "PYTHON"
+    priority: 2
+
+  - pattern: "*.js"
+    color: "#ffff66"
+    title: "JAVASCRIPT"
+    priority: 2
+
+  - pattern: "*.html"
+    color: "#ff6666"
+    title: "HTML"
+    priority: 2
+
+  - pattern: "*.css"
+    color: "#66ffcc"
+    title: "CSS"
+    priority: 2
+
+  - pattern: "*.sh"
+    color: "#ccff66"
+    title: "BASH"
+    priority: 2
+
+  - pattern: "*.yaml"
+    color: "#cc99ff"
+    title: "YAML"
+    priority: 2
+
+  - pattern: "*.json"
+    color: "#ff99cc"
+    title: "JSON"
+    priority: 2
+
+# ============================================================
+# VALORES POR DEFECTO
+# ============================================================
+# Se aplican cuando ninguna regla coincide
+
+defaults:
+  color: "#39ff14"
+  title: "KITTY"
