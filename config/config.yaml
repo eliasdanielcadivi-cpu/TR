@@ -1,0 +1,33 @@
+# Tron Configuration
+
+kitty:
+  socket: "unix:/tmp/mykitty"
+  allow_remote_control: "yes"
+
+ai:
+  enabled: true  # Permite desactivar la IA por completo
+  default_provider: "ollama"
+  
+  # Alias rápidos para modelos
+  aliases:
+    gemma: 
+      provider: "ollama"
+      model: "gemma3:4b"
+      template: "<start_of_turn>user\n{{ .Prompt }}<end_of_turn>\n<start_of_turn>model\n"
+    deepseek:
+      provider: "deepseek"
+      model: "deepseek-chat"
+
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "gemma3:4b"
+    
+  deepseek:
+    base_url: "https://api.deepseek.com"
+    model: "deepseek-chat"
+    api_key_env: "DEEPSEEK_API_KEY"
+
+paths:
+  sessions: "data/sessions"
+  logs: "logs/session.jsonl"
+  db: "db/tr.sqlite"

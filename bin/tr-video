@@ -1,0 +1,29 @@
+#!/bin/bash
+# TR-VIDEO: Herramienta de Visualización de Alto Rendimiento para Kitty
+# Calidad 100% garantizada.
+
+if [ -z "$1" ]; then
+    echo "Uso: tr-video <ruta_del_video>"
+    exit 1
+fi
+
+VIDEO_PATH="$1"
+
+# Comprobar si el archivo existe
+if [ ! -f "$VIDEO_PATH" ]; then
+    echo "❌ Error: El archivo '$VIDEO_PATH' no existe."
+    exit 1
+fi
+
+echo "🎬 Reproduciendo en calidad Kitty-Nativa: $(basename "$VIDEO_PATH")"
+
+# Parámetros óptimos para Kitty según documentación oficial
+# --vo=kitty: Usa el backend nativo de kitty
+# --vo-kitty-use-shm=yes: Mejora dramática de rendimiento (Shared Memory)
+# --profile=sw-fast: Optimiza la decodificación por software para terminales
+# --really-quiet: Limpia la salida de la terminal
+mpv --profile=sw-fast \
+    --vo=kitty \
+    --vo-kitty-use-shm=yes \
+    --really-quiet \
+    "$VIDEO_PATH"
