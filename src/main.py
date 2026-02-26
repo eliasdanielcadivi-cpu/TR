@@ -3,6 +3,7 @@ import click
 import json
 import sys
 import os
+import subprocess
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -15,11 +16,13 @@ from plan import TacticalOrchestrator
 
 console = Console()
 
-@click.group()
+@click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
     """Tron: Terminal Remote Operations Nexus (Modular)"""
     ctx.obj = TRContext()
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(help)
 
 @cli.command()
 @click.pass_obj
@@ -34,6 +37,15 @@ def status(obj):
     state = json.loads(state_res) if state_res else None
     table.add_row("Pestañas Abiertas", str(len(state[0]['tabs'])) if state else "0")
     console.print(table)
+
+@cli.command()
+@click.pass_obj
+def help(obj):
+    """Lanza la ayuda inteligente navegable con Broot."""
+    docs_path = os.path.join(obj.base_path, "docs")
+    console.print(f"[bold cyan]🛰  Lanzando Ayuda Inteligente en {docs_path}...")
+    # Lanzamos broot sobre la carpeta de documentación
+    subprocess.run(["broot", docs_path])
 
 @cli.command()
 @click.argument("alias")
