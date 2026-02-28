@@ -258,7 +258,8 @@ El proyecto está encapsulado y disponible globalmente mediante el comando `tr`.
 | `tr status` | Diagnóstico del socket Kitty y estado del sistema |
 | `tr init` | Gestiona configuración centralizada de Kitty |
 | `tr color <ruta>` | Aplica color Hacker Neon a pestaña según archivo |
-| `tr view <ruta>` | Visualización multimedia HQ (icat/mpv) |
+| `tr video <archivo>` | Reproduce video en kitty (mpv + protocolo gráfico) |
+| `tr image <archivo>` | Muestra imagen en kitty (icat + protocolo gráfico) |
 
 ---
 

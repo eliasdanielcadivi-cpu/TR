@@ -1,29 +1,220 @@
 #!/bin/bash
-# TR-VIDEO: Herramienta de Visualización de Alto Rendimiento para Kitty
-# Calidad 100% garantizada.
+# ═══════════════════════════════════════════════════════════════════════════════
+# tr-video - Reproductor de video para kitty terminal
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Reproducción de video en kitty usando mpv con protocolo de gráficos de kitty.
+# Solo funciona en kitty terminal (usa el protocolo de gráficos kitty).
+#
+# USO:
+#   tr video /ruta/al/video.mp4
+#   tr video --sub /ruta/al/sub.srt /ruta/al/video.mp4
+#   tr video --start 00:01:30 video.mp4
+#   tr video --loop video.mp4
+#   tr video --speed 1.5 video.mp4
+#
+# ═══════════════════════════════════════════════════════════════════════════════
 
-if [ -z "$1" ]; then
-    echo "Uso: tr-video <ruta_del_video>"
+set -e
+
+# Colores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Configuración
+TR_BASE="/home/daniel/tron/programas/TR"
+MPV_CONF="$TR_BASE/config/mpv/mpv.conf"
+
+# Función para mostrar ayuda
+show_help() {
+    cat << 'EOF'
+tr-video - Reproductor de video para kitty terminal
+====================================================
+
+USO:
+    tr video [OPCIONES] <archivo_de_video>
+
+OPCIONES:
+    --sub <archivo>     Cargar archivo de subtítulos (.srt, .ass, .sub)
+    --start <tiempo>    Iniciar reproducción en timestamp (ej: 00:01:30 o 90)
+    --loop              Reproducir en bucle infinito
+    --speed <valor>     Velocidad de reproducción (0.5-2.0, default: 1.0)
+    --volume <valor>    Volumen (0-100, default: 80)
+    --audio-only        Solo audio (no mostrar video)
+    --screenshot        Tomar captura de pantalla al finalizar
+    --help, -h          Mostrar esta ayuda
+
+EJEMPLOS:
+    tr video /home/daniel/Videos/pelicula.mp4
+        Reproducir video normalmente
+
+    tr video --sub /home/daniel/Videos/pelicula.srt pelicula.mp4
+        Reproducir video con subtítulos
+
+    tr video --start 00:05:00 video.mp4
+        Iniciar video en el minuto 5
+
+    tr video --loop --speed 1.25 anime.mp4
+        Reproducir anime en bucle a 1.25x
+
+    tr video --audio-only podcast.mp4
+        Reproducir solo audio (útil para podcasts)
+
+ATAJOS DE TECLADO DURANTE REPRODUCCIÓN:
+    ESPACIO      Pausar/Reproducir
+    q            Salir
+    f            Pantalla completa
+    ←/→          Adelante/Atrás 5 segundos
+    ↑/↓          Adelante/Atrás 1 minuto
+    9/0          Bajar/Subir volumen
+    j            Cambiar pista de subtítulos
+    v            Cambiar pista de video
+    s            Tomar captura de pantalla
+
+FORMATOS SOPORTADOS:
+    Video: mp4, mkv, avi, webm, mov, flv, wmv
+    Audio: mp3, flac, ogg, m4a, wav, aac
+    Subtítulos: srt, ass, sub, idx
+
+NOTAS:
+    - Este comando está diseñado para funcionar en kitty terminal
+    - Usa el protocolo de gráficos de kitty para renderizado
+    - La configuración está en: TR/config/mpv/mpv.conf
+    - Para mejor rendimiento: videos <1080p recomendados
+
+CONFIGURACIÓN:
+    Editar: /home/daniel/tron/programas/TR/config/mpv/mpv.conf
+
+VERSIÓN: 1.0.0
+EOF
+}
+
+# Función para verificar si estamos en kitty
+check_kitty() {
+    if [ -z "$KITTY_WINDOW_ID" ] && [ -z "$KITTY_LISTEN_ON" ]; then
+        echo -e "${YELLOW}⚠ Advertencia: No estás en kitty terminal${NC}"
+        echo -e "${YELLOW}  tr-video funciona mejor en kitty (usa protocolo de gráficos)${NC}"
+        echo -e "${YELLOW}  Continuando de todos modos...${NC}"
+        echo ""
+    fi
+}
+
+# Función para reproducir video
+play_video() {
+    local video_file="$1"
+    shift
+    local extra_args=("$@")
+    
+    if [ ! -f "$video_file" ]; then
+        echo -e "${RED}✗ Error: Archivo no encontrado: $video_file${NC}"
+        exit 1
+    fi
+    
+    echo -e "${CYAN}🎬 tr-video: Reproduciendo${NC}"
+    echo -e "   Archivo: $video_file"
+    echo ""
+    
+    # Construir comando mpv
+    local mpv_cmd=(
+        mpv
+        --config="$MPV_CONF"
+        --profile=sw-fast
+        --vo=kitty
+        --vo-kitty-use-shm=yes
+        --really-quiet
+        "${extra_args[@]}"
+        "$video_file"
+    )
+    
+    # Ejecutar mpv
+    "${mpv_cmd[@]}"
+}
+
+# Parsear argumentos
+SUB_FILE=""
+START_TIME=""
+LOOP_FLAG=""
+SPEED=""
+VOLUME=""
+AUDIO_ONLY=""
+SCREENSHOT_FLAG=""
+VIDEO_FILE=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --sub)
+            SUB_FILE="$2"
+            shift 2
+            ;;
+        --start)
+            START_TIME="$2"
+            shift 2
+            ;;
+        --loop)
+            LOOP_FLAG="--loop-file=inf"
+            shift
+            ;;
+        --speed)
+            SPEED="--speed=$2"
+            shift 2
+            ;;
+        --volume)
+            VOLUME="--volume=$2"
+            shift 2
+            ;;
+        --audio-only)
+            AUDIO_ONLY="--vid=no"
+            shift
+            ;;
+        --screenshot)
+            SCREENSHOT_FLAG="--screenshot-format=png"
+            shift
+            ;;
+        -*)
+            echo -e "${RED}✗ Opción desconocida: $1${NC}"
+            echo "Usa 'tr video --help' para más información"
+            exit 1
+            ;;
+        *)
+            VIDEO_FILE="$1"
+            shift
+            ;;
+    esac
+done
+
+# Verificar que se proporcionó un archivo de video
+if [ -z "$VIDEO_FILE" ]; then
+    echo -e "${RED}✗ Error: Se requiere un archivo de video${NC}"
+    echo "Usa 'tr video --help' para más información"
     exit 1
 fi
 
-VIDEO_PATH="$1"
-
-# Comprobar si el archivo existe
-if [ ! -f "$VIDEO_PATH" ]; then
-    echo "❌ Error: El archivo '$VIDEO_PATH' no existe."
+# Verificar mpv
+if ! command -v mpv &> /dev/null; then
+    echo -e "${RED}✗ Error: mpv no está instalado${NC}"
+    echo "Instala mpv: sudo apt install mpv"
     exit 1
 fi
 
-echo "🎬 Reproduciendo en calidad Kitty-Nativa: $(basename "$VIDEO_PATH")"
+# Verificar kitty
+check_kitty
 
-# Parámetros óptimos para Kitty según documentación oficial
-# --vo=kitty: Usa el backend nativo de kitty
-# --vo-kitty-use-shm=yes: Mejora dramática de rendimiento (Shared Memory)
-# --profile=sw-fast: Optimiza la decodificación por software para terminales
-# --really-quiet: Limpia la salida de la terminal
-mpv --profile=sw-fast \
-    --vo=kitty \
-    --vo-kitty-use-shm=yes \
-    --really-quiet \
-    "$VIDEO_PATH"
+# Construir argumentos extra
+EXTRA_ARGS=()
+[ -n "$SUB_FILE" ] && EXTRA_ARGS+=("--sub-file=$SUB_FILE")
+[ -n "$START_TIME" ] && EXTRA_ARGS+=("--start=$START_TIME")
+[ -n "$LOOP_FLAG" ] && EXTRA_ARGS+=("$LOOP_FLAG")
+[ -n "$SPEED" ] && EXTRA_ARGS+=("$SPEED")
+[ -n "$VOLUME" ] && EXTRA_ARGS+=("$VOLUME")
+[ -n "$AUDIO_ONLY" ] && EXTRA_ARGS+=("$AUDIO_ONLY")
+[ -n "$SCREENSHOT_FLAG" ] && EXTRA_ARGS+=("$SCREENSHOT_FLAG")
+
+# Reproducir video
+play_video "$VIDEO_FILE" "${EXTRA_ARGS[@]}"

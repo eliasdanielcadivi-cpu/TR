@@ -57,10 +57,41 @@ def status(obj):
 @cli.command()
 @click.pass_obj
 def help(obj):
-    """Lanza la ayuda inteligente navegable con Broot."""
+    """
+    Lanza la ayuda inteligente navegable con Broot.
+    Muestra documentación completa de todos los comandos TR.
+    """
     docs_path = os.path.join(obj.base_path, "docs")
-    console.print(f"[bold cyan]🛰  Lanzando Ayuda Inteligente en {docs_path}...")
-    subprocess.run(["broot", docs_path])
+    help_file = os.path.join(docs_path, "HELP.md")
+    
+    console.print(f"[bold cyan]🛰  Ayuda Inteligente de TR[/bold cyan]")
+    console.print(f"[dim]Ubicación: {docs_path}[/dim]")
+    console.print("")
+    
+    # Verificar si broot está disponible
+    if subprocess.run(["which", "broot"], capture_output=True).returncode == 0:
+        # Usar broot para navegación
+        console.print("[bold green]✓ Abriendo con Broot (navegable)[/bold green]")
+        subprocess.run(["broot", docs_path])
+    else:
+        # Fallback: mostrar HELP.md con less
+        if os.path.exists(help_file):
+            console.print("[yellow]⚠ Broot no disponible, mostrando HELP.md[/yellow]")
+            subprocess.run(["less", "-R", help_file])
+        else:
+            console.print("[red]✗ No se encontró HELP.md[/red]")
+            # Mostrar ayuda básica
+            console.print("")
+            console.print("[bold cyan]Comandos Principales:[/bold cyan]")
+            console.print("  tr p \"pregunta\"     - Consulta a la IA")
+            console.print("  tr status            - Diagnóstico del sistema")
+            console.print("  tr color <ruta>      - Aplica color a pestaña")
+            console.print("  tr video <archivo>   - Reproduce video")
+            console.print("  tr image <archivo>   - Muestra imagen")
+            console.print("  tr plan              - Orquestación táctica")
+            console.print("  tr model <alias>     - Cambia modelo de IA")
+            console.print("")
+            console.print("[dim]Para documentación completa, instala broot:[/dim]")
 
 
 @cli.command()
@@ -290,6 +321,100 @@ def init(obj, create_link, unlink, status, reload):
 
     if not result['symlink']['valid']:
         console.print("[yellow]💡 Sugerencia: Ejecuta [bold]tr init --link[/bold] para configurar kitty globalmente[/yellow]")
+
+
+@cli.command()
+@click.argument("archivo", required=True)
+@click.option("--sub", help="Archivo de subtítulos (.srt, .ass)")
+@click.option("--start", help="Timestamp de inicio (ej: 00:01:30)")
+@click.option("--loop", is_flag=True, help="Reproducir en bucle")
+@click.option("--speed", type=float, default=1.0, help="Velocidad de reproducción")
+@click.option("--volume", type=int, default=80, help="Volumen (0-100)")
+@click.option("--audio-only", is_flag=True, help="Solo audio")
+@click.pass_obj
+def video(obj, archivo, sub, start, loop, speed, volume, audio_only):
+    """
+    Reproduce video en kitty usando mpv.
+    
+    Usa el protocolo de gráficos de kitty para renderizado.
+    Configuración: TR/config/mpv/mpv.conf
+    """
+    import subprocess
+    
+    tr_base = obj.base_path
+    mpv_conf = os.path.join(tr_base, "config/mpv/mpv.conf")
+    
+    # Construir comando
+    cmd = [
+        "mpv",
+        f"--config={mpv_conf}",
+        "--profile=sw-fast",
+        "--vo=kitty",
+        "--vo-kitty-use-shm=yes",
+        "--really-quiet",
+    ]
+    
+    if sub:
+        cmd.append(f"--sub-file={sub}")
+    if start:
+        cmd.append(f"--start={start}")
+    if loop:
+        cmd.append("--loop-file=inf")
+    if speed != 1.0:
+        cmd.append(f"--speed={speed}")
+    cmd.append(f"--volume={volume}")
+    if audio_only:
+        cmd.append("--vid=no")
+    
+    cmd.append(archivo)
+    
+    console.print(f"[bold cyan]🎬 Reproduciendo:[/bold cyan] {archivo}")
+    subprocess.run(cmd)
+
+
+@cli.command()
+@click.argument("archivos", nargs=-1, required=True)
+@click.option("--grid", "-g", is_flag=True, help="Mostrar en cuadrícula")
+@click.option("--width", "-w", help="Ancho en columnas")
+@click.option("--align", default="left", help="Alineación (left/center/right)")
+@click.option("--scale-up", is_flag=True, help="Escalar imágenes pequeñas")
+@click.option("--clear", is_flag=True, help="Limpiar imágenes")
+@click.pass_obj
+def image(obj, archivos, grid, width, align, scale_up, clear):
+    """
+    Muestra imágenes en kitty usando icat.
+    
+    Usa el protocolo de gráficos de kitty.
+    Solo funciona en kitty terminal.
+    """
+    import subprocess
+    
+    if clear:
+        # Limpiar imágenes
+        print("\033[3J", end="")
+        console.print("[bold green]✓ Imágenes limpiadas[/bold green]")
+        return
+    
+    if not archivos:
+        console.print("[red]✗ Error: Se requiere al menos un archivo[/red]")
+        return
+    
+    # Construir comando icat
+    cmd = ["kitten", "icat"]
+    
+    if grid:
+        cmd.append("--grid")
+    if width:
+        cmd.append(f"--width={width}")
+    if align:
+        cmd.append(f"--align={align}")
+    if scale_up:
+        cmd.append("--scale-up")
+    
+    cmd.extend(archivos)
+    
+    console.print(f"[bold cyan]🖼️  Mostrando {len(archivos)} imagen(es)[/bold cyan]")
+    subprocess.run(cmd)
 
 
 if __name__ == "__main__":
