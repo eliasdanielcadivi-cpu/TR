@@ -1,0 +1,296 @@
+#!/bin/bash
+# tr-kitty-init - Inicializador de Kitty con configuración TRON
+# ==================================================================
+# Este script inicializa kitty usando la configuración centralizada
+# del proyecto TRON. Se puede ejecutar desde cualquier lugar del sistema.
+#
+# USO:
+#   tr-kitty-init              # Inicia kitty con config TRON
+#   tr-kitty-init --new        # Fuerza nueva instancia
+#   tr-kitty-init --reload     # Recarga configuración en instancia existente
+#   tr-kitty-init --status     # Verifica estado de configuración
+#   tr-kitty-init --link       # Crea enlace simbólico en ~/.config/kitty/
+#   tr-kitty-init --unlink     # Elimina enlace simbólico
+#   tr-kitty-init --help       # Muestra ayuda
+
+set -e
+
+# Ruta base de TRON
+TR_BASE="/home/daniel/tron/programas/TR"
+TR_KITTY_CONF="$TR_BASE/config/kitty.conf"
+KITTY_USER_CONFIG="$HOME/.config/kitty/kitty.conf"
+KITTY_LINK="$HOME/.config/kitty/kitty.conf"
+SOCKET_PATH="/tmp/mykitty"
+
+# Colores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+NC='\033[0m' # No Color
+
+# Función para mostrar ayuda
+show_help() {
+    cat << 'EOF'
+tr-kitty-init - Inicializador Kitty con configuración TRON
+============================================================
+
+USO:
+    tr-kitty-init [OPCIONES]
+
+OPCIONES:
+    (ninguna)       Inicia kitty con la configuración TRON
+    --new           Fuerza nueva instancia de kitty
+    --reload        Recarga configuración en kitty existente
+    --status        Verifica estado de configuración e instancia
+    --link          Crea enlace simbólico en ~/.config/kitty/
+    --unlink        Elimina enlace simbólico
+    --help, -h      Muestra esta ayuda
+
+DESCRIPCIÓN:
+    Este script permite ejecutar kitty con la configuración centralizada
+    del proyecto TRON, sin importar desde dónde se ejecute en el sistema.
+
+    La configuración incluye:
+    - Colores Hacker Neon (fuchsia/cyan de alto contraste)
+    - Fuente JetBrainsMono Nerd Font 16pt
+    - Atajos de teclado estilo programador
+    - Control remoto habilitado para módulos TR
+
+EJEMPLOS:
+    tr-kitty-init
+        Inicia kitty con configuración TRON
+
+    tr-kitty-init --new
+        Fuerza una nueva instancia incluso si ya hay una corriendo
+
+    tr-kitty-init --reload
+        Recarga la configuración en la instancia actual
+
+    tr-kitty-init --link
+        Crea enlace simbólico para que kitty use siempre la config TRON
+
+CONFIGURACIÓN:
+    Archivo principal: /home/daniel/tron/programas/TR/config/kitty.conf
+    Enlace usuario:   ~/.config/kitty/kitty.conf
+    Socket:           /tmp/mykitty
+
+VERSIÓN: 1.0.0
+EOF
+}
+
+# Función para verificar si kitty está corriendo
+is_kitty_running() {
+    [ -S "$SOCKET_PATH" ] && kitty @ --to unix:$SOCKET_PATH ls >/dev/null 2>&1
+}
+
+# Función para verificar configuración
+check_config() {
+    if [ ! -f "$TR_KITTY_CONF" ]; then
+        echo -e "${RED}✗ Error: Configuración TRON no encontrada en:$NC"
+        echo -e "${RED}  $TR_KITTY_CONF$NC"
+        return 1
+    fi
+    return 0
+}
+
+# Función para verificar enlace simbólico
+check_link() {
+    if [ -L "$KITTY_LINK" ]; then
+        local target=$(readlink "$KITTY_LINK")
+        if [ "$target" = "$TR_KITTY_CONF" ]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Función para crear enlace simbólico
+create_link() {
+    echo -e "${CYAN}📁 Creando enlace simbólico...$NC"
+    
+    # Crear directorio si no existe
+    mkdir -p "$HOME/.config/kitty"
+    
+    # Eliminar enlace o archivo existente
+    if [ -L "$KITTY_LINK" ] || [ -f "$KITTY_LINK" ]; then
+        rm -f "$KITTY_LINK"
+        echo -e "${YELLOW}⚠ Configuración anterior eliminada$NC"
+    fi
+    
+    # Crear enlace simbólico
+    ln -s "$TR_KITTY_CONF" "$KITTY_LINK"
+    
+    if [ -L "$KITTY_LINK" ]; then
+        echo -e "${GREEN}✓ Enlace creado exitosamente$NC"
+        echo -e "${CYAN}  ~/.config/kitty/kitty.conf → $TR_KITTY_CONF$NC"
+        echo ""
+        echo -e "${MAGENTA}ℹ Kitty usará ahora la configuración TRON por defecto$NC"
+        return 0
+    else
+        echo -e "${RED}✗ Error al crear enlace$NC"
+        return 1
+    fi
+}
+
+# Función para eliminar enlace simbólico
+remove_link() {
+    echo -e "${CYAN}📁 Eliminando enlace simbólico...$NC"
+    
+    if [ -L "$KITTY_LINK" ]; then
+        rm -f "$KITTY_LINK"
+        echo -e "${GREEN}✓ Enlace eliminado$NC"
+        echo -e "${YELLOW}ℹ Kitty volverá a su configuración por defecto$NC"
+        return 0
+    else
+        echo -e "${YELLOW}⚠ No existe enlace simbólico$NC"
+        return 0
+    fi
+}
+
+# Función para mostrar estado
+show_status() {
+    echo -e "${MAGENTA}╔════════════════════════════════════════════════════════╗$NC"
+    echo -e "${MAGENTA}║   TRON KITTY - Estado de Configuración                ║$NC"
+    echo -e "${MAGENTA}╚════════════════════════════════════════════════════════╝$NC"
+    echo ""
+    
+    # Estado de configuración TRON
+    if [ -f "$TR_KITTY_CONF" ]; then
+        echo -e "${GREEN}✓ Configuración TRON:$NC"
+        echo -e "  $TR_KITTY_CONF"
+    else
+        echo -e "${RED}✗ Configuración TRON:$NC"
+        echo -e "  $TR_KITTY_CONF (NO ENCONTRADA)"
+    fi
+    echo ""
+    
+    # Estado de enlace simbólico
+    if check_link; then
+        echo -e "${GREEN}✓ Enlace simbólico:$NC"
+        echo -e "  ~/.config/kitty/kitty.conf → $TR_KITTY_CONF"
+    elif [ -L "$KITTY_LINK" ]; then
+        local target=$(readlink "$KITTY_LINK")
+        echo -e "${YELLOW}⚠ Enlace simbólico (apunta a otro lado):$NC"
+        echo -e "  ~/.config/kitty/kitty.conf → $target"
+    elif [ -f "$KITTY_LINK" ]; then
+        echo -e "${YELLOW}⚠ Archivo kitty.conf existe (no es enlace):$NC"
+        echo -e "  $KITTY_LINK"
+    else
+        echo -e "${YELLOW}⚠ Enlace simbólico:$NC"
+        echo -e "  ~/.config/kitty/kitty.conf (NO EXISTE)"
+    fi
+    echo ""
+    
+    # Estado de kitty
+    if is_kitty_running; then
+        echo -e "${GREEN}✓ Kitty (con socket TRON):$NC"
+        echo -e "  Activo en $SOCKET_PATH"
+        
+        # Contar pestañas
+        local tabs=$(kitty @ --to unix:$SOCKET_PATH ls 2>/dev/null | \
+            python3 -c "import sys,json; d=json.load(sys.stdin); print(sum(len(w['tabs']) for w in d))" 2>/dev/null || echo "?")
+        echo -e "  Pestañas abiertas: $tabs"
+    else
+        echo -e "${YELLOW}⚠ Kitty (con socket TRON):$NC"
+        echo -e "  No está corriendo con remote control"
+    fi
+    echo ""
+}
+
+# Función para recargar configuración
+reload_config() {
+    if is_kitty_running; then
+        echo -e "${CYAN}🔄 Recargando configuración...$NC"
+        kitty @ --to unix:$SOCKET_PATH load-config "$TR_KITTY_CONF"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}✓ Configuración recargada exitosamente$NC"
+        else
+            echo -e "${RED}✗ Error al recargar configuración$NC"
+            return 1
+        fi
+    else
+        echo -e "${YELLOW}⚠ Kitty no está corriendo con socket TRON$NC"
+        echo -e "  Inicia kitty con: tr-kitty-init"
+        return 1
+    fi
+}
+
+# Función para iniciar kitty
+launch_kitty() {
+    local force_new=$1
+    
+    # Verificar configuración
+    if ! check_config; then
+        return 1
+    fi
+    
+    # Verificar si ya está corriendo
+    if is_kitty_running && [ "$force_new" != "true" ]; then
+        echo -e "${YELLOW}⚠ Kitty ya está corriendo con socket TRON$NC"
+        echo -e "  Usa --new para forzar nueva instancia"
+        echo -e "  Usa --reload para recargar configuración"
+        return 0
+    fi
+    
+    echo -e "${CYAN}🚀 Iniciando Kitty con configuración TRON...$NC"
+    echo -e "  Configuración: $TR_KITTY_CONF"
+    echo -e "  Socket: $SOCKET_PATH"
+    echo ""
+    
+    # Eliminar socket existente si existe
+    [ -S "$SOCKET_PATH" ] && rm -f "$SOCKET_PATH"
+    
+    # Iniciar kitty
+    kitty \
+        -c "$TR_KITTY_CONF" \
+        --listen-on "$SOCKET_PATH" \
+        --detach
+    
+    # Verificar que inició correctamente
+    sleep 1
+    if is_kitty_running; then
+        echo -e "${GREEN}✓ Kitty iniciado exitosamente$NC"
+        echo -e "${MAGENTA}  Socket disponible en: $SOCKET_PATH$NC"
+        echo ""
+        echo -e "${CYAN}ℹ Usa 'tr' para acceder a la ayuda inteligente$NC"
+        echo -e "${CYAN}ℹ Usa 'tr-color <ruta>' para colorear pestañas$NC"
+        return 0
+    else
+        echo -e "${RED}✗ Error al iniciar Kitty$NC"
+        echo -e "  Verifica que kitty esté instalado correctamente"
+        return 1
+    fi
+}
+
+# Parsear argumentos
+case "${1:-}" in
+    --help|-h)
+        show_help
+        ;;
+    --status)
+        show_status
+        ;;
+    --link)
+        create_link
+        ;;
+    --unlink)
+        remove_link
+        ;;
+    --reload)
+        reload_config
+        ;;
+    --new)
+        launch_kitty "true"
+        ;;
+    "")
+        launch_kitty "false"
+        ;;
+    *)
+        echo -e "${RED}✗ Opción no válida: $1$NC"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac

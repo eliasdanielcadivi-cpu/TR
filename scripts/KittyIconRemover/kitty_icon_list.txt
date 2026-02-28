@@ -1,0 +1,17 @@
+/home/daniel/.local/kitty.app/share/doc/kitty/html/_static/kitty.svg
+/home/daniel/.local/kitty.app/share/icons/hicolor/scalable/apps/kitty.svg
+/home/daniel/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png
+/home/daniel/.local/kitty.app/lib/kitty/logo/kitty.png
+/home/daniel/.local/kitty.app/lib/kitty/logo/kitty-128.png
+/usr/share/icons/Papirus/48x48/apps/kitty.svg
+/usr/share/icons/Papirus/48x48/apps/appimagekit-kitty.svg
+/usr/share/icons/Papirus/64x64/apps/kitty.svg
+/usr/share/icons/Papirus/64x64/apps/appimagekit-kitty.svg
+/usr/share/icons/Papirus/22x22/apps/kitty.svg
+/usr/share/icons/Papirus/22x22/apps/appimagekit-kitty.svg
+/usr/share/icons/Papirus/16x16/apps/kitty.svg
+/usr/share/icons/Papirus/16x16/apps/appimagekit-kitty.svg
+/usr/share/icons/Papirus/24x24/apps/kitty.svg
+/usr/share/icons/Papirus/24x24/apps/appimagekit-kitty.svg
+/usr/share/icons/Papirus/32x32/apps/kitty.svg
+/usr/share/icons/Papirus/32x32/apps/appimagekit-kitty.svg
