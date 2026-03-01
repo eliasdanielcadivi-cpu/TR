@@ -252,35 +252,49 @@ El proyecto está encapsulado y disponible globalmente mediante el comando `tr`.
 
 | Comando | Descripción |
 |---------|-------------|
-| `tr p "pregunta"` | Consulta a la IA Tron (Gemma 3 / DeepSeek) |
-| `tr plan` | Despliegue táctico: pestañas coloreadas, diagnóstico, multimedia |
+| `tr` | Abre kitty en **~** con título "TRON por Daniel Hung" |
+| `tr -p "pregunta"` | Consulta a la IA Tron (Gemma 3 / DeepSeek) |
+| `tr plan` | Despliegue táctico: 4 pestañas coloreadas Hacker Neon |
 | `tr model <alias>` | Cambia el cerebro de IA (gemma, deepseek) |
 | `tr status` | Diagnóstico del socket Kitty y estado del sistema |
 | `tr init` | Gestiona configuración centralizada de Kitty |
-| `tr color <ruta>` | Aplica color Hacker Neon a pestaña según archivo |
 | `tr video <archivo>` | Reproduce video en kitty (mpv + protocolo gráfico) |
 | `tr image <archivo>` | Muestra imagen en kitty (icat + protocolo gráfico) |
+| `tr help` | Abre documentación navegable con Broot |
+
+**NOTA:** `tr` sin argumentos abre kitty en el directorio HOME (`~`) con título fijo.
 
 ---
 
-## 🎨 CONFIGURACIÓN KITTY (HACKER NEON)
+## 🖼️ PERSONALIZACIÓN DE ICONOS (KittyIconRemover)
 
-La configuración de Kitty está centralizada en `TR/config/kitty.conf`:
+El script `scripts/KittyIconRemover/setup_kitty_icons.sh` reemplaza todos los iconos de kitty con una imagen personalizada.
 
-- **Colores**: Cyan neón (#00FFFF) sobre fondo hiperoscuro (#030305)
-- **Cursor**: Fuchsia neón (#FF00FF)
-- **Pestañas**: Alto contraste fuchsia/cyan
-- **Fuente**: JetBrainsMono Nerd Font 16pt
+**Características:**
+- Reemplaza iconos PNG y SVG en todo el sistema
+- Crea backups en `scripts/KittyIconRemover/backups/`
+- Genera iconos redimensionados en `scripts/KittyIconRemover/generated_icons/`
+- Actualiza caché de iconos GTK
 
-**Gestión centralizada:**
+**Uso:**
 ```bash
-tr init --status    # Ver estado de configuración
-tr init --link      # Crear enlace simbólico global (~/.config/kitty/)
-tr init --reload    # Recargar configuración en Kitty existente
-tr init --unlink    # Eliminar enlace simbólico
+# Ejecutar el script de reemplazo de iconos
+bash /home/daniel/tron/programas/TR/scripts/KittyIconRemover/setup_kitty_icons.sh
 ```
 
-**Ver documentación completa:** `tr help` → KITTY_INIT.md
+**Imagen fuente:** `scripts/KittyIconRemover/source_image.png`
+
+**Iconos afectados:**
+- Iconos de aplicación kitty (~/.local/kitty.app/)
+- Iconos del sistema (/usr/share/icons/Papirus/)
+- Iconos de documentación
+
+**Restaurar iconos originales:**
+```bash
+# Copiar desde backups
+cp -r scripts/KittyIconRemover/backups/* /
+gtk-update-icon-cache /usr/share/icons/Papirus
+```
 
 ---
 

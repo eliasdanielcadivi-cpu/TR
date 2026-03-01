@@ -10,15 +10,15 @@
 
 ## 🛠 NÚCLEO (src/)
 
-### main.py - Orquestador CLI
-**Propósito:** Punto de entrada único, despacho de comandos, help system.  
+### main.py - Orquestador CLI + Wrapper Kitty
+**Propósito:** Punto de entrada único, wrapper de kitty (abre en ~), despacho a módulos.
 **Funciones públicas:**
-1. `cli()` - Grupo de comandos Click, invoke sin subcomando → help
-2. `dispatch()` - Despacha a módulos según comando (status, init, color, plan, etc.)
+1. `cli()` - Sin subcomando → abre kitty en `~` con título "TRON por Daniel Hung"
+2. `dispatch()` - Despacha a módulos según comando (plan, video, image, init, status, etc.)
 3. `show_help()` - Muestra ayuda navegable con Broot en `docs/`
 
-**CLI:** `tr`, `tr <comando>`, `tr help`  
-**Relaciones:** Importa todos los módulos del núcleo, no tiene lógica de negocio.  
+**CLI:** `tr` (abre en ~), `tr <comando>`, `tr -p "pregunta"`, `tr help`
+**Relaciones:** Importa módulos del núcleo, tiene lógica de wrapper kitty.
 **Documentación:** `LEEME.md`
 
 ---

@@ -4,10 +4,10 @@ TR - Terminal Remote Operations Nexus (Main CLI)
 ================================================
 
 Punto de entrada único para el CLI de TRON.
-Sigue la regla de modularidad: solo despacho de comandos, sin lógica de negocio.
+Wrapper de kitty + despacho a módulos.
 
 Funciones:
-1. cli() - Grupo de comandos Click
+1. cli() - Grupo de comandos Click, sin args → kitty --title
 2. dispatch() - Despacha a módulos según comando
 3. show_help() - Muestra ayuda navegable con Broot
 """
@@ -33,10 +33,30 @@ console = Console()
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
-    """Tron: Terminal Remote Operations Nexus (Modular)"""
+    """
+    TRON: Terminal Remote Operations Nexus
+
+    Sin argumentos: Abre kitty en ~ con título "TRON por Daniel Hung"
+    Con argumentos: Ejecuta comando (plan, video, image, init, etc.)
+    """
     ctx.obj = TRContext()
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(help)
+
+    # SIN argumentos → abrir kitty en HOME con título fijo
+    # Primero limpiar socket si existe
+    if os.path.exists(ctx.obj.socket_path):
+        os.remove(ctx.obj.socket_path)
+
+    # Cambiar a directorio home antes de lanzar kitty
+    os.chdir(os.path.expanduser("~"))
+
+    subprocess.run([
+        "kitty",
+        "--title", "TRON por Daniel Hung",
+        "-c", ctx.obj.kitty_conf,
+        "--listen-on", ctx.obj.socket,
+        "--detach"
+    ])
+    return
 
 
 @cli.command()

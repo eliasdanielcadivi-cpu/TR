@@ -15,8 +15,21 @@ class KittyRemote:
         return os.path.exists(self.ctx.socket_path)
 
     def launch_hub(self):
-        if os.path.exists(self.ctx.socket_path): os.remove(self.ctx.socket_path)
-        subprocess.run(["kitty", "-c", self.ctx.kitty_conf, "--listen-on", self.ctx.socket, "--detach"], check=True)
+        """
+        Lanza kitty con título fijo de ventana 'TRON por Daniel Hung'.
+        Las pestañas mantienen títulos dinámicos (ruta, comando, etc.)
+        """
+        if os.path.exists(self.ctx.socket_path):
+            os.remove(self.ctx.socket_path)
+        
+        subprocess.run([
+            "kitty",
+            "-c", self.ctx.kitty_conf,
+            "--listen-on", self.ctx.socket,
+            "--detach",
+            "--title", "TRON por Daniel Hung"
+        ], check=True)
+        
         for _ in range(15):
             if self.is_running():
                 time.sleep(2)
