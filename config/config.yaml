@@ -1,31 +1,104 @@
-# Tron Configuration
+# ARES Configuration
+# Configuración modular para providers de IA, templates y herramientas
+
+identity:
+  name: "ARES"
+  full_name: "Terminal Remote Operations Nexus"
+  window_title: "Ares por Daniel Hung"
 
 kitty:
   socket: "unix:/tmp/mykitty"
+  socket_path: "/tmp/mykitty"
   allow_remote_control: "yes"
+  conf_path: "config/kitty.conf"
 
+# === Configuración de IA Multi-Provider ===
 ai:
-  enabled: true  # Permite desactivar la IA por completo
-  default_provider: "ollama"
+  enabled: true
+  default_provider: "gemma"  # gemma, deepseek, openrouter
   
-  # Alias rápidos para modelos
+  # Aliases de modelos para acceso rápido
   aliases:
-    gemma: 
-      provider: "ollama"
+    gemma:
+      provider: "gemma"
       model: "gemma3:4b"
-      template: "<start_of_turn>user\n{{ .Prompt }}<end_of_turn>\n<start_of_turn>model\n"
+    gemma12b:
+      provider: "gemma"
+      model: "gemma3:12b"
     deepseek:
       provider: "deepseek"
       model: "deepseek-chat"
+    openrouter:
+      provider: "openrouter"
+      model: "google/gemma-3-4b-it"
 
-  ollama:
+  # Provider: Gemma/Ollama
+  gemma:
     base_url: "http://localhost:11434"
     model: "gemma3:4b"
+    templates_dir: "modules/ia/templates/gemma"
     
+  # Provider: DeepSeek API
   deepseek:
     base_url: "https://api.deepseek.com"
     model: "deepseek-chat"
-    api_key_env: "DEEPSEEK_API_KEY"
+    api_key_env: "sk-2ceebfa3da2d444199e242bbc17feedc"
+    
+  # Provider: OpenRouter (placeholder)
+  openrouter:
+    base_url: "https://openrouter.ai/api/v1"
+    model: "google/gemma-3-4b-it"
+    api_key_env: "OPENROUTER_API_KEY"
+
+# === Sistema de Templates YAML ===
+templates:
+  enabled: true
+  base_dir: "modules/ia/templates"
+  
+  # Templates por defecto por provider
+  defaults:
+    gemma: "default"
+    deepseek: "default"
+  
+  # Templates disponibles para gemma
+  gemma:
+    - name: "default"
+      description: "Plantilla básica para consultas generales"
+    - name: "chat"
+      description: "Optimizada para conversaciones multi-turno"
+    - name: "code"
+      description: "Generación y explicación de código"
+    - name: "tools"
+      description: "Function calling con herramientas"
+  
+  # Templates disponibles para deepseek
+  deepseek:
+    - name: "default"
+      description: "Plantilla básica para DeepSeek"
+
+# === Sistema de Herramientas ===
+tools:
+  enabled: true
+  
+  # Herramientas disponibles
+  available:
+    - name: "google_search"
+      enabled: true
+      api_key_env: "SERPER_API_KEY"
+    - name: "translate_text"
+      enabled: true
+      api_key_env: ""  # MyMemory API es gratuita
+    - name: "get_weather"
+      enabled: true
+      api_key_env: "OPENWEATHER_API_KEY"
+    - name: "execute_shell"
+      enabled: true
+      timeout: 30
+    - name: "read_file"
+      enabled: true
+      max_lines: 100
+    - name: "write_file"
+      enabled: true
 
 paths:
   sessions: "data/sessions"

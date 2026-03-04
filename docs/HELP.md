@@ -1,4 +1,4 @@
-# 🛰 TR - Ayuda Inteligente y Documentación
+# 🛰 ARES - Ayuda Inteligente y Documentación
 
 > Navega esta documentación con `broot` o léela directamente.
 
@@ -8,30 +8,57 @@
 
 | Comando | Descripción |
 |---------|-------------|
-| `tr` | Sin argumentos: abre esta ayuda |
-| `tr p "pregunta"` | Consulta a la IA Tron |
-| `tr status` | Diagnóstico del sistema |
-| `tr color <ruta>` | Aplica color Hacker Neon a pestaña |
-| `tr video <archivo>` | Reproduce video en kitty |
-| `tr image <archivo>` | Muestra imagen en kitty |
-| `tr plan` | Orquestación táctica |
-| `tr model <alias>` | Cambia modelo de IA |
+| `ares` | Sin argumentos: abre ARES Hub |
+| `ares p "pregunta"` | Consulta a la IA ARES (Gemma/DeepSeek) |
+| `ares p "pregunta" --model gemma` | Usar modelo específico |
+| `ares p "pregunta" --template code` | Usar plantilla YAML |
+| `ares status` | Diagnóstico del sistema |
+| `ares config` | Ver configuración de IA |
+| `ares models` | Listar modelos disponibles |
+| `ares templates` | Listar plantillas YAML |
+| `ares tools` | Listar herramientas (function calling) |
+| `ares color <ruta>` | Aplica color Hacker Neon a pestaña |
+| `ares video <archivo>` | Reproduce video en kitty |
+| `ares image <archivo>` | Muestra imagen en kitty |
+| `ares plan` | Despliegue táctico (4 pestañas) |
+| `ares zshPlan` | Hacker AI Session (ZSH) |
+| `ayuda zsh` | Ver hoja de trucos WOW y productividad Zsh |
+| `sherlok --help` | Ojo Forense: Escanea e indexa tus programas propios |
+
+### Aliases de Modelos
+
+| Alias | Provider | Modelo |
+|-------|----------|--------|
+| `gemma` | Ollama | gemma3:4b |
+| `gemma12b` | Ollama | gemma3:12b |
+| `deepseek` | DeepSeek API | deepseek-chat |
+| `openrouter` | OpenRouter | google/gemma-3-4b-it |
+
+### Plantillas YAML
+
+| Plantilla | Provider | Uso |
+|-----------|----------|-----|
+| `default` | gemma | Consultas generales |
+| `chat` | gemma | Conversaciones multi-turno |
+| `code` | gemma | Programación y código |
+| `tools` | gemma | Function calling |
+| `default` | deepseek | Consultas generales |
 
 ---
 
-## 🎨 Módulo de Color (`tr color`)
+## 🎨 Módulo de Color (`ares color`)
 
 ### Uso Básico
 
 ```bash
 # Aplicar color según archivo
-tr color /home/daniel/Escritorio/QT5/elAsunto.md
+ares color /home/daniel/Escritorio/QT5/elAsunto.md
 
 # Listar reglas
-tr color --list
+ares color --list
 
 # Auto-detectar
-tr color --auto
+ares color --auto
 ```
 
 ### Estructura de Colores Hacker Neon
@@ -54,25 +81,25 @@ tr color --auto
 
 ---
 
-## 🎬 Módulo de Video (`tr video`)
+## 🎬 Módulo de Video (`ares video`)
 
 ### Uso Básico
 
 ```bash
 # Reproducir video
-tr video /ruta/al/video.mp4
+ares video /ruta/al/video.mp4
 
 # Con subtítulos
-tr video --sub /ruta/al/sub.srt video.mp4
+ares video --sub /ruta/al/sub.srt video.mp4
 
 # Iniciar en timestamp
-tr video --start 00:01:30 video.mp4
+ares video --start 00:01:30 video.mp4
 
 # Bucle infinito
-tr video --loop video.mp4
+ares video --loop video.mp4
 
 # Velocidad ajustada
-tr video --speed 1.5 video.mp4
+ares video --speed 1.5 video.mp4
 ```
 
 ### Opciones
@@ -106,22 +133,22 @@ Editar: `/home/daniel/tron/programas/TR/config/mpv/mpv.conf`
 
 ---
 
-## 🖼️ Módulo de Imagen (`tr image`)
+## 🖼️ Módulo de Imagen (`ares image`)
 
 ### Uso Básico
 
 ```bash
 # Mostrar imagen
-tr image /ruta/a/imagen.jpg
+ares image /ruta/a/imagen.jpg
 
 # Cuadrícula de imágenes
-tr image --grid img1.jpg img2.jpg img3.jpg
+ares image --grid img1.jpg img2.jpg img3.jpg
 
 # Con ancho específico
-tr image --width 80 imagen.png
+ares image --width 80 imagen.png
 
 # Limpiar imágenes
-tr image --clear
+ares image --clear
 ```
 
 ### Opciones
@@ -231,4 +258,64 @@ kitten @ load-config
 
 ---
 
-*Tron: YO Defiendo al Usuario.
+## 🤖 Uso de IA con ARES
+
+### Ejemplos de Consultas
+
+```bash
+# Consulta simple (usa gemma3:4b por defecto)
+ares p "¿Qué es Python?"
+
+# Usar modelo específico
+ares p "Explica la teoría de relatividad" --model gemma12b
+
+# Usar plantilla de código
+ares p "Escribe un hello world en Python" --template code
+
+# Usar plantilla de chat
+ares p "Tengo una duda sobre programación" --template chat
+
+# Combinar modelo y plantilla
+ares p "Optimiza esta función" --model gemma12b --template code
+
+# Usar DeepSeek API (requiere DEEPSEEK_API_KEY)
+ares p "Analiza este algoritmo" --model deepseek
+```
+
+### Herramientas Disponibles (Function Calling)
+
+ARES soporta function calling con las siguientes herramientas:
+
+| Herramienta | Descripción | Ejemplo de uso |
+|-------------|-------------|----------------|
+| `google_search` | Búsqueda en tiempo real | "¿Quién ganó el Mundial 2022?" |
+| `translate_text` | Traducción de texto | "Traduce 'Hello' al español" |
+| `get_weather` | Clima actual | "¿Qué temperatura hay en Madrid?" |
+| `execute_shell` | Ejecutar comando | "Lista los archivos del directorio" |
+| `read_file` | Leer archivo | "Lee el archivo config.yaml" |
+| `write_file` | Escribir archivo | "Crea un archivo con este contenido" |
+
+### Ver Recursos Disponibles
+
+```bash
+# Ver modelos disponibles
+ares models
+
+# Ver plantillas YAML
+ares templates
+
+# Ver herramientas
+ares tools
+
+# Ver configuración actual
+ares config
+```
+
+### Documentación Adicional
+
+- `docs/GEMMA_OLLAMA_GUIDE.md`: Guía completa de Gemma + Ollama
+- `docs/DEEPSEEK_GUIDE.md`: Guía de DeepSeek API
+
+---
+
+*ARES: El orquestador definitivo por Daniel Hung.*

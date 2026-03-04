@@ -1,0 +1,11 @@
+# Plantilla Default para DeepSeek
+# Uso: tr -p "prompt" --model deepseek
+
+content: |
+  {prompt}
+
+config:
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 4096
+  description: "Plantilla básica para consultas con DeepSeek API"

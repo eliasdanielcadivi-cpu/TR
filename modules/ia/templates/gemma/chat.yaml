@@ -1,0 +1,21 @@
+# Plantilla Chat para Gemma 3
+# Optimizada para conversaciones multi-turno
+# Uso: tr -p "prompt" --template chat
+
+content: |
+  <start_of_turn>system
+  Eres un asistente útil, preciso y conciso. Responde de manera clara y directa.
+  Si no sabes algo, dilo honestamente. No inventes información.
+  <end_of_turn>
+  <start_of_turn>user
+  {prompt}<end_of_turn>
+  <start_of_turn>model
+
+config:
+  model: "gemma3:4b"
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 40
+  max_tokens: 2048
+  repeat_penalty: 1.1
+  description: "Plantilla para conversaciones con mensaje de sistema"

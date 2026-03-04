@@ -1,0 +1,47 @@
+# Sherlok Master Configuration
+
+ares_definition: |
+  ARES (Terminal Remote Operations Nexus) es un orquestador táctico para la terminal Kitty.
+  Enfoque: Soberanía tecnológica, IA Local (Ollama), Multimedia (MPV), Automatización (Puppeteering).
+
+models:
+  default: "codellama:7b"
+  python_specialist: "codellama:7b-python"
+  aliases:
+    qwenCoderInstruc: "qwen2.5-coder:7b-instruct"
+    codellama: "codellama:7b"
+    codellamapy: "codellama:7b-python"
+    deepseekr1: "deepseek-r1:8b"
+
+templates:
+  qwenCoderInstruc: |
+    {{- if .System }}<|im_start|>system
+    {{ .System }}<|im_end|>
+    {{ end }}<|im_start|>user
+    {{ .Prompt }}<|im_end|>
+    <|im_start|>assistant
+  
+  deepseekr1: |
+    {{- if .System }}{{ .System }}{{ end }}
+    <｜User｜>{{ .Prompt }}
+    <｜Assistant｜>
+    <think>
+  
+  codellama: |
+    [INST] <<SYS>>{{ .System }}<</SYS>>
+    {{ .Prompt }} [/INST]
+
+parameters:
+  deepseekr1:
+    stop: ["<｜begin▁of▁sentence｜>", "<｜end▁of▁sentence｜>", "<｜User｜>", "<｜Assistant｜>"]
+    temperature: 0.6
+    top_p: 0.95
+  codellama:
+    rope_frequency_base: 1000000
+    stop: ["[INST]", "[/INST]", "<<SYS>>", "<</SYS>>"]
+  codellamapy:
+    rope_frequency_base: 1000000
+
+paths:
+  output: "/home/daniel/tron/programas/AYUDA/docs/PROGRAMAS-PROPIOS"
+  ignore: [".git", "node_modules", "venv", ".venv", "__pycache__", ".env"]

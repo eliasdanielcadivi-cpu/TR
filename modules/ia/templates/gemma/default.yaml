@@ -1,0 +1,15 @@
+# Plantilla Default para Gemma 3
+# Uso: tr -p "prompt" --template default
+# o: tr -p "prompt" --model gemma
+
+content: |
+  <start_of_turn>user
+  {prompt}<end_of_turn>
+  <start_of_turn>model
+
+config:
+  model: "gemma3:4b"
+  temperature: 0.7
+  top_p: 0.95
+  max_tokens: 2048
+  description: "Plantilla básica para consultas generales con Gemma 3"
