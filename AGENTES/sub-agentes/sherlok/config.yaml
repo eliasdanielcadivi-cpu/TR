@@ -1,8 +1,9 @@
-# Sherlok Master Configuration
+# 🕵️ Sherlok Master Configuration - V2.0 (Industrial Audit)
 
 ares_definition: |
   ARES (Terminal Remote Operations Nexus) es un orquestador táctico para la terminal Kitty.
   Enfoque: Soberanía tecnológica, IA Local (Ollama), Multimedia (MPV), Automatización (Puppeteering).
+  Categorías de utilidad: IA/Agentes, Multimedia, Automatización, Administración/Soberanía.
 
 models:
   default: "codellama:7b"
@@ -13,6 +14,7 @@ models:
     codellamapy: "codellama:7b-python"
     deepseekr1: "deepseek-r1:8b"
 
+# Plantillas exactas según documentación oficial de Ollama/Modelos
 templates:
   qwenCoderInstruc: |
     {{- if .System }}<|im_start|>system
@@ -23,9 +25,15 @@ templates:
   
   deepseekr1: |
     {{- if .System }}{{ .System }}{{ end }}
-    <｜User｜>{{ .Prompt }}
-    <｜Assistant｜>
-    <think>
+    {{- range .Messages }}
+    {{- if eq .Role "user" }}<｜User｜>{{ .Content }}
+    {{- else if eq .Role "assistant" }}<｜Assistant｜>
+    {{- if .Thinking }}<think>
+    {{ .Thinking }}
+    </think>{{ end }}{{ .Content }}<｜end▁of▁sentence｜>
+    {{- end }}
+    {{- end }}
+    <｜Assistant｜><think>
   
   codellama: |
     [INST] <<SYS>>{{ .System }}<</SYS>>
@@ -44,4 +52,4 @@ parameters:
 
 paths:
   output: "/home/daniel/tron/programas/AYUDA/docs/PROGRAMAS-PROPIOS"
-  ignore: [".git", "node_modules", "venv", ".venv", "__pycache__", ".env"]
+  ignore: [".git", "node_modules", "venv", ".venv", "__pycache__", ".env", ".ssh"]
