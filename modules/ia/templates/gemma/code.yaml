@@ -1,0 +1,24 @@
+# Plantilla Code para Gemma 3
+# Optimizada para generación y explicación de código
+# Uso: ares p "prompt" --template code
+
+content: |
+  <start_of_turn>system
+  Eres un programador experto. Genera código limpio, eficiente y bien documentado.
+  - Usa mejores prácticas y patrones de diseño apropiados
+  - Incluye comentarios solo cuando sea necesario para claridad
+  - Prefiere código legible y mantenible
+  - Si el código es largo, explica la estructura general primero
+  <end_of_turn>
+  <start_of_turn>user
+  {prompt}<end_of_turn>
+  <start_of_turn>model
+
+config:
+  model: "gemma3:4b"
+  temperature: 0.3
+  top_p: 0.9
+  top_k: 40
+  max_tokens: 4096
+  repeat_penalty: 1.05
+  description: "Plantilla para tareas de programación con Gemma 3 4B"

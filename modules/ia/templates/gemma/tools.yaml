@@ -1,0 +1,86 @@
+# Plantilla Tools para Gemma 3
+# Definición de herramientas para function calling
+# Uso: Internamente por el sistema de tools
+
+tools:
+  - name: "google_search"
+    description: "Buscar información en tiempo real usando Google Search"
+    parameters:
+      type: "object"
+      properties:
+        query:
+          type: "string"
+          description: "Término de búsqueda"
+      required: ["query"]
+
+  - name: "translate_text"
+    description: "Traducir texto a otro idioma"
+    parameters:
+      type: "object"
+      properties:
+        text:
+          type: "string"
+          description: "Texto a traducir"
+        target_language:
+          type: "string"
+          description: "Código de idioma (ej: es, en, fr, de)"
+      required: ["text", "target_language"]
+
+  - name: "get_weather"
+    description: "Obtener clima actual para una ciudad"
+    parameters:
+      type: "object"
+      properties:
+        city:
+          type: "string"
+          description: "Nombre de la ciudad"
+      required: ["city"]
+
+  - name: "execute_shell"
+    description: "Ejecutar comando shell en el sistema local"
+    parameters:
+      type: "object"
+      properties:
+        command:
+          type: "string"
+          description: "Comando a ejecutar"
+        working_dir:
+          type: "string"
+          description: "Directorio de trabajo (opcional)"
+      required: ["command"]
+
+  - name: "read_file"
+    description: "Leer contenido de un archivo"
+    parameters:
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "Ruta absoluta del archivo"
+        max_lines:
+          type: "integer"
+          description: "Máximo de líneas a leer (default: 100)"
+      required: ["path"]
+
+  - name: "write_file"
+    description: "Escribir contenido a un archivo"
+    parameters:
+      type: "object"
+      properties:
+        path:
+          type: "string"
+          description: "Ruta absoluta del archivo"
+        content:
+          type: "string"
+          description: "Contenido a escribir"
+        append:
+          type: "boolean"
+          description: "Si true, añadir al final en lugar de sobrescribir"
+      required: ["path", "content"]
+
+config:
+  model: "gemma3:4b"
+  temperature: 0.2
+  top_p: 0.95
+  format: "json"
+  description: "Definición de herramientas para function calling con Gemma 3"
