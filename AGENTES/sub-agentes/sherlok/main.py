@@ -1,93 +1,103 @@
 #!/usr/bin/env python3
 """
-🕵️ SHERLOK - Sub-Agente Forense de ARES
-======================================
+🕵️ SHERLOK V2.2 - Auditoría JSON Industrial (Pydantic Solid)
+==========================================================
 
-Sherlok es el 'Ojo' de ARES. Su misión es escanear tu laptop en busca de 
-scripts y programas propios, analizarlos semánticamente con modelos de lenguaje 
-locales (Ollama) y generar documentación automática en el sistema de AYUDA.
+Sherlok es el 'Ojo' de ARES. Misión: Escanear, analizar e indexar 
+programas locales en un Inventario Maestro JSON validado.
 
-CAPACIDADES:
-1. Inferencia Multimodelo: Usa especialistas (Codellama-Python) para código.
-2. Pensamiento en Vivo: Muestra el flujo de razonamiento en la terminal.
-3. Clasificación Determinista: Solo acepta temas técnicos relevantes para ARES.
-4. Modo Sigilo: Ejecución en background con prioridad ultra-baja.
-
-USO:
-  sherlok --lista              # Analiza rutas en prioritarios.txt
-  sherlok --directorio [Ruta]  # Escaneo recursivo inteligente
+Uso:
+  sherlok --lista              # Analiza programas prioritarios
+  sherlok --directorio [Ruta]  # Escaneo masivo
+  sherlok --file [Archivo]     # Análisis quirúrgico
 """
 
 import click
 import os
 import yaml
+import json
+import sys
 from pathlib import Path
 from brain import SherlokBrain
 from scanner import SherlokScanner
 from rich.console import Console
 
 console = Console()
-
-# Carga de configuración centralizada
 BASE_DIR = Path(__file__).parent.resolve()
-with open(BASE_DIR / "config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+
+def build_master_inventory(output_dir):
+    """Reconstruye el inventario.json consolidando todos los hallazgos."""
+    inventory_path = Path(output_dir) / "inventario.json"
+    programas = []
+    for file in Path(output_dir).glob("*.json"):
+        if file.name == "inventario.json": continue
+        try:
+            with open(file, "r") as f:
+                programas.append(json.load(f))
+        except: continue
+    with open(inventory_path, "w") as f:
+        json.dump({"programas": programas}, f, indent=2)
+    console.print(f"[bold magenta]📊 Inventario Maestro actualizado: {inventory_path}[/bold magenta]")
 
 @click.command()
-@click.option("--lista", "-l", is_flag=True, help="Procesa rutas desde prioritarios.txt")
-@click.option("--directorio", "-d", type=click.Path(exists=True), help="Escanea recursivamente una ruta")
-@click.option("--model", "-m", help="Fuerza un modelo específico (alias)")
-@click.option("--background", "-b", is_flag=True, help="Ejecuta con prioridad baja (nice -n 19)")
-def main(lista, directorio, model, background):
-    """Orquestador principal de Sherlok."""
-    
-    if background:
+@click.option("--lista", "-l", is_flag=True, help=f"Analiza rutas en {BASE_DIR}/prioritarios.txt")
+@click.option("--directorio", "-d", type=click.Path(exists=True), help="Escaneo recursivo de una carpeta de proyectos")
+@click.option("--file", "-f", type=click.Path(exists=True), help="Auditoría quirúrgica de un solo archivo")
+@click.option("--model", "-m", help="Fuerza alias de modelo (qwenCoderInstruc, deepseekr1, etc.)")
+@click.option("--background", "-b", is_flag=True, help="Ejecución en segundo plano (nice -n 19)")
+def main(lista, directorio, file, model, background):
+    """Orquestador forense para el mapeo de activos digitales."""
+    if background: 
         os.nice(19)
-        console.print("[dim]🌙 Sherlok operando en modo sigilo (prioridad baja)...[/dim]")
+        console.print("[dim]🌙 Modo sigilo activado.[/dim]")
+    
+    try:
+        with open(BASE_DIR / "config.yaml", "r") as f:
+            config = yaml.safe_load(f)
+    except Exception as e:
+        console.print(f"[bold red]❌ Error de config: {e}[/bold red]")
+        return
 
     brain = SherlokBrain(config)
     scanner = SherlokScanner(config['paths']['ignore'])
-
     target_paths = []
 
-    # 1. Recopilación de rutas
     if lista:
         list_file = BASE_DIR / "prioritarios.txt"
         if list_file.exists():
             with open(list_file, "r") as f:
                 target_paths.extend([line.strip() for line in f if line.strip()])
     
+    if file: target_paths.append(str(Path(file).absolute()))
+    
     if directorio:
-        # Añadir lógica de escaneo de carpetas nivel 1 (proyectos)
         for item in os.listdir(directorio):
             path = Path(directorio) / item
             if path.name not in config['paths']['ignore']:
                 target_paths.append(str(path))
 
     if not target_paths:
-        console.print("[yellow]⚠ No hay rutas para analizar. Usa --help para ver opciones.[/yellow]")
+        console.print("[yellow]⚠ Sin objetivos. Usa --help para ver opciones.[/yellow]")
         return
 
-    # 2. Ciclo de Análisis y Generación
+    output_dir = Path(config['paths']['output'])
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     for path in target_paths:
-        console.print(f"
-[bold blue]🔍 Analizando:[/bold blue] {path}")
-        
+        console.print(f"\n[bold blue]🔍 Auditando:[/bold blue] {path}")
         data = scanner.scan_path(path)
         if not data: continue
 
-        # Inferencia
-        analysis = brain.analyze(data, is_python=data['is_python'], forced_model=model)
+        # Inferencia con Validación Pydantic y Auto-Corrección interna
+        analysis_json = brain.analyze(data, is_python=data['is_python'], forced_model=model)
         
-        if analysis:
-            # Guardar en AYUDA
-            output_name = f"{data['name']}.md"
-            output_path = Path(config['paths']['output']) / output_name
-            
+        if analysis_json:
+            output_path = output_dir / f"{data['name']}.json"
             with open(output_path, "w") as f:
-                f.write(analysis)
-            
-            console.print(f"[bold green]✅ Indexado en:[/bold green] {output_path}")
+                f.write(analysis_json)
+            console.print(f"[bold green]✅ Auditado: {data['name']}[/bold green]")
+
+    build_master_inventory(output_dir)
 
 if __name__ == "__main__":
     main()

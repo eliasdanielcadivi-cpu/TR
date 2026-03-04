@@ -1,0 +1,4 @@
+[project]
+name = "sherlok"
+version = "0.1.0"
+dependencies = ["click", "pyyaml", "rich", "requests", "pydantic"]
