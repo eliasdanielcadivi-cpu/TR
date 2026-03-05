@@ -1,0 +1,102 @@
+{
+  ###############################################################
+  # CONFIGURACIÓN INTEGRAL BROOT - DANIEL (OPTIMIZADA)
+  ###############################################################
+
+  # Banderas: g (git status), h (hidden files)
+  default_flags: "gh"
+  show_selection_mark: true
+  
+  # Aumentamos un poco para tus archivos de configuración de IA
+  content_search_max_file_size: 20MB
+
+  special_paths: {
+    "/media": "no-enter"
+    "/mnt": "no-enter"
+  }
+
+  verbs: [
+
+
+    # 1. Backspace para subir de nivel (directorio padre)
+    {
+        invocation: "parent"
+        key: "alt-backspace"
+        execution: ":parent"
+    }
+
+
+    # --- COPIAR RUTA (Mejor manejo de espacios con comillas simples) ---
+    {
+      invocation: "copy_path"
+      key: "alt-c"
+      execution: "bash -c \"echo -n {file} | xclip -selection clipboard\""
+      leave_broot: false
+    }
+
+    # --- COPIAR CONTENIDO (Protección para no intentar 'cat' en directorios) ---
+    {
+      invocation: "copy_contents"
+      key: "alt-a"
+      execution: "bash -c \"if [ -f {file} ]; then cat {file} | xclip -selection clipboard; fi\""
+      leave_broot: false
+    }
+
+    # --- MODO PANEL (Arreglado el nombre del internal) ---
+    {
+      invocation: "panel"
+      key: "ctrl-p"
+      internal: "panel_right_no_open"
+    }
+
+    # --- BACKUP RÁPIDO (Añadido -v para ver progreso en la barra de estado) ---
+    {
+      name: "backup"
+      invocation: "bu"
+      key: "alt-b"
+      execution: "cp -rv {file} {file}.bak"
+      leave_broot: false
+    }
+
+    # --- TERMINAL Y EDICIÓN ---
+    {
+      invocation: "terminal"
+      key: "ctrl-t"
+      execution: "$SHELL"
+      set_working_dir: true
+      leave_broot: false
+    }
+    {
+      invocation: "edit"
+      key: "F2"
+      shortcut: "e"
+      execution: "micro {file}"
+      leave_broot: false
+    }
+    {
+        invocation: micro {nombre}
+        execution: "micro {directory}/{nombre}"
+        leave_broot: false
+    }
+
+    
+    # --- FUNCIÓN EXTRA: BUSCAR TEXTO CON RIPGREP (Máximo Jugo) ---
+    # Esto te permite buscar dentro de archivos de código/IA instantáneamente
+    {
+      invocation: "rg {sub}"
+      execution: "rg --color=always --line-number \"{sub}\" {directory}"
+      from_shell: true
+    }
+  ]
+
+  # Skin Minimalista para Openbox (Alto Contraste)
+  skin: {
+    default: "gray(22) none"
+    directory: "rgb(255, 152, 0) none bold"
+    file: "gray(18) none"
+    selected_line: "none gray(4)"
+    char_match: "yellow none bold"
+    git_branch: "rgb(120, 220, 150) none"
+  }
+
+}

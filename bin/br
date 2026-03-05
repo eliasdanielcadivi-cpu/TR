@@ -1,0 +1,25 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# BR - Función Shell para Broot
+# ═══════════════════════════════════════════════════════════════════════════════
+# Permite que comandos como 'cd' funcionen después de navegar en broot
+# Documentación: https://dystroy.org/broot/install-br/
+# ═══════════════════════════════════════════════════════════════════════════════
+
+_TRON_BROOT_BIN="/home/daniel/tron/programas/TR/bin/broot-core/broot-bin"
+_TRON_BROOT_CONF="/home/daniel/tron/programas/TR/config/broot/conf.hjson"
+
+function br {
+    local cmd cmd_file code
+    cmd_file=$(mktemp)
+    if "$_TRON_BROOT_BIN" --conf "$_TRON_BROOT_CONF" --outcmd "$cmd_file" "$@"; then
+        cmd=$(<"$cmd_file")
+        command rm -f "$cmd_file"
+        eval "$cmd"
+    else
+        code=$?
+        command rm -f "$cmd_file"
+        return "$code"
+    fi
+}
+
+unset _TRON_BROOT_BIN _TRON_BROOT_CONF
