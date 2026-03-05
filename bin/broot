@@ -1,0 +1,11 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# BROOT - Navegador Jerárquico TRON
+# ═══════════════════════════════════════════════════════════════════════════════
+# Wrapper encapsulado: binario + configuración TRON
+# ═══════════════════════════════════════════════════════════════════════════════
+
+TRON_BASE="/home/daniel/tron/programas/TR"
+exec "$TRON_BASE/bin/broot-core/broot-bin" \
+    --conf "$TRON_BASE/config/broot/conf.hjson" \
+    "$@"

@@ -1,32 +1,19 @@
 #!/usr/bin/env python3
-"""
-🕵️ SHERLOK V2.2 - Auditoría JSON Industrial (Pydantic Solid)
-==========================================================
-
-Sherlok es el 'Ojo' de ARES. Misión: Escanear, analizar e indexar 
-programas locales en un Inventario Maestro JSON validado.
-
-Uso:
-  sherlok --lista              # Analiza programas prioritarios
-  sherlok --directorio [Ruta]  # Escaneo masivo
-  sherlok --file [Archivo]     # Análisis quirúrgico
-"""
-
 import click
 import os
 import yaml
 import json
-import sys
+import hashlib
 from pathlib import Path
 from brain import SherlokBrain
 from scanner import SherlokScanner
+from persistence import init_db, get_stored_fingerprint, update_scan_record
 from rich.console import Console
 
 console = Console()
 BASE_DIR = Path(__file__).parent.resolve()
 
 def build_master_inventory(output_dir):
-    """Reconstruye el inventario.json consolidando todos los hallazgos."""
     inventory_path = Path(output_dir) / "inventario.json"
     programas = []
     for file in Path(output_dir).glob("*.json"):
@@ -37,20 +24,19 @@ def build_master_inventory(output_dir):
         except: continue
     with open(inventory_path, "w") as f:
         json.dump({"programas": programas}, f, indent=2)
-    console.print(f"[bold magenta]📊 Inventario Maestro actualizado: {inventory_path}[/bold magenta]")
+    console.print(f"[bold magenta]📊 Inventario Maestro: {inventory_path}[/bold magenta]")
 
 @click.command()
-@click.option("--lista", "-l", is_flag=True, help=f"Analiza rutas en {BASE_DIR}/prioritarios.txt")
-@click.option("--directorio", "-d", type=click.Path(exists=True), help="Escaneo recursivo de una carpeta de proyectos")
-@click.option("--file", "-f", type=click.Path(exists=True), help="Auditoría quirúrgica de un solo archivo")
-@click.option("--model", "-m", help="Fuerza alias de modelo (qwenCoderInstruc, deepseekr1, etc.)")
-@click.option("--background", "-b", is_flag=True, help="Ejecución en segundo plano (nice -n 19)")
-def main(lista, directorio, file, model, background):
-    """Orquestador forense para el mapeo de activos digitales."""
-    if background: 
-        os.nice(19)
-        console.print("[dim]🌙 Modo sigilo activado.[/dim]")
-    
+@click.option("--lista", "-l", is_flag=True)
+@click.option("--directorio", "-d", type=click.Path(exists=True))
+@click.option("--file", "-f", type=click.Path(exists=True))
+@click.option("--model", "-m")
+@click.option("--background", "-b", is_flag=True)
+@click.option("--force", is_flag=True)
+def main(lista, directorio, file, model, background, force):
+    if background: os.nice(19)
+    init_db()
+
     try:
         with open(BASE_DIR / "config.yaml", "r") as f:
             config = yaml.safe_load(f)
@@ -69,33 +55,49 @@ def main(lista, directorio, file, model, background):
                 target_paths.extend([line.strip() for line in f if line.strip()])
     
     if file: target_paths.append(str(Path(file).absolute()))
-    
     if directorio:
         for item in os.listdir(directorio):
             path = Path(directorio) / item
             if path.name not in config['paths']['ignore']:
                 target_paths.append(str(path))
 
-    if not target_paths:
-        console.print("[yellow]⚠ Sin objetivos. Usa --help para ver opciones.[/yellow]")
-        return
+    if not target_paths: return
 
     output_dir = Path(config['paths']['output'])
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for path in target_paths:
-        console.print(f"\n[bold blue]🔍 Auditando:[/bold blue] {path}")
+        console.print(f"\n[bold blue]🔍 Verificando objetivo:[/bold blue] {path}")
         data = scanner.scan_path(path)
         if not data: continue
 
-        # Inferencia con Validación Pydantic y Auto-Corrección interna
+        # --- LÓGICA DE DOBLE PASO DETERMINISTA ---
+        output_file = output_dir / f"{data['name']}.json"
+        
+        content_to_hash = f"{data.get('structure', '')}{data.get('help_text', '')}{data.get('source_sample', '')}"
+        current_fp = hashlib.sha256(content_to_hash.encode()).hexdigest()
+        stored_fp = get_stored_fingerprint(path)
+
+        # Solo saltamos si: No hay force Y el fingerprint coincide Y el archivo físico existe
+        if not force and stored_fp == current_fp and output_file.exists():
+            console.print(f"[bold yellow]⏭️  Sin cambios y archivo presente. Saltando: {data['name']}[/bold yellow]")
+            continue
+
+        # Inferencia IA
         analysis_json = brain.analyze(data, is_python=data['is_python'], forced_model=model)
         
         if analysis_json:
-            output_path = output_dir / f"{data['name']}.json"
-            with open(output_path, "w") as f:
+            # Generar un nombre de archivo más robusto (ej: MarcadorDeVideos_main.py.json)
+            safe_name = path.replace("/", "_").strip("_")
+            if len(safe_name) > 100: # Limitar si la ruta es extrema
+                safe_name = hashlib.md5(path.encode()).hexdigest()
+            
+            output_file = output_dir / f"{safe_name}.json"
+            
+            with open(output_file, "w") as f:
                 f.write(analysis_json)
-            console.print(f"[bold green]✅ Auditado: {data['name']}[/bold green]")
+            update_scan_record(path, data)
+            console.print(f"[bold green]✅ Auditado y guardado en: {output_file.name}[/bold green]")
 
     build_master_inventory(output_dir)
 

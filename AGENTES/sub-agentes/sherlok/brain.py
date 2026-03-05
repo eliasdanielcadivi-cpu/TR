@@ -9,14 +9,13 @@ console = Console()
 
 class SherlokBrain:
     """
-    🧠 CEREBRO SHERLOK V2.2 (SOLID JSON & AUTO-CORRECT)
-    Utiliza Schemas de Pydantic y el parámetro 'format' de Ollama.
-    Gestiona memoria efímera por documento.
+    🧠 CEREBRO SHERLOK V2.5 (OPTIMIZED)
+    Enfoque en ADN Técnico Industrial. Salida JSON Solid.
     """
     
     def __init__(self, config):
         self.config = config
-        self.base_url = "http://localhost:11434/api/chat" # Usamos /chat para mantener historial de corrección
+        self.base_url = "http://localhost:11434/api/chat"
         self.current_model = None
 
     def _stop_model(self, model_name):
@@ -27,11 +26,8 @@ class SherlokBrain:
             pass
 
     def analyze(self, context_data, is_python=False, forced_model=None):
-        """
-        Analiza un programa con bucle de auto-corrección.
-        """
         target_alias = forced_model if forced_model else "codellama"
-        if is_python: target_alias = "codellamapy"
+        if is_python: target_alias = "qwenCoderInstruc"
         
         model_name = self.config['models']['aliases'].get(target_alias, self.config['models']['default'])
         
@@ -39,52 +35,55 @@ class SherlokBrain:
             self._stop_model(self.current_model)
         self.current_model = model_name
 
-        # --- MEMORIA EFÍMERA: Inicia limpia para cada documento ---
         messages = [
             {
                 "role": "system",
-                "content": f"Eres Sherlok V2.2. Debes generar un JSON estrictamente válido basado en el esquema proporcionado. No agregues texto extra. Contexto Ares: {self.config['ares_definition']}"
+                "content": f"Eres Sherlok V2.5. Genera JSON estrictamente válido. ADN Técnico Puro. No texto extra. Contexto Ares: {self.config['ares_definition']}"
             },
             {
                 "role": "user",
-                "content": f"ID: {context_data['abs_path']}\nDATA: {json.dumps(context_data)}"
+                "content": f"AUDITA ESTE PROGRAMA (ID: {context_data['abs_path']}):\n{json.dumps(context_data)}"
             }
         ]
 
         max_retries = 3
         for attempt in range(max_retries):
-            console.print(f"[dim]🧠 Analizando (Intento {attempt+1}/{max_retries}) con {model_name}...[/dim]")
+            console.print(f"[dim]🧠 Auditando (Intento {attempt+1}/{max_retries}) con {model_name}...[/dim]")
             
             payload = {
                 "model": model_name,
                 "messages": messages,
-                "stream": False,
-                "format": ProgramaAudit.model_json_schema(), # Structured Output!
-                "options": {"temperature": 0} # Máximo determinismo
+                "stream": True,
+                "format": ProgramaAudit.model_json_schema(),
+                "options": {"temperature": 0.1}
             }
 
+            full_content = ""
             try:
-                response = requests.post(self.base_url, json=payload)
-                response.raise_for_status()
-                content = response.json()['message']['content']
+                response = requests.post(self.base_url, json=payload, stream=True)
+                for line in response.iter_lines():
+                    if line:
+                        chunk = json.loads(line)
+                        text = chunk.get("message", {}).get("content", "")
+                        print(text, end="", flush=True)
+                        full_content += text
                 
-                # --- VALIDACIÓN CON PYDANTIC ---
+                print("\n")
+
+                if not full_content.strip(): continue
+
                 try:
-                    # Validar y parsear
-                    validated_data = ProgramaAudit.model_validate_json(content)
-                    return validated_data.model_dump_json(indent=2) # Éxito total
+                    validated = ProgramaAudit.model_validate_json(full_content)
+                    return validated.model_dump_json(indent=2)
                 
                 except ValidationError as ve:
-                    error_msg = f"Error de validación JSON: {str(ve)}. Por favor, corrige la estructura y reintenta."
-                    console.print(f"[bold yellow]⚠️ Fallo de validación. Enviando reporte de error a la IA...[/bold yellow]")
-                    
-                    # Añadir el error al historial para que la IA corrija
-                    messages.append({"role": "assistant", "content": content})
-                    messages.append({"role": "user", "content": error_msg})
+                    console.print(f"[bold red]❌ Fallo Estructural:[/bold red] Enviando corrección a la IA...")
+                    messages.append({"role": "assistant", "content": full_content})
+                    messages.append({"role": "user", "content": f"Tu JSON falló el esquema Pydantic. Errores: {str(ve)}. REGENERA SOLO EL JSON CORREGIDO."})
                     continue
 
             except Exception as e:
-                console.print(f"[bold red]❌ Error de comunicación con Ollama: {e}[/bold red]")
+                console.print(f"[bold red]❌ Error Ollama: {e}[/bold red]")
                 break
 
-        return None # Falló tras reintentos
+        return None

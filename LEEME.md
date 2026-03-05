@@ -28,6 +28,16 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 | `ares image <archivo>` | Muestra imagen en terminal |
 | `ares help` | Abre documentación navegable con Broot |
 
+### Herramientas Especializadas
+
+| Herramienta | Propósito |
+|-------------|-----------|
+| `tr-color <ruta>` | Aplica color Hacker Neon a pestaña Kitty según tipo de archivo |
+| `tr-investigador buscar <query>` | Búsqueda en Google con resultados estructurados |
+| `tr-investigador otear <URLs>` | Exploración profunda de páginas web |
+| `tr-investigador docs [tema]` | Consulta documentación interna |
+| `tr-kitty-init` | Inicialización y configuración de terminal Kitty |
+
 ---
 
 ## 🏛 FILOSOFÍA DE MODULARIDAD ATÓMICA
@@ -42,10 +52,18 @@ Cada componente de ARES debe ser quirúrgico. Esto permite:
 Los módulos están agrupados jerárárquicamente en `modules/`:
 - **admon/**: Salud y configuración del sistema.
 - **ia/**: Inteligencia y búsqueda avanzada (multi-provider).
+- **color/**: Identidad visual dinámica para pestañas Kitty.
 - **multimedia/**: Puppeteering de video, imagen y audio.
 - **tactico/**: Despliegue de flujos de trabajo complejos.
 - **ui/**: Estética neón y manuales dinámicos.
 - **whatsapp/**: Integración con WhatsApp.
+- **investigador/**: Exploración web e inteligencia (búsqueda, oteo).
+
+### 🕵️ Sub-Agentes (AGENTES/)
+- **sherlok/**: Auditor de código con "ADN Técnico Industrial" usando LLM local.
+  - Modelos: codellama:7b, qwen2.5-coder:7b-instruct, deepseek-r1:8b
+  - Componentes: brain.py (análisis), scanner.py (exploración), persistence.py (SQLite)
+  - Ubicación: `AGENTES/sub-agentes/sherlok/`
 
 ---
 
@@ -98,6 +116,44 @@ ARES permite la manipulación de medios visuales directamente en el espacio de t
 
 ---
 
+## 📁 BROOT - Navegación Encapsulada
+
+**Broot** está integrado en TRON como módulo atómico de navegación jerárquica.
+
+### Estructura
+
+| Componente | Ubicación |
+|------------|-----------|
+| Binario | `bin/broot-core/broot-bin` |
+| Wrapper | `bin/broot` |
+| Launcher `br` | `bin/broot-core/br` |
+| Configuración | `config/broot/` |
+
+### Uso
+
+```bash
+# Navegación con función shell (recomendado)
+source ~/tron/programas/TR/bin/broot-core/br
+br          # Navegar con capacidad de cd
+br /ruta    # Navegar desde ruta específica
+
+# Ejecución directa
+broot       # Navegador jerárquico
+broot --help
+```
+
+### Configuración Personalizada
+
+- `conf.hjson`: Configuración principal (flags, skins, verbos)
+- `verbs.hjson`: Comandos personalizados
+- `*-skin.hjson`: Temas de color (gruvbox, solarized, etc.)
+
+### Integración con ARES
+
+`ares help` abre la documentación usando **broot** como navegador.
+
+---
+
 ## 📐 ARQUITECTURA DE DATOS VIVA
 Los dashboards de ARES (en desarrollo) utilizan transiciones tipo **morphing** para mostrar indicadores industriales, KPIs petroleros y tendencias sociales en tiempo real, sintiéndose como un organismo vivo.
 
@@ -112,6 +168,9 @@ Los dashboards de ARES (en desarrollo) utilizan transiciones tipo **morphing** p
 | `docs/DEEPSEEK_GUIDE.md` | Guía de DeepSeek API |
 | `docs/Ollama-API.md` | Referencia de API de Ollama |
 | `docs/sacar-jugo-gemma.md` | Recopilación de técnicas para Gemma |
+| `docs/Ares-Terminal/` | Configuración de terminal predeterminada |
+| `docs/Ares-Terminal/CONFIGURACION_TERMINAL_PREDETERMINADA.md` | Guía forense completa de ARES como terminal |
+| `docs/Ares-Terminal/REFERENCIA_RAPIDA.md` | Comandos y atajos rápidos |
 
 ---
 
