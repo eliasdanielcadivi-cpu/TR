@@ -3,33 +3,18 @@ import subprocess
 import time
 from pathlib import Path
 
+from config import KittyRemote
+
 def launch_ares(ctx_obj):
     """Lógica de arranque del sistema ARES."""
-    title = ctx_obj.config.get('identity', {}).get('window_title', "ARES")
-    socket_path = ctx_obj.socket_path
-    kitty_conf = ctx_obj.kitty_conf
-    socket = ctx_obj.socket
-
-    # Limpieza de socket previo
-    if os.path.exists(socket_path):
-        os.remove(socket_path)
-
-    # Asegurar inicio en HOME
-    os.chdir(os.path.expanduser("~"))
-
-    # 1. Lanzar ventana kitty (título de VENTANA intocable)
-    subprocess.run([
-        "kitty",
-        "--title", title,
-        "-c", kitty_conf,
-        "--listen-on", socket,
-        "--detach"
-    ])
+    kitty = KittyRemote(ctx_obj)
+    
+    # 1. Lanzar ventana kitty a través de KittyRemote (Centralizado)
+    if not kitty.launch_hub():
+        return False
 
     # 2. Nombre de la PRIMERA PESTAÑA: mínimo ("-" por defecto)
     # Esperar que kitty inicie antes de enviar comando remoto
     time.sleep(0.3)
-    subprocess.run([
-        "kitty", "@", "--to", socket,
-        "set-tab-title", "-"
-    ], capture_output=True)
+    kitty.run(["set-tab-title", "-"])
+    return True

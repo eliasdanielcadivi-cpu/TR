@@ -12,27 +12,28 @@ class MediaManager:
 
     def play_video(self, archivo, **kwargs):
         """Reproduce video usando mpv y protocolo kitty."""
-        mpv_conf = os.path.join(self.ctx.base_path, "config/mpv/mpv.conf")
-        
+        # Se construye el comando base que el usuario confirmó que funciona
         cmd = [
             "mpv",
-            f"--config={mpv_conf}",
             "--profile=sw-fast",
             "--vo=kitty",
             "--vo-kitty-use-shm=yes",
             "--really-quiet",
         ]
         
+        # Opciones adicionales si se proporcionan
         if kwargs.get('sub'): cmd.append(f"--sub-file={kwargs['sub']}")
         if kwargs.get('start'): cmd.append(f"--start={kwargs['start']}")
         if kwargs.get('loop'): cmd.append("--loop-file=inf")
-        if kwargs.get('speed') != 1.0: cmd.append(f"--speed={kwargs['speed']}")
-        if kwargs.get('volume') != 80: cmd.append(f"--volume={kwargs['volume']}")
+        if kwargs.get('speed') and kwargs.get('speed') != 1.0: 
+            cmd.append(f"--speed={kwargs['speed']}")
+        if kwargs.get('volume') and kwargs.get('volume') != 80: 
+            cmd.append(f"--volume={kwargs['volume']}")
         if kwargs.get('audio_only'): cmd.append("--vid=no")
         
         cmd.append(archivo)
         
-        console.print(f"[bold cyan]🎬 Reproduciendo:[/bold cyan] {archivo}")
+        # Ejecución silenciosa sin mensajes previos (limpieza de salida)
         subprocess.run(cmd)
 
     def show_image(self, archivos, **kwargs):
