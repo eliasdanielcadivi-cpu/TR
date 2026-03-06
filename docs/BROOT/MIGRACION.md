@@ -1,13 +1,13 @@
-# 📁 BROOT - Migración a TRON
+# 📁 BROOT - Migración a TRON (v3.0 - Oficial)
 
 **Fecha:** 5 de marzo de 2026  
-**Versión:** 2.0 (Limpia)
+**Versión:** 3.0 (Binario oficial GitHub)
 
 ---
 
 ## 🎯 Objetivo
 
-Migrar **broot** desde linuxbrew hacia el ecosistema encapsulado de TRON, sin alterar PATH, usando enlaces del sistema.
+Instalar **broot** desde la fuente oficial (GitHub releases) en el ecosistema TRON, con configuración encapsulada y soporte para variables de entorno (kitty graphics).
 
 ---
 
@@ -15,67 +15,80 @@ Migrar **broot** desde linuxbrew hacia el ecosistema encapsulado de TRON, sin al
 
 | Componente | Ubicación |
 |------------|-----------|
-| Binario puro | `TR/bin/broot-core/broot-bin` (12MB) |
+| Binario oficial | `TR/bin/broot-core/broot-bin` (13MB, v1.55.0) |
 | Wrapper | `TR/bin/broot` |
 | Función shell `br` | `TR/bin/br` |
 | Configuración | `TR/config/broot/` |
 | Enlace sistema | `/usr/bin/broot` → `TR/bin/broot` |
 | Backup config | `~/.qwen/backups/broot-system-backup/` |
+| Config antigua | ❌ ELIMINADA (`~/.config/broot`) |
 
 ---
 
 ## 🔧 Proceso de Migración
 
-### 1. Backup de Configuración Original
+### 1. Backup y Limpieza
 
 ```bash
+# Backup (ya realizado)
 mkdir -p ~/.qwen/backups/broot-system-backup
 cp -r ~/.config/broot/* ~/.qwen/backups/broot-system-backup/
+
+# Eliminar configuración antigua
+rm -rf ~/.config/broot
 ```
 
 ---
 
-### 2. Limpieza de Instalación Existente
+### 2. Descargar Binario Oficial
 
 ```bash
-# Eliminar symlinks de linuxbrew
-rm /home/linuxbrew/.linuxbrew/bin/broot
-rm /home/linuxbrew/.linuxbrew/bin/br
+curl -L https://github.com/Canop/broot/releases/download/v1.55.0/broot_1.55.0.zip -o /tmp/broot.zip
+unzip /tmp/broot.zip -d /tmp/broot-extract
+```
 
-# Eliminar symlinks de /usr/local/bin
-sudo rm /usr/local/bin/broot
-sudo rm /usr/local/bin/br
+**Binario Linux x86_64:** `x86_64-unknown-linux-gnu/broot`
 
-# Eliminar plugins
-rm -rf ~/tron/plugins/broot
+---
+
+### 3. Instalar en TRON
+
+```bash
+# Copiar binario oficial
+sudo cp /tmp/broot-extract/x86_64-unknown-linux-gnu/broot TR/bin/broot-core/broot-bin
+sudo chmod +x TR/bin/broot-core/broot-bin
 ```
 
 ---
 
-### 3. Crear Wrapper en TR/bin
+### 4. Crear Wrapper con Variables de Entorno
 
 **Archivo:** `TR/bin/broot`
 
 ```bash
 #!/bin/bash
 TRON_BASE="/home/daniel/tron/programas/TR"
-exec "$TRON_BASE/bin/broot-core/broot-bin" \
-    --conf "$TRON_BASE/config/broot/conf.hjson" \
-    "$@"
+BROOT_BIN="$TRON_BASE/bin/broot-core/broot-bin"
+BROOT_CONF="$TRON_BASE/config/broot/conf.hjson"
+
+# Preservar TERM para kitty graphics
+export TERM="${TERM:-xterm-256color}"
+
+exec "$BROOT_BIN" --conf "$BROOT_CONF" "$@"
 ```
 
 ---
 
-### 4. Crear Enlace en /usr/bin
+### 5. Crear Enlace en /usr/bin
 
 ```bash
 chmod +x TR/bin/broot
-echo "a" | sudo -S ln -sf TR/bin/broot /usr/bin/broot
+sudo ln -sf TR/bin/broot /usr/bin/broot
 ```
 
 ---
 
-### 5. Crear Función Shell `br`
+### 6. Función Shell `br`
 
 **Archivo:** `TR/bin/br`
 
@@ -86,6 +99,8 @@ _TRON_BROOT_CONF=".../config/broot/conf.hjson"
 function br {
     local cmd cmd_file code
     cmd_file=$(mktemp)
+    export TERM="${TERM:-xterm-256color}"
+    
     if "$_TRON_BROOT_BIN" --conf "$_TRON_BROOT_CONF" --outcmd "$cmd_file" "$@"; then
         cmd=$(<"$cmd_file")
         command rm -f "$cmd_file"
@@ -100,7 +115,7 @@ function br {
 
 ---
 
-### 6. Actualizar .bashrc
+### 7. Actualizar .bashrc
 
 ```bash
 # Broot TRON: Función shell br
@@ -114,15 +129,20 @@ fi
 ## 🧪 Verificación
 
 ```bash
-# En shell interactivo
+# Función br
+source ~/.bashrc
+type br
+# Salida: br is a function
+
+br --version
+# Salida: broot 1.55.0
+
+# Binario
 which broot
 # Salida: /usr/bin/broot
 
 broot --version
 # Salida: broot 1.55.0
-
-type br
-# Salida: br is a function
 ```
 
 ---
@@ -132,14 +152,14 @@ type br
 ```
 tron/programas/TR/
 ├── bin/
-│   ├── broot              # Wrapper (970 bytes)
-│   ├── br                 # Función shell (1.4KB)
+│   ├── broot              # Wrapper con variables de entorno
+│   ├── br                 # Función shell (source)
 │   └── broot-core/
-│       └── broot-bin      # Binario (12MB)
+│       └── broot-bin      # Binario oficial (13MB)
 ├── config/
 │   └── broot/
-│       ├── conf.hjson
-│       ├── verbs.hjson
+│       ├── conf.hjson     # Config principal
+│       ├── verbs.hjson    # Verbos personalizados
 │       └── *.hjson        # 6 skins
 └── docs/BROOT/MIGRACION.md
 
@@ -149,19 +169,40 @@ Sistema:
 
 ---
 
-## 🗑️ Pendiente de Orden
+## 🗑️ Limpieza Realizada
 
-Configuración original en `~/.config/broot/` **NO eliminada**.
+- ✅ `~/.config/broot/` ELIMINADA
+- ✅ linuxbrew symlinks eliminados
+- ✅ /usr/local/bin symlinks eliminados
+- ✅ ~/tron/plugins/broot eliminado
 
-Espera string: `"borra config broot"`
+---
+
+## 🔌 Variables de Entorno
+
+### Específicas de Broot
+
+| Variable | Propósito |
+|----------|-----------|
+| `BR_*` | Configuración en línea de comandos |
+| `BROOT_*` | Configuración general |
+
+### Sistema
+
+| Variable | Propósito |
+|----------|-----------|
+| `TERM` | Si contiene "kitty" → protocolo gráfico kitty |
+| `TERMINAL` | Alternativa a TERM |
 
 ---
 
 ## 📖 Referencias
 
-- [broot install br](https://dystroy.org/broot/install-br/)
-- [Documentación oficial](https://dystroy.org/broot/)
+- [GitHub Releases](https://github.com/Canop/broot/releases)
+- [Install br](https://dystroy.org/broot/install-br/)
+- [Variables de entorno](https://dystroy.org/broot/config-file/)
+- [Kitty graphics protocol](https://dystroy.org/broot/images/)
 
 ---
 
-*Migración limpia, sin alterar PATH, encapsulamiento total.*
+*Migración completa: binario oficial, configuración TRON, variables preservadas.*

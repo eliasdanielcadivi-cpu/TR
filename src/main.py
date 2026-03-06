@@ -136,5 +136,32 @@ def init(obj, **kwargs):
     manage_config(obj, **kwargs)
 
 
+@cli.command()
+@click.argument("archivo", type=click.Path(exists=True))
+@click.option("--sub", help="Ruta al archivo de subtítulos")
+@click.option("--start", help="Tiempo de inicio (ej. 10, 01:15:00)")
+@click.option("--loop", is_flag=True, help="Reproducir en bucle infinito")
+@click.option("--speed", type=float, default=1.0, help="Velocidad de reproducción")
+@click.option("--volume", type=int, default=80, help="Volumen (0-100)")
+@click.option("--audio-only", is_flag=True, help="Reproducir solo audio (sin video)")
+@click.pass_obj
+def video(obj, archivo, **kwargs):
+    """Reproduce un video en Kitty usando mpv."""
+    MediaManager(obj).play_video(archivo, **kwargs)
+
+
+@cli.command()
+@click.argument("archivos", nargs=-1, type=click.Path(exists=True))
+@click.option("--clear", is_flag=True, help="Limpiar imágenes en terminal")
+@click.option("--grid", is_flag=True, help="Mostrar en cuadrícula")
+@click.option("--width", help="Ancho de la imagen")
+@click.option("--align", help="Alineación (left, center, right)")
+@click.option("--scale-up", is_flag=True, help="Escalar imagen si es pequeña")
+@click.pass_obj
+def image(obj, archivos, **kwargs):
+    """Muestra imágenes en Kitty terminal."""
+    MediaManager(obj).show_image(archivos, **kwargs)
+
+
 if __name__ == "__main__":
     cli()

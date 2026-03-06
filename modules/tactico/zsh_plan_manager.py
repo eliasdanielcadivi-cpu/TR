@@ -26,13 +26,14 @@ def deploy_zsh_plan(kitty, ctx):
 
     # 2. Lanzar pestañas
     for tab in tabs:
-        # Lanzar pestaña con zsh
+        # Lanzar pestaña con zsh soberano (encapsulado en TR/config/zsh)
+        zdotdir = os.path.join(ctx.base_path, "config/zsh")
         kitty.run([
             "launch", 
             "--type=tab", 
             f"--tab-title={tab['title']}", 
             f"--cwd={tab['path']}",
-            "zsh"
+            f"env", f"ZDOTDIR={zdotdir}", "zsh"
         ])
         
         # Aplicar color a la pestaña recién creada
