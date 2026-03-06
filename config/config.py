@@ -6,11 +6,15 @@ class TRContext:
     def __init__(self):
         self.base_path = os.path.expanduser("~/tron/programas/TR")
         self.config_path = f"{self.base_path}/config/config.yaml"
-        self.socket = "unix:/tmp/mykitty"
-        self.socket_path = "/tmp/mykitty"
+        self.config = self._load_config()
+        
+        # Centralización de Socket (prioridad YAML, fallback default)
+        kitty_cfg = self.config.get('kitty', {})
+        self.socket = kitty_cfg.get('socket', "unix:/tmp/mykitty")
+        self.socket_path = kitty_cfg.get('socket_path', "/tmp/mykitty")
+        
         self.handshake_file = "/tmp/tron_handshake.txt"
         self.kitty_conf = f"{self.base_path}/config/kitty.conf"
-        self.config = self._load_config()
 
     def _load_config(self):
         if not os.path.exists(self.config_path):

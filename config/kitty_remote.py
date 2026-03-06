@@ -12,33 +12,42 @@ class KittyRemote:
         self.ctx = ctx
 
     def is_running(self):
-        return os.path.exists(self.ctx.socket_path)
+        """Verifica si el socket existe y responde."""
+        if not os.path.exists(self.ctx.socket_path):
+            return False
+        # Prueba de conexión rápida
+        res = subprocess.run(
+            ["kitty", "@", "--to", self.ctx.socket, "ls"],
+            capture_output=True, text=True, timeout=1
+        )
+        return res.returncode == 0
 
     def launch_hub(self):
         """
-        Lanza kitty con título fijo de ventana 'Ares por Daniel Hung'.
+        Lanza kitty con título fijo y configuración TRON.
         """
+        # Limpieza agresiva de socket huérfano
         if os.path.exists(self.ctx.socket_path):
-            os.remove(self.ctx.socket_path)
+            try:
+                os.remove(self.ctx.socket_path)
+            except OSError:
+                pass
         
-        # Leer título desde config si es posible, sino default
         title = self.ctx.config.get('identity', {}).get('window_title', "Ares por Daniel Hung")
-
-        # Inyectar ZDOTDIR para soberanía de Zsh (Configuración encapsulada en TR)
         env = os.environ.copy()
         env["ZDOTDIR"] = os.path.join(self.ctx.base_path, "config/zsh")
 
-        subprocess.run([
+        # Lanzar proceso desacoplado
+        subprocess.Popen([
             "kitty",
             "-c", self.ctx.kitty_conf,
             "--listen-on", self.ctx.socket,
-            "--detach",
             "--title", title
-        ], env=env, check=True)
+        ], env=env, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
-        for _ in range(15):
+        # Esperar a que el socket se cree y responda
+        for _ in range(10):
             if self.is_running():
-                time.sleep(2)
                 return True
             time.sleep(0.5)
         return False

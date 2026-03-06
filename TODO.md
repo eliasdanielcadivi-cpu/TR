@@ -10,11 +10,15 @@
 - [x] Registrar comando `video` en `src/main.py`.
 - [x] Registrar comando `image` en `src/main.py`.
 - [x] Corregir lógica de `show_image` para usar `--place` y evitar errores de `unknown option`.
+- [x] **Limpieza:** Eliminar mensajes de "Reproduciendo" que ensucian la salida.
+- [x] **Corrección:** Quitar carga explícita de `mpv.conf` en `play_video` para evitar conflictos y asegurar que use el comando base verificado.
 
-## 3. Validación
-- [x] Probar `ares video <ruta>` con un archivo real. (Exitoso)
-- [x] Probar `ares image <ruta>` con archivos reales. (Exitoso tras corrección)
-- [x] Verificar que no se rompan otras funcionalidades.
+## 4. Gestión de Sesiones (Kitty Socket)
+- [x] Crear directorio `test` y `db` si no existen.
+- [x] Crear script `test/capture_session.py` para leer el socket.
+- [x] Extraer nombres de ventanas (OS), pestañas y sus IDs.
+- [x] Guardar captura en `db/last_session.json` de forma estructurada.
+- [ ] Implementar comando `guardaSesion` en `main.py` delegando al nuevo módulo.
 
 ## 4. Notas para el Usuario
 - [x] Informar sobre el problema de zsh globbing (corchetes `[]` en nombres de archivos requieren escape o desactivar globbing temporalmente).
