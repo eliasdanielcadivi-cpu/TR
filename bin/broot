@@ -3,9 +3,16 @@
 # BROOT - Navegador Jerárquico TRON
 # ═══════════════════════════════════════════════════════════════════════════════
 # Wrapper encapsulado: binario + configuración TRON
+# Preserva variables de entorno para kitty y otras integraciones
 # ═══════════════════════════════════════════════════════════════════════════════
 
 TRON_BASE="/home/daniel/tron/programas/TR"
-exec "$TRON_BASE/bin/broot-core/broot-bin" \
-    --conf "$TRON_BASE/config/broot/conf.hjson" \
-    "$@"
+BROOT_BIN="$TRON_BASE/bin/broot-core/broot-bin"
+BROOT_CONF="$TRON_BASE/config/broot/conf.hjson"
+
+# Exportar variables de entorno para kitty (gráficos TUI)
+# Si TERM contiene "kitty", broot usará el protocolo gráfico de kitty
+export TERM="${TERM:-xterm-256color}"
+
+# Ejecutar broot con configuración TRON
+exec "$BROOT_BIN" --conf "$BROOT_CONF" "$@"

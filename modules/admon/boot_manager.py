@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 from pathlib import Path
 
 def launch_ares(ctx_obj):
@@ -15,7 +16,8 @@ def launch_ares(ctx_obj):
 
     # Asegurar inicio en HOME
     os.chdir(os.path.expanduser("~"))
-    
+
+    # 1. Lanzar ventana kitty (título de VENTANA intocable)
     subprocess.run([
         "kitty",
         "--title", title,
@@ -23,3 +25,11 @@ def launch_ares(ctx_obj):
         "--listen-on", socket,
         "--detach"
     ])
+
+    # 2. Nombre de la PRIMERA PESTAÑA: mínimo ("-" por defecto)
+    # Esperar que kitty inicie antes de enviar comando remoto
+    time.sleep(0.3)
+    subprocess.run([
+        "kitty", "@", "--to", socket,
+        "set-tab-title", "-"
+    ], capture_output=True)

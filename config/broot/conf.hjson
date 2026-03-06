@@ -89,14 +89,9 @@
     }
   ]
 
-  # Skin Minimalista para Openbox (Alto Contraste)
-  skin: {
-    default: "gray(22) none"
-    directory: "rgb(255, 152, 0) none bold"
-    file: "gray(18) none"
-    selected_line: "none gray(4)"
-    char_match: "yellow none bold"
-    git_branch: "rgb(120, 220, 150) none"
-  }
+  # Skin Tokyo Night - Tema oscuro moderno
+  imports: [
+    "/home/daniel/tron/programas/TR/config/broot/tokyo-night.hjson"
+  ]
 
 }

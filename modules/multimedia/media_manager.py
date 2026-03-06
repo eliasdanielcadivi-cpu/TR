@@ -38,16 +38,29 @@ class MediaManager:
     def show_image(self, archivos, **kwargs):
         """Muestra imágenes usando icat."""
         if kwargs.get('clear'):
-            print("\033[3J", end="")
+            subprocess.run(["kitten", "icat", "--clear"])
             console.print("[bold green]✓ Imágenes limpiadas[/bold green]")
             return
 
         cmd = ["kitten", "icat"]
-        if kwargs.get('grid'): cmd.append("--grid")
-        if kwargs.get('width'): cmd.append(f"--width={kwargs['width']}")
-        if kwargs.get('align'): cmd.append(f"--align={kwargs['align']}")
+        
+        # icat usa --place=WIDTHxHEIGHT@X,Y o flags específicos dependiendo de la versión
+        # Para simplicidad y compatibilidad con el resto del sistema Ares:
         if kwargs.get('scale_up'): cmd.append("--scale-up")
         
+        # Si se pasan dimensiones, se intenta usar la lógica de posición
+        place = ""
+        if kwargs.get('width'):
+            place += f"{kwargs['width']}"
+            if kwargs.get('height'):
+                place += f"x{kwargs['height']}"
+        
+        if place:
+            cmd.append(f"--place={place}")
+            
+        if kwargs.get('align'):
+            cmd.append(f"--align={kwargs['align']}")
+            
         cmd.extend(archivos)
         
         console.print(f"[bold cyan]🖼️  Mostrando {len(archivos)} imagen(es)[/bold cyan]")

@@ -24,13 +24,17 @@ class KittyRemote:
         # Leer título desde config si es posible, sino default
         title = self.ctx.config.get('identity', {}).get('window_title', "Ares por Daniel Hung")
 
+        # Inyectar ZDOTDIR para soberanía de Zsh (Configuración encapsulada en TR)
+        env = os.environ.copy()
+        env["ZDOTDIR"] = os.path.join(self.ctx.base_path, "config/zsh")
+
         subprocess.run([
             "kitty",
             "-c", self.ctx.kitty_conf,
             "--listen-on", self.ctx.socket,
             "--detach",
             "--title", title
-        ], check=True)
+        ], env=env, check=True)
         
         for _ in range(15):
             if self.is_running():
