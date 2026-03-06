@@ -100,23 +100,28 @@ class ColorEngine:
                   'active_bg': '#1A0D00', 'inactive_bg': '#0D0600'},
     }
 
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: Optional[str] = None, socket_path: Optional[str] = None):
         """
         Inicializa el motor de coloreado
 
         Args:
             config_path: Ruta al archivo YAML de configuración.
-                        Si es None, usa reglas por defecto.
+            socket_path: Ruta al socket de kitty (opcional).
         """
         self.config_path = config_path
         self.rules: List[ColorRule] = []
         self.defaults: Dict[str, str] = {
             'color': self.DEFAULT_COLOR,
-            'title': self.DEFAULT_TITLE
+            'title': self.DEFAULT_TITLE,
+            'socket': self.DEFAULT_SOCKET
         }
 
         if config_path and Path(config_path).exists():
             self._load_config(config_path)
+        
+        # El socket pasado por argumento manda, luego el del YAML, luego el default
+        self.socket_path = socket_path or self.defaults.get('socket', self.DEFAULT_SOCKET)
+        self.socket = f"unix:{self.socket_path}"
 
     def _load_config(self, config_path: str) -> None:
         """Carga configuración desde YAML"""
@@ -274,7 +279,7 @@ class ColorEngine:
 
         Args:
             path: Ruta del archivo que determina el color
-            socket_path: Ruta al socket de kitty (default: /tmp/mykitty)
+            socket_path: Ruta al socket de kitty (opcional, sobreescribe instancia)
 
         Returns:
             True si se aplicó exitosamente, False en caso contrario
@@ -283,7 +288,7 @@ class ColorEngine:
             return False
 
         rule = self.get_rule_for_path(path)
-        socket = socket_path or self.DEFAULT_SOCKET
+        socket = socket_path or self.socket_path
 
         # Generar paleta Hacker Neon desde el color de la regla
         colors = self._generate_hacker_colors(rule['color'])
@@ -345,7 +350,7 @@ class ColorEngine:
 
         Args:
             path: Ruta del archivo
-            socket_path: Socket de kitty
+            socket_path: Socket de kitty (opcional)
 
         Returns:
             True si se aplicó exitosamente
@@ -354,7 +359,7 @@ class ColorEngine:
             return False
 
         rule = self.get_rule_for_path(path)
-        socket = socket_path or self.DEFAULT_SOCKET
+        socket = socket_path or self.socket_path
 
         try:
             cmd = ['kitty', '@', '--to', f'unix:{socket}', 'set-tab-title', rule['title']]

@@ -18,9 +18,17 @@ set -e
 # Ruta base de TRON
 TR_BASE="/home/daniel/tron/programas/TR"
 TR_KITTY_CONF="$TR_BASE/config/kitty.conf"
+TR_CONFIG_YAML="$TR_BASE/config/config.yaml"
 KITTY_USER_CONFIG="$HOME/.config/kitty/kitty.conf"
 KITTY_LINK="$HOME/.config/kitty/kitty.conf"
-SOCKET_PATH="/tmp/mykitty"
+
+# Intentar leer socket desde config.yaml, fallback al default
+if [ -f "$TR_CONFIG_YAML" ]; then
+    # Extraer valor de socket_path usando sed (evitando dependencias externas como yq)
+    SOCKET_PATH=$(grep "socket_path:" "$TR_CONFIG_YAML" | sed 's/.*: "\(.*\)".*/\1/')
+fi
+# Fallback si falló la extracción o el archivo no existe
+SOCKET_PATH=${SOCKET_PATH:-"/tmp/mykitty"}
 
 # Colores para output
 RED='\033[0;31m'

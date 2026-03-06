@@ -1,0 +1,28 @@
+[
+    {
+        "os_window_id": 1,
+        "is_focused": true,
+        "tabs": [
+            {
+                "tab_id": 1,
+                "title": "GEMINI",
+                "is_active": false
+            },
+            {
+                "tab_id": 4,
+                "title": "QWEN",
+                "is_active": false
+            },
+            {
+                "tab_id": 5,
+                "title": "AGENDA",
+                "is_active": false
+            },
+            {
+                "tab_id": 6,
+                "title": "COMANDO",
+                "is_active": true
+            }
+        ]
+    }
+]
