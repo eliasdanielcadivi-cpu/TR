@@ -1,0 +1,19 @@
+#!/bin/bash
+# =============================================================================
+# AVISO - Sistema de Recordatorios y Alarmas
+# =============================================================================
+# Wrapper para globalización en /usr/bin
+#
+# INSTALACIÓN:
+#   sudo cp ~/tron/programas/TR/modules/aviso/aviso /usr/bin/aviso
+#   sudo chmod +x /usr/bin/aviso
+#
+# O usar ini:
+#   cd ~/tron/programas/TR/modules/aviso
+#   ini prod
+# =============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TRON_PATH="$SCRIPT_DIR/../../.."
+
+exec python3 "$SCRIPT_DIR/aviso.py" "$@"
