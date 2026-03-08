@@ -300,6 +300,62 @@ El diseño modular es por lo tanto **una decisión arquitectónica orientada tan
 
 
 
+## 10. Soberanía del Entorno y Precedencia del $PATH
+
+Es crítico entender cómo el sistema operativo resuelve los comandos para evitar errores de dependencias (ej. `ModuleNotFoundError`).
+
+### El Problema de la Precedencia
+Si un proyecto tiene su carpeta `bin/` dentro del `$PATH` del usuario y esta aparece **antes** que `/usr/bin/`, el sistema ejecutará el script local. 
+* Si el script local es un archivo Python puro con shebang `#!/usr/bin/env python3`, este usará el intérprete global si el entorno virtual no está activo, fallando al no encontrar las librerías del proyecto (como `click`).
+
+### La Solución: Bash Wrappers Universales
+Para garantizar la soberanía del entorno, **todo ejecutable en `bin/` (local) o `/usr/bin/` (producción) debe ser un Bash Wrapper** que utilice `uv run`.
+
+#### Estándar de Wrapper Local (bin/):
+Usa rutas relativas para mantener la portabilidad del repositorio.
+```bash
+#!/bin/bash
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+exec uv run --project "$PROJECT_DIR" python "$PROJECT_DIR/src/main.py" "$@"
+```
+
+#### Estándar de Wrapper Global (/usr/bin/):
+Gestionado automáticamente por `ini v2.1`.
+```bash
+#!/bin/bash
+export TR_PROJECT_ROOT="/ruta/absoluta/al/proyecto"
+exec uv run --project "$TR_PROJECT_ROOT" python "$TR_PROJECT_ROOT/src/main.py" "$@"
+```
+
+Esta estructura asegura que el comando funcione correctamente **desde cualquier ubicación**, respetando el directorio de trabajo del usuario y garantizando el aislamiento del entorno virtual.
+
+## 11. Preservación de Evidencias y Carpeta OLD (Jamas Borramos)
+
+En el ecosistema TRON, **la información es el activo más valioso**. Por lo tanto, rige la norma de **NO BORRAR NADA**.
+
+*   **Evidencias Temporales:** Scripts de prueba, borradores o investigaciones (`test/`, scripts sueltos) nunca se eliminan.
+*   **Organización:** Si un archivo molesta o ya no es útil para la rama principal, se mueve a una subcarpeta llamada `OLD/` dentro de su directorio actual, o a la carpeta raíz `papelera/`.
+*   **Puntero de Borrado:** La carpeta `papelera/` se considera un "puntero a borrar", pero su limpieza es una decisión humana soberana, nunca automática por parte de una IA.
+
+## 12. Gestión de TODO por Fases (Eficiencia de Contexto)
+
+Para optimizar el uso de tokens y la memoria de la IA, el seguimiento de tareas se organiza por **Fases de Naturaleza Común**.
+
+*   **Agrupación:** Las tareas atómicas se agrupan en fases (ej. "Fase 1: Infraestructura Core").
+*   **Estado:** La IA actualiza el estado de la **Fase** completa, resumiendo el progreso para mantener el `TODO.md` compacto y altamente semántico.
+*   **Atomicidad:** Las tareas dentro de la fase deben ser claras, precisas, granulares, descriptivas y ordenadas con una temporalidad lógica.
+
+## 13. Skills (Librería de Kung-Fu para IAs)
+
+Las Skills son módulos de conocimiento procedimental que permiten a las IAs adquirir capacidades específicas ("Kung-Fu") sin saturar el contexto principal.
+
+*   **Ubicación:** `docs/skills/`.
+*   **Formato:** `SKILL.md` con Frontmatter YAML (name, description) y cuerpo Markdown.
+*   **Indización:** Existe un `INDEX.md` en la carpeta de skills que sirve como punto de entrada único.
+*   **Referencia:** Los archivos de contexto de IA (`GEMINI.cli`, `QWEN.md`) deben apuntar a este índice.
+
+---
+
 # ANEXO
 
 # Integración de Binarios Externos, Organización del Proyecto y Módulos Agente

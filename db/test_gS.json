@@ -1,0 +1,44 @@
+[
+    {
+        "os_window_id": 1,
+        "is_focused": true,
+        "tabs": [
+            {
+                "tab_id": 1,
+                "title": "GEMINI",
+                "is_active": true,
+                "layout": "fat"
+            },
+            {
+                "tab_id": 2,
+                "title": "QWEN",
+                "is_active": false,
+                "layout": "fat"
+            },
+            {
+                "tab_id": 3,
+                "title": "COMANDO",
+                "is_active": false,
+                "layout": "fat"
+            },
+            {
+                "tab_id": 4,
+                "title": "BR",
+                "is_active": false,
+                "layout": "fat"
+            },
+            {
+                "tab_id": 6,
+                "title": "AGENDA",
+                "is_active": false,
+                "layout": "fat"
+            },
+            {
+                "tab_id": 5,
+                "title": "NOTAS",
+                "is_active": false,
+                "layout": "fat"
+            }
+        ]
+    }
+]

@@ -1,24 +1,27 @@
-# TODO: Reparar comandos de multimedia en ARES
+# 🛰️ ARES - ESTRATEGIA DE DESARROLLO POR FASES
 
-## 1. Análisis y Preparación
-- [x] Leer `LEEME.md` y documentación de arquitectura.
-- [x] Identificar la falta de registro de comandos en `src/main.py`.
-- [x] Verificar la implementación actual en `modules/multimedia/media_manager.py`.
-- [x] Confirmar el comando mpv correcto para Kitty: `mpv --profile=sw-fast --vo=kitty --vo-kitty-use-shm=yes --really-quiet`.
+## 🟢 FASE 1: Infraestructura y Soberanía (COMPLETADO)
+- [x] **Repo Auditor:** `repo status` y `repo audit` funcionales.
+- [x] **Ini v2.1:** Gestión de venv (uv) y publicación con Soberanía del CWD.
+- [x] **Launchers:** Wrappers Bash con `uv run` en `bin/` y `/usr/bin/`.
+- [x] **Arquitectura:** Documentación de metodología y mapas IA (`GEMINI.cli`, `QWEN.md`).
+- [x] **Multimedia:** Comandos `video` e `image` integrados en `main.py`.
 
-## 2. Ejecución (Cirujano)
-- [x] Registrar comando `video` en `src/main.py`.
-- [x] Registrar comando `image` en `src/main.py`.
-- [x] Corregir lógica de `show_image` para usar `--place` y evitar errores de `unknown option`.
-- [x] **Limpieza:** Eliminar mensajes de "Reproduciendo" que ensucian la salida.
-- [x] **Corrección:** Quitar carga explícita de `mpv.conf` en `play_video` para evitar conflictos y asegurar que use el comando base verificado.
+## 🟡 FASE 2: Gestión de Sesiones y Sockets (EN PROCESO)
+- [x] **Investigación:** Script `test/capture_session.py` extrae datos de Kitty.
+- [ ] **Módulo Oficial:** Crear `modules/admon/session_manager.py` con lógica de captura.
+- [ ] **Comando CLI:** Implementar `ares gS` (prompt por nombre de sesión).
+- [ ] **Persistencia:** Guardar en `db/{nombre}.json`.
+- [ ] **Restauración:** Implementar `ares plan` dinámico basado en sesión guardada.
 
-## 4. Gestión de Sesiones (Kitty Socket)
-- [x] Crear directorio `test` y `db` si no existen.
-- [x] Crear script `test/capture_session.py` para leer el socket.
-- [x] Extraer nombres de ventanas (OS), pestañas y sus IDs.
-- [x] Guardar captura en `db/last_session.json` de forma estructurada.
-- [ ] Implementar comando `guardaSesion` en `main.py` delegando al nuevo módulo.
+## 🔵 FASE 3: Librería de Skills (Kung-Fu para IA)
+- [ ] **Estructura:** Crear `docs/skills/` y su `INDEX.md`.
+- [ ] **Skill: Inicialización:** Guía para crear proyectos TRON-compatibles.
+- [ ] **Skill: Producción:** Guía de uso de `ini` y mantenimiento de wrappers.
+- [ ] **Skill: Auditoría:** Protocolo `repo` antes de entregas.
+- [ ] **Vínculo:** Actualizar `GEMINI.cli` y `QWEN.md` con punteros al índice de skills.
 
-## 4. Notas para el Usuario
-- [x] Informar sobre el problema de zsh globbing (corchetes `[]` en nombres de archivos requieren escape o desactivar globbing temporalmente).
+## 🔴 FASE 4: Auditoría Final y "Preservación de Evidencias"
+- [ ] **OLD/ Movement:** Mover scripts de `test/` a `test/OLD/`.
+- [ ] **Refactoring:** Asegurar que `main.py` solo delega (Cero lógica pesada).
+- [ ] **Validation:** `repo audit ares` final.

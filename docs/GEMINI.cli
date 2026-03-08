@@ -1,0 +1,31 @@
+# 🛰️ ARES - MAPA OPERATIVO PARA GEMINI CLI (v1.0)
+
+## 🏛️ ARQUITECTURA CORE
+- **Raíz Proyecto:** `/home/daniel/tron/programas/TR`
+- **Orquestador:** `src/main.py` (Delegación pura, sin lógica pesada)
+- **Configuración:** `config/config.yaml` (Soberanía de datos)
+- **Socket Kitty:** `/tmp/mykitty` (Configurado en YAML)
+
+## 🛠️ HERRAMIENTAS DEL SISTEMA (Globales)
+- **ini (v2.0):** `/usr/bin/ini` -> Gestión de venv y publicación (Sin `cd` global).
+- **repo (v5.0):** `/usr/bin/repo` -> Auditoría Git (`repo status`, `repo audit <modulo>`).
+
+## 🧩 REGLAS DE ORO (MODULARIDAD)
+1. **Atomicidad:** Máximo 3 funciones por módulo en `modules/`.
+2. **Aislamiento:** Un módulo no debe conocer la existencia del CLI.
+3. **Auditoría:** Antes de terminar, ejecutar `repo status` y `repo audit <modulo>`.
+
+## 📂 RUTAS CLAVE
+- `src/`: Puntos de entrada y orquestación.
+- `modules/`: Lógica atómica por especialidad.
+- `config/`: Archivos `.conf` y YAML.
+- `docs/skills/`: Manuales de "Kung-Fu" para tareas específicas.
+
+## 🚀 SKILLS (LIBRERÍA DE KUNG-FU)
+Para adquirir capacidades específicas, consulta el índice central:
+👉 `docs/skills/INDEX.md`
+
+Las skills disponibles incluyen:
+- `inicializacion`: Crear estructura base.
+- `prod`: Publicar en `/usr/bin` vía `ini`.
+- `session-management`: Gestión de Kitty y `ares gS`.

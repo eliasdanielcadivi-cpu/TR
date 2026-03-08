@@ -132,16 +132,32 @@ class HelpManager:
         console.print(table)
 
     def show_config(self) -> None:
-        """Mostrar configuración actual de IA."""
-        config = self.ctx.config.get("ai", {})
+        """Mostrar configuración actual de IA y del sistema ARES."""
+        ai_config = self.ctx.config.get("ai", {})
+        kitty_config = self.ctx.config.get("kitty", {})
+        identity = self.ctx.config.get("identity", {})
         
-        console.print(Panel.fit(
-            f"[bold]Configuración de IA[/bold]\n\n"
-            f"Provider por defecto: [cyan]{config.get('default_provider', 'gemma')}[/cyan]\n"
-            f"Modelo Gemma: [green]{config.get('gemma', {}).get('model', 'gemma3:4b')}[/green]\n"
-            f"Modelo DeepSeek: [yellow]{config.get('deepseek', {}).get('model', 'deepseek-chat')}[/yellow]",
-            title="⚙️ ARES IA Config"
-        ))
+        # Panel de Identidad y Sockets
+        sys_info = (
+            f"[bold cyan]Identidad:[/bold cyan] {identity.get('window_title', 'ARES')}\n"
+            f"[bold cyan]Socket Kitty:[/bold cyan] {self.ctx.socket}\n"
+            f"[bold cyan]Socket Path:[/bold cyan] {self.ctx.socket_path}\n"
+        )
+        
+        # Panel de IA
+        ai_info = (
+            f"[bold green]Provider Activo:[/bold green] {ai_config.get('default_provider', 'gemma')}\n"
+            f"[bold green]Gemma (Ollama):[/bold green] {ai_config.get('gemma', {}).get('model', 'gemma3:4b')}\n"
+            f"[bold green]DeepSeek API:[/bold green] {ai_config.get('deepseek', {}).get('model', 'deepseek-chat')}\n"
+            f"[bold green]OpenRouter:[/bold green] {ai_config.get('openrouter', {}).get('model', 'n/a')}\n"
+        )
+        
+        table = Table.grid(expand=True)
+        table.add_column(style="dim")
+        table.add_row(Panel(sys_info, title="🛰️ Sistema", border_style="cyan"))
+        table.add_row(Panel(ai_info, title="🤖 Inteligencia Artificial", border_style="green"))
+        
+        console.print(Panel(table, title="⚙️ CONFIGURACIÓN GLOBAL ARES", border_style="white"))
 
     def _get_ai_engine(self):
         """Obtener instancia de AIEngine (lazy loading)."""

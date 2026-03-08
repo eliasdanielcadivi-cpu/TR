@@ -1,53 +1,14 @@
-#!/usr/bin/env python3
-"""
-TR INVESTIGADOR - Herramienta de Inteligencia y Exploración
-===========================================================
-Parte del módulo 'investigador' de TRON.
-"""
-import sys
-import json
-import argparse
-from pathlib import Path
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# TR INVESTIGADOR - Herramienta de Inteligencia y Exploración
+# ═══════════════════════════════════════════════════════════════════════════════
+# Parte del módulo 'investigador' de TRON.
+# Este wrapper garantiza que el módulo se ejecute en su entorno virtual (uv).
+# ═══════════════════════════════════════════════════════════════════════════════
 
-# Añadir ruta de módulos TR
-BASE_DIR = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(BASE_DIR))
+# 1. Determinar raíz del proyecto
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 
-try:
-    from modules.investigador.investigador_engine import InvestigatorEngine
-except ImportError as e:
-    print(f"Error importando motor: {e}")
-    sys.exit(1)
-
-def main():
-    parser = argparse.ArgumentParser(description="TR Investigador - Inteligencia Web")
-    subparsers = parser.add_subparsers(dest="command")
-
-    # Comando: buscar
-    search_parser = subparsers.add_parser("buscar", help="Busca en Google")
-    search_parser.add_argument("query", nargs="+", help="Término de búsqueda")
-
-    # Comando: otear
-    ote_parser = subparsers.add_parser("otear", help="Explora URLs profundamente")
-    ote_parser.add_argument("urls", nargs="+", help="Lista de URLs")
-
-    # Comando: docs
-    doc_parser = subparsers.add_parser("docs", help="Consulta documentación interna")
-    doc_parser.add_argument("tema", nargs="?", help="Tema específico")
-
-    args = parser.parse_args()
-    engine = InvestigatorEngine()
-
-    if args.command == "buscar":
-        res = engine.investigar(" ".join(args.query))
-        print(json.dumps(res, indent=2, ensure_ascii=False))
-    elif args.command == "otear":
-        res = engine.oteador(args.urls)
-        print(json.dumps(res, indent=2, ensure_ascii=False))
-    elif args.command == "docs":
-        print(engine.consultar_docs(args.tema))
-    else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main()
+# 2. Ejecutar script original usando 'uv run'
+# --project asegura que busque el pyproject.toml en la raíz del proyecto
+exec uv run --project "$PROJECT_DIR" python "$PROJECT_DIR/bin/tr-investigador-python" "$@"

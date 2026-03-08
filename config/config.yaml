@@ -1,106 +1,79 @@
-# ARES Configuration
-# Configuración modular para providers de IA, templates y herramientas
-
-identity:
-  name: "ARES"
-  full_name: "Terminal Remote Operations Nexus"
-  window_title: "Ares por Daniel Hung"
-
-kitty:
-  socket: "unix:/tmp/mykitty"
-  socket_path: "/tmp/mykitty"
-  allow_remote_control: "yes"
-  conf_path: "config/kitty.conf"
-
-# === Configuración de IA Multi-Provider ===
 ai:
-  enabled: true
-  default_provider: "gemma"  # gemma, deepseek, openrouter
-  
-  # Aliases de modelos para acceso rápido
   aliases:
-    gemma:
-      provider: "gemma"
-      model: "gemma3:4b"
-    gemma12b:
-      provider: "gemma"
-      model: "gemma3:12b"
     deepseek:
-      provider: "deepseek"
-      model: "deepseek-chat"
+      model: deepseek-chat
+      provider: deepseek
+    gemma:
+      model: gemma3:4b
+      provider: gemma
+    gemma12b:
+      model: gemma3:12b
+      provider: gemma
     openrouter:
-      provider: "openrouter"
-      model: "google/gemma-3-4b-it"
-
-  # Provider: Gemma/Ollama
-  gemma:
-    base_url: "http://localhost:11434"
-    model: "gemma3:4b"
-    templates_dir: "modules/ia/templates/gemma"
-    
-  # Provider: DeepSeek API
+      model: google/gemma-3-4b-it
+      provider: openrouter
   deepseek:
-    base_url: "https://api.deepseek.com"
-    model: "deepseek-chat"
-    api_key_env: "sk-2ceebfa3da2d444199e242bbc17feedc"
-    
-  # Provider: OpenRouter (placeholder)
+    api_key_env: sk-2ceebfa3da2d444199e242bbc17feedc
+    base_url: https://api.deepseek.com
+    model: deepseek-chat
+  default_provider: gemma
+  enabled: true
+  gemma:
+    base_url: http://localhost:11434
+    model: gemma3:4b
+    templates_dir: modules/ia/templates/gemma
   openrouter:
-    base_url: "https://openrouter.ai/api/v1"
-    model: "google/gemma-3-4b-it"
-    api_key_env: "OPENROUTER_API_KEY"
-
-# === Sistema de Templates YAML ===
-templates:
-  enabled: true
-  base_dir: "modules/ia/templates"
-  
-  # Templates por defecto por provider
-  defaults:
-    gemma: "default"
-    deepseek: "default"
-  
-  # Templates disponibles para gemma
-  gemma:
-    - name: "default"
-      description: "Plantilla básica para consultas generales"
-    - name: "chat"
-      description: "Optimizada para conversaciones multi-turno"
-    - name: "code"
-      description: "Generación y explicación de código"
-    - name: "tools"
-      description: "Function calling con herramientas"
-  
-  # Templates disponibles para deepseek
-  deepseek:
-    - name: "default"
-      description: "Plantilla básica para DeepSeek"
-
-# === Sistema de Herramientas ===
-tools:
-  enabled: true
-  
-  # Herramientas disponibles
-  available:
-    - name: "google_search"
-      enabled: true
-      api_key_env: "SERPER_API_KEY"
-    - name: "translate_text"
-      enabled: true
-      api_key_env: ""  # MyMemory API es gratuita
-    - name: "get_weather"
-      enabled: true
-      api_key_env: "OPENWEATHER_API_KEY"
-    - name: "execute_shell"
-      enabled: true
-      timeout: 30
-    - name: "read_file"
-      enabled: true
-      max_lines: 100
-    - name: "write_file"
-      enabled: true
-
+    api_key_env: OPENROUTER_API_KEY
+    base_url: https://openrouter.ai/api/v1
+    model: google/gemma-3-4b-it
+identity:
+  full_name: Terminal Remote Operations Nexus
+  name: ARES
+  window_title: Ares por Daniel Hung
+kitty:
+  allow_remote_control: 'yes'
+  conf_path: config/kitty.conf
+  socket: unix:/tmp/mykitty
+  socket_path: /tmp/mykitty
 paths:
-  sessions: "data/sessions"
-  logs: "logs/session.jsonl"
-  db: "db/tr.sqlite"
+  db: db/tr.sqlite
+  logs: logs/session.jsonl
+  sessions: data/sessions
+templates:
+  base_dir: modules/ia/templates
+  deepseek:
+  - description: "Plantilla b\xE1sica para DeepSeek"
+    name: default
+  defaults:
+    deepseek: default
+    gemma: default
+  enabled: true
+  gemma:
+  - description: "Plantilla b\xE1sica para consultas generales"
+    name: default
+  - description: Optimizada para conversaciones multi-turno
+    name: chat
+  - description: "Generaci\xF3n y explicaci\xF3n de c\xF3digo"
+    name: code
+  - description: Function calling con herramientas
+    name: tools
+tools:
+  available:
+  - api_key_env: SERPER_API_KEY
+    enabled: true
+    name: google_search
+  - api_key_env: ''
+    enabled: true
+    name: translate_text
+  - api_key_env: OPENWEATHER_API_KEY
+    enabled: true
+    name: get_weather
+  - enabled: true
+    name: execute_shell
+    timeout: 30
+  - enabled: true
+    max_lines: 100
+    name: read_file
+  - enabled: true
+    name: write_file
+  enabled: true
