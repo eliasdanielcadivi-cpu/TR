@@ -351,8 +351,8 @@
     </keybind>
     <!-- Tecla Menu contextual para mostrar menú contextual de ventana -->
     <keybind key="Menu">
-      <action name="ShowMenu">
-        <menu>client-menu</menu>
+      <action name="Execute">
+        <command>xdotool click 3</command>
       </action>
     </keybind>
     
