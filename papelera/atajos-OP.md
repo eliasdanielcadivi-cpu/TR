@@ -1,6 +1,6 @@
-# Atajos de Teclado de Openbox
+# Atajos de Teclado de Openbox - Guía Completa
 
-## 🖱️ Atajos que Controlan el Ratón (Mouse)
+## 🖱️ Atajos que Controlan el Ratón (Mouse) - CRÍTICOS
 
 ### Movimiento del Cursor
 | Atajo | Acción |
@@ -9,7 +9,7 @@
 | `Win + Ctrl + ↓` | Mover cursor abajo 10px |
 | `Win + Ctrl + ←` | Mover cursor izquierda 10px |
 | `Win + Ctrl + →` | Mover cursor derecha 10px |
-| `Ctrl + Win + Alt + ↑` | Mover cursor arriba 15px |
+| `Ctrl + Win + Alt + ↑` | Mover cursor arriba 15px (más rápido) |
 | `Ctrl + Win + Alt + ↓` | Mover cursor abajo 15px |
 | `Ctrl + Win + Alt + ←` | Mover cursor izquierda 15px |
 | `Ctrl + Win + Alt + →` | Mover cursor derecha 15px |
@@ -18,14 +18,14 @@
 | Atajo | Acción |
 |-------|--------|
 | `Win + Ctrl + Enter` | Clic izquierdo (click 1) |
-| `Win + Ctrl + Shift + Enter` | Clic derecho (click 3) |
+| `Win + Ctrl + Shift + Enter` | Clic derecho (click 3, con retardo 0.5s) |
 
-### Script de Ratón
+### Script de Ratón (raton.sh)
 | Atajo | Acción |
 |-------|--------|
 | `Ctrl + Win + Break` | Ejecutar raton.sh - **Alternar clic izquierdo** (mousedown/mouseup) |
 
-#### Detalle de `raton.sh`:
+#### Detalle de `raton.sh` (`/home/daniel/tron/programas/Admon/QT5-Openbox/raton.sh`):
 ```bash
 #!/bin/bash
 STATE_FILE="/tmp/mouse_link_state"
@@ -38,6 +38,24 @@ else
 fi
 ```
 **Función:** Mantener presionado el botón izquierdo hasta pulsar nuevamente el atajo. Útil para arrastrar elementos.
+
+---
+
+## 🚀 Lanzamiento de Aplicaciones
+
+| Atajo | Aplicación |
+|-------|------------|
+| `Ctrl + Alt + T` | ARES (`/usr/bin/ares`) |
+| `Ctrl + Alt + K` | Kate (editor de texto) |
+| `Ctrl + Alt + E` | Dolphin (gestor de archivos) |
+| `Ctrl + Alt + I` | Google Chrome |
+| `Ctrl + Alt + A` | Antigravity |
+| `Ctrl + Alt + C` | Visual Studio Code |
+| `Ctrl + Alt + M` | Mousepad (editor de texto) |
+| `Ctrl + Alt + N` | Kate - abrir notas.md |
+| `Ctrl + Alt + V` | Pavucontrol (control de audio) |
+| `Ctrl + Alt + R` | Network Manager (`nm-connection-editor`) |
+| `Win + E` | Dolphin |
 
 ---
 
@@ -112,22 +130,6 @@ fi
 
 ---
 
-## 🚀 Lanzamiento de Aplicaciones
-
-| Atajo | Aplicación |
-|-------|------------|
-| `Ctrl + Alt + T` | ARES (`/usr/bin/ares`) |
-| `Ctrl + Alt + K` | Kate (editor de texto) |
-| `Ctrl + Alt + E` | Dolphin (gestor de archivos) |
-| `Ctrl + Alt + I` | Google Chrome |
-| `Ctrl + Alt + A` | Antigravity |
-| `Ctrl + Alt + C` | Visual Studio Code |
-| `Ctrl + Alt + M` | Mousepad (editor de texto) |
-| `Ctrl + Alt + N` | Kate - abrir notas.md |
-| `Win + E` | Dolphin |
-
----
-
 ## 📸 Capturas de Pantalla
 
 | Atajo | Acción |
@@ -144,8 +146,6 @@ fi
 |-------|--------|
 | `Ctrl + Alt + Delete` | Reiniciar sistema (`reboot`) |
 | `Ctrl + Alt + Backspace` | Apagar sistema (`systemctl poweroff`) |
-| `Ctrl + Alt + V` | Pavucontrol (control de audio) |
-| `Ctrl + Alt + R` | Network Manager (`nm-connection-editor`) |
 
 ---
 
@@ -204,3 +204,5 @@ fi
 ---
 
 **Nota:** `Win` = Tecla Super/Windows, `Ctrl` = Control, `Alt` = Alt, `Shift` = Mayús
+
+**Fuente:** `~/.config/openbox/rc.xml`
