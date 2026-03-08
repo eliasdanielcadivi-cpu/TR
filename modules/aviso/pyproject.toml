@@ -1,0 +1,12 @@
+[project]
+name = "aviso"
+version = "1.0.0"
+description = "Sistema de Recordatorios y Alarmas - TRON"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+aviso = "aviso:main"
+
+[tool.uv]
+dev-dependencies = []
