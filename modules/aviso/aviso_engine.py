@@ -13,9 +13,19 @@ Integra:
 
 import subprocess
 import re
+import logging
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
+from pathlib import Path
+
 from .aviso_db import guardar_aviso, listar_avisos, borrar_aviso, actualizar_estado, obtener_pendientes, Aviso
+
+# Configuración de logging
+LOG_PATH = Path.home() / "tron/programas/TR/logs/aviso.log"
+DEBUG_PATH = Path.home() / "tron/programas/TR/logs/aviso.debug"
+DEBUG_FILE = Path.home() / "tron/programas/TR/papelera/aviso_debug.txt"
+
+logger = logging.getLogger('aviso.engine')
 
 
 def parsear_tiempo(texto: str) -> Optional[datetime]:
@@ -30,6 +40,8 @@ def parsear_tiempo(texto: str) -> Optional[datetime]:
     
     Retorna datetime o None si no puede parsear.
     """
+    logger.debug(f"Parseando tiempo: '{texto}'")
+    
     texto = texto.lower().strip()
     ahora = datetime.now()
     
@@ -39,13 +51,21 @@ def parsear_tiempo(texto: str) -> Optional[datetime]:
         valor = int(match.group(1))
         unidad = match.group(2)[:2]
         if unidad == 'mi':
-            return ahora + timedelta(minutes=valor)
+            resultado = ahora + timedelta(minutes=valor)
+            logger.debug(f"Patrón relativo minutos: +{valor}min → {resultado}")
+            return resultado
         elif unidad == 'ho':
-            return ahora + timedelta(hours=valor)
+            resultado = ahora + timedelta(hours=valor)
+            logger.debug(f"Patrón relativo horas: +{valor}h → {resultado}")
+            return resultado
         elif unidad == 'dí' or unidad == 'di':
-            return ahora + timedelta(days=valor)
+            resultado = ahora + timedelta(days=valor)
+            logger.debug(f"Patrón relativo días: +{valor}d → {resultado}")
+            return resultado
         elif unidad == 'se':
-            return ahora + timedelta(weeks=valor)
+            resultado = ahora + timedelta(weeks=valor)
+            logger.debug(f"Patrón relativo semanas: +{valor}sem → {resultado}")
+            return resultado
     
     # Patrones de hora: "a las 15:30", "a las 3pm"
     match = re.search(r'a\s+las?\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)?', texto)
@@ -57,7 +77,9 @@ def parsear_tiempo(texto: str) -> Optional[datetime]:
             hora += 12
         elif ampm == 'am' and hora == 12:
             hora = 0
-        return ahora.replace(hour=hora, minute=minuto, second=0, microsecond=0)
+        resultado = ahora.replace(hour=hora, minute=minuto, second=0, microsecond=0)
+        logger.debug(f"Patrón hora: {hora}:{minuto} → {resultado}")
+        return resultado
     
     # Patrones de fecha: "el 25/12", "el 31/12/2026"
     match = re.search(r'el\s+(\d{1,2})/(\d{1,2})(?:/(\d{4}))?', texto)
@@ -66,16 +88,24 @@ def parsear_tiempo(texto: str) -> Optional[datetime]:
         mes = int(match.group(2))
         anio = int(match.group(3)) if match.group(3) else ahora.year
         try:
-            return ahora.replace(year=anio, month=mes, day=dia, hour=9, minute=0, second=0)
-        except ValueError:
+            resultado = ahora.replace(year=anio, month=mes, day=dia, hour=9, minute=0, second=0)
+            logger.debug(f"Patrón fecha: {dia}/{mes}/{anio} → {resultado}")
+            return resultado
+        except ValueError as e:
+            logger.warning(f"Fecha inválida: {e}")
             return None
     
     # "mañana", "pasado mañana"
     if 'mañana' in texto and 'pasado' in texto:
-        return ahora + timedelta(days=2)
+        resultado = ahora + timedelta(days=2)
+        logger.debug(f"Pasado mañana: +2d → {resultado}")
+        return resultado
     elif 'mañana' in texto:
-        return ahora + timedelta(days=1)
+        resultado = ahora + timedelta(days=1)
+        logger.debug(f"Mañana: +1d → {resultado}")
+        return resultado
     
+    logger.warning(f"No se pudo parsear: '{texto}'")
     return None
 
 
@@ -88,24 +118,57 @@ def ejecutar_aviso(aviso: Aviso) -> bool:
     
     Retorna True si se ejecutó exitosamente.
     """
+    logger.info(f"Ejecutando aviso ID={aviso.id}: '{aviso.mensaje}' (comando={aviso.comando})")
+    
+    # Escribir archivo de debug en papelera
+    DEBUG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(DEBUG_FILE, 'a') as f:
+        f.write(f"\n{'='*60}\n")
+        f.write(f"[{datetime.now().isoformat()}] EJECUTANDO AVISO\n")
+        f.write(f"ID: {aviso.id}\n")
+        f.write(f"Mensaje: {aviso.mensaje}\n")
+        f.write(f"Comando: {aviso.comando}\n")
+        f.write(f"Fecha programada: {aviso.fecha_hora}\n")
+        f.write(f"{'='*60}\n")
+    
     try:
         if aviso.comando == 'zenity':
-            subprocess.run([
+            logger.debug("Ejecutando zenity (timeout 10s)...")
+            # Zenity con timeout para no bloquear indefinidamente
+            result = subprocess.run([
                 'zenity',
                 '--info',
                 '--title', '⏰ AVISO - Recordatorio',
-                '--text', f'{aviso.mensaje}',
+                '--text', aviso.mensaje,
                 '--width', '400',
-                '--height', '150'
-            ], timeout=300)
+                '--height', '150',
+                '--timeout', '10'  # Auto-cierre después de 10 segundos
+            ], timeout=15, capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                logger.info("Zenity ejecutado correctamente")
+            elif result.returncode == 1:  # Timeout o cancelado
+                logger.info("Zenity cerrado por timeout/usuario (comportamiento normal)")
+            else:
+                logger.warning(f"Zenity retornó {result.returncode}: {result.stderr}")
         else:
-            # Ejecutar comando personalizado
-            subprocess.run(aviso.comando, shell=True, timeout=300)
+            logger.debug(f"Ejecutando comando: {aviso.comando}")
+            result = subprocess.run(aviso.comando, shell=True, timeout=300, capture_output=True, text=True)
+            logger.info(f"Comando retornó {result.returncode}")
+            if result.stdout:
+                logger.debug(f"STDOUT: {result.stdout}")
+            if result.stderr:
+                logger.warning(f"STDERR: {result.stderr}")
+        
         return True
     except subprocess.TimeoutExpired:
+        logger.warning(f"Timeout ejecutando aviso ID={aviso.id}")
+        return True  # Considerar como ejecutado aunque haya timeout
+    except FileNotFoundError as e:
+        logger.error(f"Comando no encontrado: {e}")
         return False
     except Exception as e:
-        print(f"Error ejecutando aviso: {e}")
+        logger.error(f"Error ejecutando aviso: {e}")
         return False
 
 
@@ -118,18 +181,32 @@ def verificar_y_ejecutar() -> int:
     
     Retorna cantidad de avisos ejecutados.
     """
+    logger.debug("=== Iniciando verificación de avisos ===")
+    
     ahora = datetime.now()
     ejecutados = 0
+    errores = 0
     
     for aviso in obtener_pendientes():
         try:
             fecha_aviso = datetime.fromisoformat(aviso.fecha_hora)
-            if fecha_aviso <= ahora:
+            diferencia = (ahora - fecha_aviso).total_seconds()
+            
+            logger.debug(f"Aviso #{aviso.id}: programado={aviso.fecha_hora}, diferencia={diferencia}s")
+            
+            if diferencia >= 0:
+                logger.info(f"Aviso #{aviso.id} VENCIDO (diferencia={diferencia}s)")
+                
                 if ejecutar_aviso(aviso):
                     actualizar_estado(aviso.id, 'ejecutado')
                     ejecutados += 1
-        except (ValueError, Exception):
-            # Si hay error parseando la fecha, marcar como error
+                else:
+                    actualizar_estado(aviso.id, 'error')
+                    errores += 1
+        except (ValueError, Exception) as e:
+            logger.error(f"Error procesando aviso #{aviso.id}: {e}")
             actualizar_estado(aviso.id, 'error')
+            errores += 1
     
+    logger.info(f"Verificación completada: {ejecutados} ejecutados, {errores} errores")
     return ejecutados

@@ -24,11 +24,15 @@ Uso CLI:
 
 from .aviso_db import (
     guardar_aviso,
-    listar_avisos,
+    listar_avisos, 
     borrar_aviso,
     actualizar_estado,
     obtener_pendientes,
-    Aviso
+    Aviso,
+    LOG_PATH,
+    DEBUG_PATH,
+    toggle_debug,
+    limpiar_logs
 )
 from .aviso_engine import (
     parsear_tiempo,
@@ -38,7 +42,9 @@ from .aviso_engine import (
 from .aviso_cli import (
     crear_aviso,
     mostrar_lista,
-    borrar_unico
+    borrar_unico,
+    mostrar_log,
+    mostrar_debug_file
 )
 
 __all__ = [
@@ -49,6 +55,10 @@ __all__ = [
     'actualizar_estado',
     'obtener_pendientes',
     'Aviso',
+    'LOG_PATH',
+    'DEBUG_PATH',
+    'toggle_debug',
+    'limpiar_logs',
     # Engine
     'parsear_tiempo',
     'ejecutar_aviso',
@@ -56,6 +66,8 @@ __all__ = [
     # CLI
     'crear_aviso',
     'mostrar_lista',
-    'borrar_unico'
+    'borrar_unico',
+    'mostrar_log',
+    'mostrar_debug_file'
 ]
-__version__ = '1.0.0'
+__version__ = '1.1.0'
