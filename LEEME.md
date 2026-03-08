@@ -1,13 +1,13 @@
 # 🛰 ARES - Terminal Remote Operations Nexus
 
-**ARES** es un orquestador táctico diseñado para transformar la terminal Kitty en una estación de trabajo de alta productividad aumentada por IA. Actúa como el cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación de alto rendimiento.
+**ARES** es un orquestador táctico diseñado para transformar el trabajo de las personas, usando modulos como el de la terminal Kitty en una estación de trabajo de alta productividad aumentada por Agentes Lógicos, Semántico-Cognitivos de IA, Actúa como  cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación, marketing, investigación, CRM, eComerce, eLearnig, entre otros es un  Full Stack Presence Management Capital  para los clientes y usuarios finales. Ares es un producto-servicio de alto rendimiento,  constructor de infraestructura que genera valor y capital para la empresa, industria, artesanos, vendesores, distribuidores, médicos en todos los ambitos de influencia de la IA.
 
 ---
 
 ## 🚀 RESUMEN EJECUTIVO
 
 ### ¿Qué es ARES?
-ARES es el **cerebro** que controla la terminal Kitty para crear flujos de trabajo de vanguardia. Es la evolución modular y paranoica del proyecto TRON original.
+ARES es el **cerebro** que controla la terminal Kitty para crear flujos de trabajo de vanguardia. Es la evolución modular y  del proyecto TRON original.
 
 ### Comandos Maestros
 
@@ -47,6 +47,25 @@ Cada componente de ARES debe ser quirúrgico. Esto permite:
 - ✅ **Determinismo**: Resultados predecibles en cada comando.
 - ✅ **Encapsulamiento**: Funcionamiento autónomo sin dependencias globales.
 - ✅ **Vibe Coding**: Desarrollo acelerado sin pérdida de contexto.
+
+## 🛠️ Herramientas de Ecosistema (Soberanía TRON)
+
+ARES no actúa solo; se integra con herramientas globales diseñadas para la precisión quirúrgica y la soberanía del entorno:
+
+- **`ini` (v2.0):** Orquestador de ciclo de vida.
+    - `ini venv`: Inicialización profesional de entornos (uv/npm).
+    - `ini prod`: Publicación en `/usr/bin` con **Soberanía del CWD** (ARES respeta tu ubicación actual en la terminal).
+- **`repo` (v5.0):** Auditor táctico de Git.
+    - `repo status`: Auditoría rápida de cambios para humanos e IA.
+    - `repo audit <modulo>`: Verifica que los cambios realizados por una IA estén contenidos dentro del alcance del módulo correspondiente.
+
+## 🧩 Arquitectura Orquestador-Módulo
+
+1. **Orquestador (`src/main.py`):** Director de orquesta. Delegación pura de comandos a especialistas.
+2. **Módulos (`modules/`):** Especialistas atómicos (máx. 3 funciones por módulo).
+3. **Agentes (`Agentes/`):** Módulos inteligentes con salida JSON estructurada para integración con LLMs.
+
+---
 
 ### 🧩 Organización por Naturaleza
 Los módulos están agrupados jerárárquicamente en `modules/`:
@@ -193,6 +212,7 @@ source .venv/bin/activate
 ```bash
 ares --help
 ares status
+ares gS [nombre]   # Guardar sesión actual de Kitty
 ```
 
 ### 4. (Opcional) Añadir al PATH
@@ -212,5 +232,38 @@ export PATH="$HOME/tron/programas/TR/bin:$PATH"
 - ✅ **Sin dependencias externas**: Funciona offline
 
 ---
+
+
+## Módulo: MPV System Injector
+
+**Ubicación:** `tron/programas/TR/scripts/MPV/inyectar_mpv.py`
+
+Este componente gestiona la configuración global de `mpv` mediante la inyección directa de archivos de configuración y lógica en el sistema operativo. Su objetivo es unificar la experiencia de usuario y añadir herramientas de edición de subtítulos en tiempo real.
+
+### Componentes Inyectados
+
+El script automatiza el despliegue en la ruta raíz `/etc/mpv/`, garantizando que las mejoras estén disponibles para todos los usuarios:
+
+* **`input.conf` (Mapping Estilo VLC):**
+* **Navegación:** Flechas direccionales para control de volumen (Arriba/Abajo) y búsqueda (Izquierda/Derecha).
+* **Reproducción:** Teclas `+`/`-` para velocidad, `a` para audio, `s` para subtítulos.
+* **Precisión:** `,` y `.` para retroceso/avance cuadro a cuadro; `[` y `]` para ciclos de bucle A-B.
+
+
+* **`fix_subdelay.lua` (Script de Sincronización):**
+* Herramienta avanzada que permite corregir desfases de subtítulos mediante la captura de dos puntos de referencia (audio vs. texto) usando la combinación `Alt+Z`.
+
+
+
+### Ejecución y Despliegue
+
+Para aplicar la configuración y sincronizar los archivos de la carpeta `TR` hacia el sistema, ejecuta:
+
+```bash
+sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
+
+```
+
+
 
 *Ares: El orquestador definitivo por Daniel Hung.*

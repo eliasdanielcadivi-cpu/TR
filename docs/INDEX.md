@@ -23,6 +23,8 @@
 **Propósito:** Mantenimiento y diagnóstico de la salud de ARES.
 - `diag_manager.py`: Diagnóstico visual de sockets y pestañas.
 - `init_manager.py`: Gestión de enlaces simbólicos y recarga de configuración.
+- `session_manager.py`: Captura y persistencia de sesiones de Kitty (JSON).
+  - **Funciones**: `capture_and_save()`, `list_sessions()`, `load_session_data()`
 
 ### ia/ - Cerebro Agéntico
 **Propósito:** Conectividad con modelos de lenguaje y lógica de prompts.
