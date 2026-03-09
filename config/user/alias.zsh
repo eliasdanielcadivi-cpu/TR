@@ -16,6 +16,7 @@ alias BajoNivel='micro ~/tron/programas/TR/scripts/BajoNivel.sh'
 # --- ALIAS DEL SISTEMA ---
 alias notas="micro /home/daniel/tron/Notas-Pendientes/notas.md
 "
+alias aviso='python3 ~/tron/programas/TR/modules/aviso/aviso.py'
 alias agenda='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py'
 alias agendaed='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py editar'
 alias agendaweb='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py web'

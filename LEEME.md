@@ -18,14 +18,20 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 | `ares p "pregunta" --model gemma` | Usar modelo Gemma específico |
 | `ares p "pregunta" --template code` | Usar plantilla YAML para código |
 | `ares plan` | Despliegue táctico: 4 pestañas coloreadas Hacker Neon |
-| `ares zshPlan` | Hacker AI Session (ZSH) |
+| `ares zshplan` | Hacker AI Session (ZSH) |
+| `ares gs [nombre]` | Guardar sesión actual de Kitty |
+| `ares gs list` | Listar sesiones guardadas en la base de datos |
+| `ares gs restore [nombre]` | Restaurar una sesión guardada |
+| `ares gs com "[pestaña]" "[comando]"` | Ejecutar comando en una pestaña específica |
 | `ares status` | Diagnóstico del socket Kitty y estado del sistema |
-| `ares config` | Ver configuración de IA |
-| `ares models` | Listar modelos disponibles |
-| `ares templates` | Listar plantillas YAML |
-| `ares tools` | Listar herramientas (function calling) |
+| `ares config` | Ver/Inspeccionar configuración de IA y entorno |
+| `ares init` | Gestión de infraestructura y enlaces simbólicos |
+| `ares model [provider]` | Configurar provider de IA por defecto (gemma/deepseek) |
+| `ares models` | Listar modelos disponibles (Ollama + Cloud) |
+| `ares templates` | Listar plantillas YAML de comportamiento |
+| `ares tools` | Listar herramientas (function calling) disponibles |
 | `ares video <archivo>` | Reproduce video en terminal (mpv + protocolo gráfico) |
-| `ares image <archivo>` | Muestra imagen en terminal |
+| `ares image <archivo>` | Muestra imagen en terminal (icat) |
 | `ares help` | Abre documentación navegable con Broot |
 
 ### Herramientas Especializadas
@@ -48,7 +54,7 @@ Cada componente de ARES debe ser quirúrgico. Esto permite:
 - ✅ **Encapsulamiento**: Funcionamiento autónomo sin dependencias globales.
 - ✅ **Vibe Coding**: Desarrollo acelerado sin pérdida de contexto.
 
-## 🛠️ Herramientas de Ecosistema (Soberanía TRON)
+### Herramientas de Ecosistema (Soberanía TRON)
 
 ARES no actúa solo; se integra con herramientas globales diseñadas para la precisión quirúrgica y la soberanía del entorno:
 
@@ -58,6 +64,11 @@ ARES no actúa solo; se integra con herramientas globales diseñadas para la pre
 - **`repo` (v5.0):** Auditor táctico de Git.
     - `repo status`: Auditoría rápida de cambios para humanos e IA.
     - `repo audit <modulo>`: Verifica que los cambios realizados por una IA estén contenidos dentro del alcance del módulo correspondiente.
+- **`aviso` (v1.0):** Sistema de recordatorios y alarmas con lenguaje natural.
+    - `aviso en 10min "mensaje"`: Recordatorio rápido.
+    - `aviso el 25/12 "mensaje"`: Fecha específica.
+    - `aviso comando "script.sh" a las 8am`: Ejecución programada.
+    - Daemon integrado: Se ejecuta al inicio de sesión vía XDG autostart.
 
 ## 🧩 Arquitectura Orquestador-Módulo
 
@@ -190,6 +201,63 @@ Los dashboards de ARES (en desarrollo) utilizan transiciones tipo **morphing** p
 | `docs/Ares-Terminal/` | Configuración de terminal predeterminada |
 | `docs/Ares-Terminal/CONFIGURACION_TERMINAL_PREDETERMINADA.md` | Guía forense completa de ARES como terminal |
 | `docs/Ares-Terminal/REFERENCIA_RAPIDA.md` | Comandos y atajos rápidos |
+| **`docs/skills/INDEX.md`** | **Arsenal completo de Skills (Kung-Fu IA)** — 18 skills, 367 archivos, 9.6 MB clasificadas |
+| **`docs/QWEN.md`** | Contexto operativo para Qwen Code (v2.0) |
+| **`docs/GEMINI.cli`** | Mapa operativo para Gemini CLI (v2.0) |
+
+---
+
+## 🥋 SKILLS (ARSENAL DE KUNG-FU IA)
+
+Las **skills** son paquetes autocontenidos de conocimiento procedimental que dotan a la IA de capacidades específicas. Cada skill incluye documentación (SKILL.md), scripts ejecutables, referencias y assets.
+
+### Arsenal Completo (18 Skills, 367 Archivos, 9.6 MB)
+
+| Categoría | Skills | Archivos | Scripts | Destacado |
+|-----------|--------|----------|---------|-----------|
+| **ARES Core** | 3 | 3 | 0 | Inicialización, gestión de sesiones Kitty |
+| **Desarrollo** | 4 | 45 | 12 | MCP servers, Playwright testing, React + shadcn/ui |
+| **Doc-Processing** | 2 | 85 | 18 | Word (.docx) con redlining, PDF con formularios |
+| **Office** | 2 | 95 | 15 | PowerPoint (templates, thumbnails), Excel (fórmulas, recalc) |
+| **Multimedia** | 2 | 25 | 8 | Arte generativo p5.js, GIFs animados para Slack |
+| **IA** | 1 | 12 | 3 | Creación y packaging de skills |
+| **Comms** | 1 | 6 | 0 | Comunicación interna, newsletters, FAQs |
+| **Design** | 3 | 95 | 0 | Branding, 80+ fonts, 20 themes de color |
+
+### Estructura de Skills
+
+Cada skill contiene:
+- **SKILL.md**: Punto de entrada con propósito, triggers, flujo de ejecución
+- **scripts/**: Código ejecutable (Python, JS, Bash)
+- **reference/** o **references/**: Documentación de apoyo
+- **assets/**, **templates/**, **themes/**: Recursos reutilizables
+- **LICENSE.txt**: Términos de licencia
+
+### Cómo Usar
+
+1. **Navegar:** Leer `docs/skills/INDEX.md` para visión completa del arsenal
+2. **Identificar:** Buscar categoría y skill por trigger o descripción
+3. **Leer:** Abrir `SKILL.md` de la skill (documentación principal)
+4. **Ejecutar:** Usar scripts bajo demanda según necesidad
+
+**Principio de Carga Mínima:** Solo cargar la skill necesaria para la tarea actual (progressive disclosure).
+
+### Scripts Destacados
+
+| Script | Skill | Propósito |
+|--------|-------|-----------|
+| `init_skill.py` | ia/skill-creator | Inicializar nueva skill |
+| `package_skill.py` | ia/skill-creator | Empaquetar skill para distribuir |
+| `recalc.py` | office/xlsx | Recalcular fórmulas Excel con LibreOffice |
+| `with_server.py` | dev/webapp-testing | Gestionar servidores para testing Playwright |
+| `init-artifact.sh` | dev/web-artifacts-builder | Inicializar artifact React |
+| `bundle-artifact.sh` | dev/web-artifacts-builder | Bundlear a HTML único |
+| `thumbnail.py` | office/pptx | Generar thumbnail grids de slides |
+| `inventory.py` | office/pptx | Extraer inventario de texto de slides |
+| `replace.py` | office/pptx | Reemplazar texto masivamente con formato |
+| `rearrange.py` | office/pptx | Duplicar y reordenar slides |
+| `unpack.py` / `pack.py` | docx, pdf, pptx | Desempaquetar/empaquetar OOXML |
+| `evaluation.py` | dev/mcp-builder | Evaluar servidores MCP |
 
 ---
 

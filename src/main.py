@@ -95,19 +95,30 @@ def status(obj):
     show_status(obj)
 
 
-@cli.command(name="gs")
+@cli.group(name="gs", invoke_without_command=True)
+@click.pass_context
+def gs_cmd(ctx):
+    """💾 Gestión de Sesiones de Kitty.
+    
+    Sin subcomando: Lanza el proceso de guardado rápido.
+    Subcomandos: list, restore, com, save.
+    """
+    if ctx.invoked_subcommand is None:
+        # Lógica de guardado por defecto (ares gs)
+        ctx.invoke(gs_save)
+
+
+@gs_cmd.command(name="save")
 @click.argument("name", required=False)
 @click.pass_obj
-def gs_cmd(obj, name):
-    """💾 Guarda el estado actual de la sesión de Kitty.
-    
-    Captura todas las ventanas y pestañas abiertas en el socket ARES
-    y las persiste en un archivo JSON para su restauración posterior.
-    """
+def gs_save(obj, name):
+    """💾 Guarda la sesión actual."""
     from config import KittyRemote
+    from modules.admon import session_manager
     kitty = KittyRemote(obj)
+    
     if not kitty.is_running():
-        click.echo(f"❌ El socket {obj.socket_path} no existe. Kitty no parece estar corriendo con ARES.")
+        click.echo(f"❌ El socket {obj.socket_path} no existe. Kitty no está corriendo.")
         return
 
     if not name:
@@ -118,6 +129,60 @@ def gs_cmd(obj, name):
         click.echo(f"✅ Sesión guardada en: {result}")
     else:
         click.echo(f"❌ Error: {result}")
+
+
+@gs_cmd.command(name="list")
+@click.pass_obj
+def gs_list(obj):
+    """📋 Lista sesiones guardadas."""
+    from modules.admon import session_manager
+    sessions = session_manager.list_sessions(obj)
+    if not sessions:
+        click.echo("📭 No hay sesiones guardadas en 'db/'.")
+        return
+    
+    click.echo("📂 [bold cyan]Sesiones Disponibles:[/bold cyan]")
+    for s in sessions:
+        click.echo(f"  • {s}")
+
+
+@gs_cmd.command(name="restore")
+@click.argument("name")
+@click.pass_obj
+def gs_restore(obj, name):
+    """🔄 Restaura una sesión por nombre."""
+    from config import KittyRemote
+    from modules.admon import session_manager
+    kitty = KittyRemote(obj)
+    if not kitty.is_running():
+        click.echo("❌ Kitty no está corriendo.")
+        return
+
+    success, msg = session_manager.restore_session(obj, kitty, name)
+    if success:
+        click.echo(f"✅ {msg}")
+    else:
+        click.echo(f"❌ {msg}")
+
+
+@gs_cmd.command(name="com")
+@click.argument("tab_title")
+@click.argument("command")
+@click.pass_obj
+def gs_com(obj, tab_title, command):
+    """⚔️  Envía un comando a una pestaña específica."""
+    from config import KittyRemote
+    from modules.admon import session_manager
+    kitty = KittyRemote(obj)
+    if not kitty.is_running():
+        click.echo("❌ Kitty no está corriendo.")
+        return
+
+    success, msg = session_manager.send_command_to_tab(kitty, tab_title, command)
+    if success:
+        click.echo(f"✅ {msg}")
+    else:
+        click.echo(f"❌ {msg}")
 
 
 @cli.command()

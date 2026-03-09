@@ -65,6 +65,44 @@ class AIEngine:
         Returns:
             Respuesta de la IA.
         """
+        # --- INYECCIÓN DINÁMICA DE SKILLS ---
+        skills_dir = os.path.join(self.base_path, "docs", "skills")
+        injected_context = ""
+        
+        # Mapa de palabras clave a skills
+        skill_map = {
+            "sesion": "skill-sesion.md",
+            "pestaña": "skill-sesion.md",
+            "abre": "skill-sesion.md",
+            "gs": "skill-sesion.md",
+            "inicializa": "skill-inicializacion.md",
+            "proyecto": "skill-inicializacion.md",
+            "desarrolla": "skill-desarrollo.md",
+            "módulo": "skill-desarrollo.md",
+            "mantén": "skill-mantenimiento.md",
+            "producir": "skill-produccion.md",
+            "globalizar": "skill-produccion.md"
+        }
+        
+        found_skills = set()
+        prompt_lower = prompt.lower()
+        for key, skill_file in skill_map.items():
+            if key in prompt_lower:
+                found_skills.add(skill_file)
+        
+        for skill_file in found_skills:
+            skill_path = os.path.join(skills_dir, skill_file)
+            if os.path.exists(skill_path):
+                try:
+                    with open(skill_path, "r", encoding="utf-8") as f:
+                        injected_context += f"\n\n--- SKILL INYECTADO: {skill_file} ---\n{f.read()}\n"
+                except:
+                    pass
+        
+        if injected_context:
+            prompt = f"{injected_context}\n\n--- CONSULTA USUARIO ---\n{prompt}"
+        # ------------------------------------
+
         # Determinar provider y modelo
         provider, model = self._resolve_provider_and_model(model_alias, template)
         
