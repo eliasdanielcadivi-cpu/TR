@@ -1,0 +1,11 @@
+{
+    "window_title_ok": true,
+    "tabs_count_ok": true,
+    "colors_neon_ok": true,
+    "cmd_notas_exec": false,
+    "cmd_notas_visual": false,
+    "cmd_agenda_exec": false,
+    "cmd_agenda_visual": false,
+    "cmd_br_exec": false,
+    "cmd_br_visual": false
+}

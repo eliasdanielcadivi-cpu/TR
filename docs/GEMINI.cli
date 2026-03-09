@@ -1,4 +1,4 @@
-# 🛰️ ARES - MAPA OPERATIVO PARA GEMINI CLI (v1.0)
+# 🛰️ ARES - MAPA OPERATIVO PARA GEMINI CLI (v2.0)
 
 ## 🏛️ ARQUITECTURA CORE
 - **Raíz Proyecto:** `/home/daniel/tron/programas/TR`
@@ -19,13 +19,35 @@
 - `src/`: Puntos de entrada y orquestación.
 - `modules/`: Lógica atómica por especialidad.
 - `config/`: Archivos `.conf` y YAML.
-- `docs/skills/`: Manuales de "Kung-Fu" para tareas específicas.
+- `docs/skills/`: **Arsenal completo de Kung-Fu IA** — 18 skills, 367 archivos, 9.6 MB.
 
 ## 🚀 SKILLS (LIBRERÍA DE KUNG-FU)
-Para adquirir capacidades específicas, consulta el índice central:
-👉 `docs/skills/INDEX.md`
 
-Las skills disponibles incluyen:
-- `inicializacion`: Crear estructura base.
-- `prod`: Publicar en `/usr/bin` vía `ini`.
-- `session-management`: Gestión de Kitty y `ares gS`.
+### Índice Central
+👉 **`docs/skills/INDEX.md`** — Punto de entrada único. Contiene:
+- Tabla de resumen (8 categorías, 367 archivos, 9.6 MB)
+- Clasificación completa por categoría
+- Detalle de cada skill (scripts, referencias, assets, triggers)
+- Estructura de carpetas completa (tree)
+- Estadísticas del arsenal
+
+### Categorías Disponibles
+| Categoría | Ruta | Skills | Archivos | Scripts |
+|-----------|------|--------|----------|---------|
+| **ARES Core** | `docs/skills/` | inicializacion, sesion, session-management | 3 | 0 |
+| **Desarrollo** | `docs/skills/dev/` | mcp-builder, webapp-testing, frontend-design, web-artifacts-builder | 45 | 12 |
+| **Doc-Processing** | `docs/skills/doc-processing/` | docx, pdf | 85 | 18 |
+| **Office** | `docs/skills/office/` | pptx, xlsx | 95 | 15 |
+| **Multimedia** | `docs/skills/multimedia/` | algorithmic-art, slack-gif-creator | 25 | 8 |
+| **IA** | `docs/skills/ia/` | skill-creator | 12 | 3 |
+| **Comms** | `docs/skills/comms/` | internal-comms | 6 | 0 |
+| **Design** | `docs/skills/design/` | brand-guidelines, canvas-design, theme-factory | 95 | 0 |
+
+### Flujo de Uso
+1. Leer `INDEX.md` completo para entender el arsenal disponible
+2. Identificar categoría y skill específica
+3. Leer `SKILL.md` de la skill (punto de entrada)
+4. Usar scripts bajo demanda (`scripts/`, `reference/`, `assets/`)
+
+### Principio de Carga Mínima
+Solo cargar la skill necesaria para la tarea actual. Las skills están diseñadas para cargarse bajo demanda (progressive disclosure).

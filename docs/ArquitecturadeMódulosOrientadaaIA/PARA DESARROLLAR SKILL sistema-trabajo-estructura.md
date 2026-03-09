@@ -5,7 +5,21 @@
 - `RECOMENDACIONES-OLLAMA-MODELFILE-VARIABLES-ENTORNO-POR-MODELO.md`: Contexto limitado (8K tokens), RAM <1GB, lectura selectiva
 - Tus memorias actuales: TRON tools (ini, com, repo), filosofía ARES headless, soberanía tecnológica
 
-**Principio de loop:** Cada skill debe ser autocontenido, cargable manualmente, sin dependencias cruzadas que obliguen cargar múltiples skills simultáneamente.
+## Metodología de Avance Empírico y Registro de Trazabilidad
+
+Para asegurar el progreso constante sin regresiones y mantener la soberanía de autoría, se establece el siguiente protocolo de obligatorio cumplimiento para la IA:
+
+1.  **Inyección Documental Previa**: Antes de proponer cambios estructurales, la IA debe leer los documentos técnicos pertinentes (ej. `COLOR_SYSTEM.md`, `VENTANA_VS_PESTANA.md`).
+2.  **Protocolo de No Borrado (Snapshotting)**:
+    - Las versiones de scripts que alcancen hitos funcionales (ej. "Abre ventana OK") deben respaldarse físicamente con nombres descriptivos (ej. `abrió-ventana-OK.py`).
+    - Estas versiones sirven como puntos de restauración inmediata en caso de fallo en la siguiente iteración.
+3.  **Validación Granular por Hitos**:
+    - No realizar validaciones de "todo o nada". 
+    - Descomponer la verificación en una batería de preguntas granulares (vía Zenity o consola) que aíslen fallos de títulos, colores, sockets y comandos.
+4.  **Registro de Logros (INDEX-TESTS.md)**:
+    - Cada experimento exitoso debe documentarse en `docs/INDEX-TESTS.md`, detallando el objetivo, los errores superados y los artefactos generados.
+    - Este registro es la base legal y operativa para comprobar la evolución del sistema y la autoría del diseño.
+5.  **Aislamiento de Sockets**: Para pruebas de orquestación, usar siempre sockets aislados (`--listen-on unix:/tmp/test_socket`) para no interferir con el entorno de trabajo principal hasta la consolidación final.
 
 ---
 

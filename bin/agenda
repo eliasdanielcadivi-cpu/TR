@@ -1,0 +1,3 @@
+#!/bin/bash
+# Script universal para agenda (convertido de alias ZSH)
+/home/daniel/.local/bin/uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py "$@"

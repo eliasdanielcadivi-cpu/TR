@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "is_focused": true,
+        "tabs": [
+            {
+                "title": "AGENDA",
+                "is_active": true,
+                "layout": "tall",
+                "cmd": "agenda"
+            },
+            {
+                "title": "NOTAS",
+                "is_active": false,
+                "layout": "tall",
+                "cmd": "notas"
+            },
+            {
+                "title": "BR",
+                "is_active": false,
+                "layout": "tall",
+                "cmd": "br"
+            },
+            {
+                "title": "GEMINI",
+                "is_active": false,
+                "layout": "tall",
+                "cmd": "zsh"
+            },
+            {
+                "title": "QWEN",
+                "is_active": false,
+                "layout": "tall",
+                "cmd": "zsh"
+            }
+        ]
+    }
+]
