@@ -1,0 +1,36 @@
+[
+    {
+        "id": 1,
+        "is_focused": true,
+        "tabs": [
+            {
+                "title": "GEMINI",
+                "cmd": ""
+            },
+            {
+                "title": "QWEN",
+                "cmd": ""
+            },
+            {
+                "title": "COMANDO",
+                "cmd": ""
+            },
+            {
+                "title": "NOTAS",
+                "cmd": "/usr/bin/micro /home/daniel/tron/Notas-Pendientes/notas.md"
+            },
+            {
+                "title": "AGENDA",
+                "cmd": "/home/daniel/.local/bin/uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py"
+            },
+            {
+                "title": "BR",
+                "cmd": "/home/daniel/tron/programas/TR/bin/br"
+            },
+            {
+                "title": "OLLAMA-SERVE",
+                "cmd": "ollama serve"
+            }
+        ]
+    }
+]

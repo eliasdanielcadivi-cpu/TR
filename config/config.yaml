@@ -12,6 +12,9 @@ ai:
     openrouter:
       model: google/gemma-3-4b-it
       provider: openrouter
+    smollm3:
+      model: alibayram/smollm3:latest
+      provider: gemma
   deepseek:
     api_key_env: sk-2ceebfa3da2d444199e242bbc17feedc
     base_url: https://api.deepseek.com
@@ -26,6 +29,48 @@ ai:
     api_key_env: OPENROUTER_API_KEY
     base_url: https://openrouter.ai/api/v1
     model: google/gemma-3-4b-it
+  apollo:
+    # Sistema RAG + CRM
+    enabled: true
+    db_dir: bd/apollo
+    knowledge_db: bd/apollo/knowledge.db
+    users_db: bd/apollo/users.db
+    embeddings:
+      model: mxbai-embed-large:335m
+      dimensions: 1024
+      metric: cosine
+    llm:
+      local_model: alibayram/smollm3:latest
+      fallback_api: deepseek
+    chunking:
+      max_tokens: 256
+      overlap_tokens: 25
+    retrieval:
+      default_k: 5
+      rrf_k: 60
+      compress: true
+      max_context_tokens: 2000
+    # Etiquetas de datos personalizables (ontologías)
+    datasets:
+      default:
+        description: "Todos los documentos ingeridos"
+        filters: {}
+      docs:
+        description: "Documentación técnica del proyecto"
+        filters:
+          source_pattern: "docs/*"
+      skills:
+        description: "Skills y capacidades de ARES"
+        filters:
+          source_pattern: "docs/skills/*"
+      codigo:
+        description: "Código fuente Python"
+        filters:
+          source_pattern: "*.py"
+      config:
+        description: "Archivos de configuración"
+        filters:
+          source_pattern: "config/*"
 identity:
   full_name: Terminal Remote Operations Nexus
   name: ARES

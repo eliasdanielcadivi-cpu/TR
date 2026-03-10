@@ -25,7 +25,23 @@ Desplegar una ventana soberana de Kitty con 6 pestañas específicas, coloreado 
 
 ---
 
-## 📜 Metodología de Avance (Protocolo Soberano)
+## 🔬 TEST-002: Refinamiento de Resiliencia y Visualización TUI
+**Fecha:** 2026-03-09  
+**Estado:** ✅ EXITOSO (v1.1)  
+**Autoría:** Daniel Hung (Intención/Diagnóstico) + Gemini CLI (Refactorización)
+
+### 🎯 Objetivo
+Resolver el cierre prematuro de pestañas y el fallo de visualización de programas TUI (`Broot`, `Micro`). Consolidar la sesión `diaria` con el orden exacto.
+
+### 📈 Evolución y Errores Superados
+1.  **Secuestro de Stderr**: Se detectó que Broot no renderizaba interfaz al redirigir errores a archivo. Se eliminó la redirección para liberar la interfaz.
+2.  **Persistencia de Pestaña**: Se implementó `exec zsh -i` como envoltorio universal. Esto permite que la pestaña sea eterna incluso si el comando falla, mostrando el error en el prompt.
+3.  **Soberanía de Agenda**: Se verificó el comando `uv run` para la agenda, asegurando su ejecución entre `NOTAS` y `BR`.
+
+### 📂 Artefactos Vinculados
+- `modules/tactico/orchestrator.py` (Versión Resiliente)
+- `db/diaria.json`
+- `modules/tactico/README.md`
 1.  **Inyección Documental**: Lectura profunda de docs técnicos (`COLOR_MODULE`, `VENTANA_VS_PESTANA`) antes de proponer cambios.
 2.  **No Borrado**: Las versiones funcionales se respaldan físicamente (`abrió-ventana-OK.py`) antes de iterar.
 3.  **Aislamiento Empírico**: Cada funcionalidad se prueba por separado (Socket -> Pestañas -> Comandos).

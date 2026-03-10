@@ -1,36 +1,37 @@
 # 🎯 TODO: PROYECTO ORQUESTACIÓN DINÁMICA Y CONTROL DE SESIONES
 
 ## 🧠 Análisis de Intencionalidad (Metacognición)
-El usuario (Daniel Hung) busca transformar ARES de un gestor de sesiones estático a un orquestador inteligente y granular. La meta es que la IA sea capaz de interpretar intenciones en lenguaje natural (ej. "Abre esto y aquello en pestañas...") y ejecutarlas sin confundir títulos de ventana con pestañas, respetando sockets aislados o compartidos.
+Consolidar ARES como un orquestador impulsado por datos. La meta es un sistema resiliente donde las TUIs respiren, las pestañas persistan y el coloreado sea un ciclo armónico infinito.
 
 ---
 
-## 🚩 METAS INMEDIATAS (Q1-2026)
+## 🚩 METAS INMEDIATAS (CONSOLIDADAS) ✅
 
-### 1. Consolidación de Funcionalidad [PENDIENTE NEGOCIACIÓN]
-- [ ] Decidir ubicación arquitectónica:
-    - **Opción A**: Nuevo módulo `modules/tactico/orchestrator.py`.
-    - **Opción B**: Extensión del comando `ares gs` (ej. `ares gs deploy --file plan.yaml`).
-    - **Opción C**: Integración en `AIEngine` para ejecución directa via `ares p`.
-- [ ] Implementar el "Protocolo de Migas de Pan" en el código: Comentarios internos que distingan claramente entre control de `SAME_SOCKET` vs `NEW_SOCKET`.
+### 1. Refactorización Impulsada por Datos
+- [x] Crear `modules/tactico/orchestrator.py` como motor genérico.
+- [x] Implementar ciclo cromático de 12 niveles (Hacker Neon).
+- [x] Soporte para `MODE_ISOLATED` (Nuevo Socket) y `MODE_INJECTED`.
 
-### 2. Gestión de Comandos por Pestaña
-- [ ] Diseñar estructura JSON/YAML que permita asociar una lista de comandos (`cmd1; cmd2; cmd3`) a una pestaña específica en una sesión guardada.
-- [ ] Permitir lanzamiento manual desde CLI: `ares gs com "[NOMBRE_PESTAÑA]" "comando1; comando2"`.
+### 2. Resiliencia y Visualización
+- [x] Resolver "Secuestro de Stderr" en TUIs (Broot/Micro).
+- [x] Implementar persistencia de pestañas via `exec zsh -i`.
+- [x] Registro de trazabilidad permanente en `logs/orchestrator_trace.log`.
 
-### 3. Refinamiento de IA (Skill Integration)
-- [ ] Actualizar `skill-sesion.md` con ejemplos de lanzamientos multi-socket.
-- [ ] Instruir a la IA para que siempre use el "Titulado Inteligente" (Mayúsculas, semántico, corto).
-
----
-
-## 🚀 VISIÓN DE FUTURO
-- **Control Granular Multi-Socket**: Capacidad de orquestar múltiples ventanas OS de Kitty en diferentes sockets UNIX simultáneamente desde un único despacho de IA.
-- **Validación Automática Silenciosa**: Integrar el sistema de rastros físicos (`papelera/`) como una herramienta de "Function Calling" para que la IA verifique su propio éxito antes de reportar al usuario.
+### 3. Sesión "DIARIA"
+- [x] Orden exacto: GEMINI -> QWEN -> COMANDO -> NOTAS -> AGENDA -> BR.
+- [x] Validación de comandos interactivos (`uv run`, `micro`, `br`).
 
 ---
 
-## 📝 NOTAS DE DISEÑO (Arquitectura Paranoica)
-- **Cero Flojera**: Documentación granular por cada función.
-- **Soberanía**: El usuario siempre tiene la última palabra sobre el socket a usar.
-- **Determinismo**: No usar `sleep` arbitrarios; preferir comprobación de sockets o rastros de archivos.
+## 📅 PRÓXIMAS FASES (A FUTURO)
+
+### 4. Gestión de Comandos Avanzada
+- [ ] Soporte para listas de comandos en el JSON (`cmd`: ["cmd1", "cmd2"]).
+- [ ] Implementar `ares gs com` con soporte para sockets dinámicos.
+
+### 5. Integración de IA (ARES P)
+- [ ] Skill de Sesión: IA debe proponer cambios al JSON antes de desplegar.
+- [ ] Capacidad de "Descubrimiento de Sockets" activos para control remoto multi-ventana.
+
+### 6. Validación Automática
+- [ ] Integrar `papelera/` como sensor de éxito para el "Function Calling" de la IA.

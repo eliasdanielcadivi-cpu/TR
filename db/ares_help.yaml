@@ -1,0 +1,105 @@
+commands:
+  ares:
+    description: "🚀 Abre el ARES Hub (Dashboard táctico) en la terminal actual."
+    usage: "ares"
+    category: "Core"
+    details: "Lanza la interfaz principal con título 'Ares por Daniel Hung'. Si Kitty no está corriendo, intenta inicializar el entorno."
+
+  p:
+    description: "🤖 Consulta Inteligente a la IA (Modo Experto)."
+    usage: "ares p [PROMPT] [OPTIONS]"
+    category: "IA"
+    options:
+      - "-m, --model TEXT": "Alias del modelo (gemma, deepseek, openrouter)."
+      - "-t, --template TEXT": "Plantilla YAML a aplicar (code, chat, tools)."
+    details: "Integra inyección dinámica de skills basada en palabras clave."
+
+  gs:
+    description: "💾 Gestión Avanzada de Sesiones de Kitty."
+    usage: "ares gs [COMMAND] [ARGS]"
+    category: "Gestión"
+    commands:
+      save: "Guarda el estado actual (ventanas, pestañas, colores)."
+      list: "Lista sesiones guardadas en la base de datos."
+      restore: "Reconstruye una sesión completa desde DB."
+      deploy: "Despliega sesión en una ventana/socket NUEVO."
+      com: "Envía comandos a pestañas específicas."
+
+  plan:
+    description: "🚩 Despliegue Táctico Original."
+    usage: "ares plan"
+    category: "Táctico"
+    details: "Lanza 4 pestañas Hacker Neon fijas (CYBERPUNK, NEON, MATRIX, BLADE)."
+
+  zshplan:
+    description: "⚔️ Despliegue Táctico ZSH (Hacker AI Session)."
+    usage: "ares zshplan"
+    category: "Táctico"
+
+  status:
+    description: "🔍 Diagnóstico Integral del Sistema."
+    usage: "ares status"
+    category: "Gestión"
+    details: "Verifica estado del socket Kitty, enlaces simbólicos y salud de la IA."
+
+  config:
+    description: "⚙️ Inspección de Configuración Global."
+    usage: "ares config"
+    category: "Gestión"
+
+  init:
+    description: "🛠️  Gestión de Infraestructura."
+    usage: "ares init [OPTIONS]"
+    category: "Gestión"
+    options:
+      - "--link, -l": "Enlazar configuración de Kitty con ARES."
+      - "--status, -s": "Ver estado de la inicialización."
+      - "--reload, -r": "Recargar configuración en Kitty caliente."
+
+  model:
+    description: "⚙️  Configura el Provider de IA por defecto."
+    usage: "ares model [PROVIDER]"
+    category: "IA"
+    details: "Cambia entre 'gemma' (Ollama local) y 'deepseek' (API remota)."
+
+  models:
+    description: "📦 Lista Modelos Disponibles."
+    usage: "ares models"
+    category: "IA"
+
+  templates:
+    description: "📄 Catálogo de Plantillas YAML."
+    usage: "ares templates"
+    category: "IA"
+
+  tools:
+    description: "🛠️  Inventario de Herramientas (Function Calling)."
+    usage: "ares tools"
+    category: "IA"
+
+  video:
+    description: "🎬 Multimedia: Reproductor de Video en Terminal."
+    usage: "ares video [ARCHIVO]"
+    category: "Multimedia"
+    details: "Usa mpv con protocolo gráfico integrado en Kitty."
+
+  image:
+    description: "🖼️ Multimedia: Visualizador de Imágenes (icat)."
+    usage: "ares image [ARCHIVO]"
+    category: "Multimedia"
+
+  help:
+    description: "📚 Manual de Operaciones y Documentación."
+    usage: "ares help"
+    category: "Core"
+    details: "Abre la carpeta docs/ usando Broot para navegación jerárquica."
+
+ecosystem_tools:
+  ini: "Orquestador de ciclo de vida (venv, prod, globalización)."
+  repo: "Auditor táctico de Git y gestor de backups comprimidos."
+  aviso: "Sistema de recordatorios con lenguaje natural y daemon."
+  tr-color: "Pigmentación dinámica de pestañas basada en contexto."
+  tr-investigador: "Búsqueda Google, oteo web y consulta de docs."
+
+sub_agents:
+  sherlok: "Auditor de código con ADN Técnico Industrial (codellama, qwen, deepseek)."

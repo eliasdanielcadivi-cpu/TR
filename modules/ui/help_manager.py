@@ -33,21 +33,88 @@ class HelpManager:
         self.docs_path = os.path.join(self.ctx.base_path, "docs")
         self._ai_engine = None
 
-    def show_help(self) -> None:
-        """Muestra ayuda navegable con Broot o fallback a less."""
-        help_file = os.path.join(self.docs_path, "HELP.md")
+    def show_enhanced_help(self) -> None:
+        """Muestra una ayuda visualmente enriquecida desde db/ares_help.yaml."""
+        import yaml
+        help_db_path = os.path.join(self.ctx.base_path, "db", "ares_help.yaml")
+        
+        if not os.path.exists(help_db_path):
+            self.show_help() # Fallback
+            return
 
-        console.print(f"[bold cyan]🛰  Ayuda Inteligente de ARES[/bold cyan]")
-        console.print(f"[dim]Ubicación: {self.docs_path}[/dim]")
-        console.print("")
+        with open(help_db_path, "r", encoding="utf-8") as f:
+            help_data = yaml.safe_load(f)
 
-        if subprocess.run(["which", "broot"], capture_output=True).returncode == 0:
-            subprocess.run(["broot", self.docs_path])
-        elif os.path.exists(help_file):
-            console.print("[yellow]⚠ Broot no disponible, mostrando HELP.md[/yellow]")
-            subprocess.run(["less", "-R", help_file])
-        else:
-            console.print("[red]✗ No se encontró HELP.md[/red]")
+        # Encabezado Soberano
+        console.print(Panel.fit(
+            "[bold cyan]🛰  ARES - Terminal Remote Operations Nexus[/bold cyan]\n"
+            "[dim]Orquestador Táctico por Daniel Hung[/dim]",
+            border_style="cyan"
+        ))
+
+        # Categorizar comandos
+        categories = {}
+        for name, info in help_data.get('commands', {}).items():
+            cat = info.get('category', 'Otros')
+            if cat not in categories: categories[cat] = []
+            categories[cat].append((name, info))
+
+        # Mostrar por categorías
+        for cat, cmds in categories.items():
+            table = Table(title=f"[black bg_cyan]{cat}[/black bg_cyan]", 
+                         title_justify="left", box=None, show_header=False)
+            table.add_column("Command", style="bold green", width=15)
+            table.add_column("Description", style="white")
+
+            for name, info in cmds:
+                desc = info.get('description', '')
+                display_name = f"ares {name}" if name != "ares" else "ares"
+                table.add_row(display_name, desc)
+                
+                # Subcomandos (si existen)
+                if 'commands' in info:
+                    for sub_name, sub_desc in info['commands'].items():
+                        table.add_row(f"  └ {sub_name}", f"[dim]{sub_desc}[/dim]")
+                
+                # Opciones (si existen)
+                if 'options' in info:
+                    for opt in info['options']:
+                        if isinstance(opt, dict):
+                            opt_name = list(opt.keys())[0]
+                            opt_desc = opt[opt_name]
+                        else:
+                            # Si es un string de la lista (formato YAML previo)
+                            opt_name = opt
+                            opt_desc = ""
+                        table.add_row(f"    [yellow]{opt_name}[/yellow]", f"[dim]{opt_desc}[/dim]")
+            
+            console.print(table)
+            console.print("")
+
+        # Herramientas del Ecosistema
+        eco_table = Table(title="🛠️  HERRAMIENTAS DE ECOSISTEMA (Soberanía TRON)", 
+                         title_style="bold yellow", box=None)
+        eco_table.add_column("Herramienta", style="bold yellow", width=15)
+        eco_table.add_column("Propósito", style="dim white")
+
+        for tool, desc in help_data.get('ecosystem_tools', {}).items():
+            eco_table.add_row(tool, desc)
+
+        console.print(Panel(eco_table, border_style="yellow"))
+
+        # Sub-Agentes
+        if 'sub_agents' in help_data:
+            agent_table = Table(title="🕵️  SUB-AGENTES ESPECIALIZADOS", 
+                               title_style="bold magenta", box=None)
+            agent_table.add_column("Agente", style="bold magenta", width=15)
+            agent_table.add_column("Especialidad", style="dim white")
+
+            for agent, desc in help_data.get('sub_agents', {}).items():
+                agent_table.add_row(agent, desc)
+
+            console.print(Panel(agent_table, border_style="magenta"))
+
+        console.print("\n[dim]Usa 'ares help' para navegar la documentación completa con Broot.[/dim]")
 
     def query_ai(self, prompt: str, model_alias: Optional[str] = None,
                  template: Optional[str] = None, **kwargs) -> None:
