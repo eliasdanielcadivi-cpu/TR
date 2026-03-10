@@ -13,13 +13,14 @@ alias aresrced='micro ~/tron/programas/TR/config/zsh/.zshrc; actz'
 alias AltoNivel='micro ~/tron/programas/TR/scripts/AltoNivel.sh'
 alias BajoNivel='micro ~/tron/programas/TR/scripts/BajoNivel.sh'
 
-# --- ALIAS DEL SISTEMA ---
-alias notas="micro /home/daniel/tron/Notas-Pendientes/notas.md
-"
-alias aviso='python3 ~/tron/programas/TR/modules/aviso/aviso.py'
 alias agenda='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py'
-alias agendaed='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py editar'
-alias agendaweb='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py web'
+alias agendaed='agenda editar'
+alias agendaweb='agenda web'
+alias agendadev='agenda mostrar --depuracion'
+alias agendacap='uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/captura.py'
+# --- ALIAS DEL SISTEMA ---
+alias notas="micro /home/daniel/tron/Notas-Pendientes/notas.md"
+alias aviso='python3 ~/tron/programas/TR/modules/aviso/aviso.py'
 alias abrircurso="abrirdocuArray"
 alias activar="source /home/daniel/.venv/bin/activate"
 alias actualizable="apt list --upgradable"

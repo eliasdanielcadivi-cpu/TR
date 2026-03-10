@@ -94,3 +94,11 @@ Mensaje: Para mañana lunes: Solo necesitarás ejecutar: ares gs restore ultima.
 Comando: zenity
 Fecha programada: 2026-03-09 09:00
 ============================================================
+
+============================================================
+[2026-03-09T20:12:09.845448] EJECUTANDO AVISO
+ID: 12
+Mensaje: Continuar con Fase 3 (CRM) y pruebas de ares i --rag
+Comando: zenity
+Fecha programada: 2026-03-09 07:00
+============================================================

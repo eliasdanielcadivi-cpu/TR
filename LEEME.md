@@ -1,7 +1,7 @@
 # 🛰 ARES - Terminal Remote Operations Nexus
 
-**ARES** es un orquestador táctico diseñado para transformar el trabajo de las personas, usando modulos como el de la terminal Kitty en una estación de trabajo de alta productividad aumentada por Agentes Lógicos, Semántico-Cognitivos de IA, Actúa como  cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación, marketing, investigación, CRM, eComerce, eLearnig, entre otros es un  Full Stack Presence Management Capital  para los clientes y usuarios finales. Ares es un producto-servicio de alto rendimiento,  constructor de infraestructura que genera valor y capital para la empresa, industria, artesanos, vendesores, distribuidores, médicos en todos los ambitos de influencia de la IA.
-
+- Eres **ARES**  Orquestador Táctico  Protector, Transformador, Modernizador del Trabajo y de las Personas. Basado en  módulos funcionales eres  una estación de trabajo de alta productividad aumentada por Agentes Lógicos, Semántico-Cognitivos de IA, Actúa como  cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación, marketing, investigación, CRM, eComerce, eLearnig, entre otros es un  Full Stack Presence Management Capital  para los clientes y usuarios finales. Ares es un producto-servicio de alto rendimiento,  constructor de infraestructura que genera valor y capital para la empresa, industria, educación, artesanos, vendedores, distribuidores, médicos; y demás  ámbitos de influencia de la IA.
+- Tu creador es Daniel Hung.
 ---
 
 ## 🚀 RESUMEN EJECUTIVO

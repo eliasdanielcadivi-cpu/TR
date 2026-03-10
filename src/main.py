@@ -24,16 +24,25 @@ from modules.ui.help_manager import HelpManager
 from modules.multimedia.media_manager import MediaManager
 
 
-@click.group(invoke_without_command=True)
+@click.group(invoke_without_command=True, add_help_option=False)
 @click.option("-p", "--prompt", help="Consulta IA rápida (modo directo)")
+@click.option("-h", "--help", is_flag=True, is_eager=True, help="Mostrar ayuda enriquecida")
 @click.pass_context
-def cli(ctx, prompt):
+def cli(ctx, prompt, help):
     """🚀 ARES: Terminal Remote Operations Nexus.
     
     Sin argumentos: Lanza el ARES Hub (Dashboard táctico).
     Con -p: Realiza una consulta directa a la IA configurada.
     """
-    ctx.obj = TRContext()
+    obj = ctx.ensure_object(TRContext)
+    ctx.obj = obj
+
+    # --- MANEJO DE AYUDA ENRIQUECIDA ---
+    if help:
+        HelpManager(obj).show_enhanced_help()
+        ctx.exit()
+    # ----------------------------------
+
     if prompt:
         HelpManager(ctx.obj).query_ai(prompt)
         ctx.exit()
@@ -46,19 +55,176 @@ def cli(ctx, prompt):
 @click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter)")
 @click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
+@click.option("--rag", help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
 @click.pass_obj
-def p_cmd(obj, prompt, model, template, temperature):
+def p_cmd(obj, prompt, model, template, temperature, rag):
     """🤖 Consulta Inteligente (Modo Experto).
-    
+
     Permite interactuar con la IA especificando el modelo, la plantilla de comportamiento
     y la temperatura de respuesta.
+    
+    Con --rag: Usa RAG para recuperar contexto del dataset especificado.
     """
+    # Si se usa --rag, inyectar contexto RAG
+    if rag:
+        from modules.ia.apollo import retrieve, compress_context, generate_answer
+        
+        # Recuperar contexto del dataset
+        results = retrieve(query=prompt, k=5, mode="fused", dataset=rag)
+        
+        # Obtener textos de chunks
+        chunks = results.get("semantic", [])[:5]
+        
+        if chunks:
+            # Comprimir contexto
+            context = compress_context(chunks, query=prompt, max_tokens=1500)
+            
+            # Generar respuesta con contexto RAG
+            llm_model = model if model else "alibayram/smollm3:latest"
+            response = generate_answer(
+                query=prompt,
+                context=context,
+                model=llm_model,
+                temperature=temperature
+            )
+            
+            # Añadir fuentes
+            from modules.ia.apollo import generate_citations
+            full_response = generate_citations(response, chunks)
+            
+            click.echo(full_response)
+            ctx.exit()
+        else:
+            click.echo("⚠️  No se encontró contexto relevante en el dataset '{}'.".format(rag))
+            # Continuar con consulta normal sin RAG
+    
+    # Consulta normal sin RAG
     HelpManager(obj).query_ai(
         prompt,
         model_alias=model,
         template=template,
         temperature=temperature
     )
+
+
+@cli.command(name="i")
+@click.option("--rag", help="Dataset RAG por defecto (default, docs, skills, codigo, config)")
+@click.option("--model", "-m", default="alibayram/smollm3:latest", help="Modelo LLM")
+@click.pass_obj
+def i_cmd(obj, rag, model):
+    """💬 Modo Interactivo (REPL con IA).
+
+    Inicia una sesión interactiva tipo REPL para conversar con la IA.
+    Comandos especiales:
+      /quit, /exit - Salir
+      /model <nombre> - Cambiar modelo
+      /rag <dataset> - Cambiar dataset RAG
+      /clear - Limpiar pantalla
+      /help - Ayuda
+    """
+    import readline  # Historial de comandos
+    
+    current_model = model
+    current_rag = rag
+    
+    click.echo("💬 [bold cyan]MODO INTERACTIVO ARES[/bold cyan]")
+    click.echo(f"   Modelo: [green]{current_model}[/green]")
+    click.echo(f"   RAG Dataset: [green]{current_rag or 'desactivado'}[/green]")
+    click.echo("   Comandos: /quit, /model, /rag, /clear, /help")
+    click.echo("   " + "─" * 50)
+    
+    while True:
+        try:
+            # Prompt de entrada
+            user_input = click.prompt("🧑 Tú", type=str)
+            
+            # Comandos especiales
+            if user_input.strip().startswith("/"):
+                parts = user_input.strip().split(maxsplit=1)
+                command = parts[0].lower()
+                args = parts[1] if len(parts) > 1 else ""
+                
+                if command in ("/quit", "/exit"):
+                    click.echo("👋 ¡Hasta luego!")
+                    break
+                
+                elif command == "/model":
+                    if args:
+                        current_model = args
+                        click.echo(f"✅ Modelo: {current_model}")
+                    else:
+                        click.echo(f"Modelo actual: {current_model}")
+                
+                elif command == "/rag":
+                    if args:
+                        valid_datasets = ["default", "docs", "skills", "codigo", "config"]
+                        if args in valid_datasets:
+                            current_rag = args
+                            click.echo(f"✅ RAG Dataset: {current_rag}")
+                        else:
+                            click.echo(f"❌ Datasets válidos: {', '.join(valid_datasets)}")
+                    else:
+                        click.echo(f"RAG actual: {current_rag or 'desactivado'}")
+                
+                elif command == "/clear":
+                    click.clear()
+                    click.echo("💬 [bold cyan]MODO INTERACTIVO ARES[/bold cyan]")
+                
+                elif command == "/help":
+                    click.echo("""
+📚 Comandos disponibles:
+  /quit, /exit  - Salir del modo interactivo
+  /model <nombre> - Cambiar modelo LLM
+  /rag <dataset>  - Cambiar dataset RAG (default, docs, skills, codigo, config)
+  /clear          - Limpiar pantalla
+  /help           - Mostrar esta ayuda
+""")
+                
+                else:
+                    click.echo(f"❌ Comando desconocido: {command}. Usa /help")
+                continue
+            
+            # Consulta normal
+            if not user_input.strip():
+                continue
+            
+            # Si hay RAG activado, usar contexto
+            if current_rag:
+                from modules.ia.apollo import retrieve, compress_context, generate_answer, generate_citations
+                
+                click.echo("🔍 Buscando contexto relevante...", err=True)
+                results = retrieve(query=user_input, k=5, mode="fused", dataset=current_rag)
+                
+                chunks = results.get("semantic", [])[:5]
+                context = compress_context(chunks, query=user_input, max_tokens=1500) if chunks else ""
+                
+                click.echo(f"🤖 Generando respuesta con {current_model}...", err=True)
+                response = generate_answer(
+                    query=user_input,
+                    context=context,
+                    model=current_model,
+                    temperature=0.1
+                )
+                
+                # Mostrar respuesta con fuentes
+                if chunks:
+                    full_response = generate_citations(response, chunks)
+                else:
+                    full_response = response
+                
+                click.echo(f"\n{full_response}\n")
+            
+            else:
+                # Sin RAG, consulta directa
+                from modules.ia.ai_engine import AIEngine
+                engine = AIEngine(obj.config['ai'], str(obj.base_path))
+                response = engine.ask(user_input, model_alias=current_model)
+                click.echo(f"\n🤖 [cyan]{response}[/cyan]\n")
+                
+        except KeyboardInterrupt:
+            click.echo("\n👋 Interrumpido. Usa /quit para salir.")
+        except EOFError:
+            break
 
 
 @cli.command(name="model")
@@ -165,6 +331,27 @@ def gs_restore(obj, name):
         click.echo(f"❌ {msg}")
 
 
+@gs_cmd.command(name="deploy")
+@click.argument("name")
+@click.option("--socket", help="Socket UNIX personalizado (ej. /tmp/custom)")
+@click.pass_obj
+def gs_deploy(obj, name, socket):
+    """🚀 Despliega una sesión en una ventana/socket NUEVO."""
+    from modules.tactico.orchestrator import KittyOrchestrator
+    orch = KittyOrchestrator(obj)
+    
+    # Si no se da socket, generamos uno temporal basado en el nombre de la sesión
+    target_socket = socket or f"/tmp/ares_session_{name}"
+    
+    click.echo(f"🛰️  Desplegando sesión '{name}' en socket '{target_socket}'...")
+    success, msg = orch.deploy_session_from_db(name, socket=target_socket, new_window=True)
+    
+    if success:
+        click.echo(f"✅ {msg}")
+    else:
+        click.echo(f"❌ {msg}")
+
+
 @gs_cmd.command(name="com")
 @click.argument("tab_title")
 @click.argument("command")
@@ -188,7 +375,7 @@ def gs_com(obj, tab_title, command):
 @cli.command()
 @click.pass_obj
 def help(obj):
-    """📚 Manual de Operaciones y Documentación.
+    """📚 Manual de Operaciones Extendido (Broot).
     
     Abre el explorador de documentación técnica interactivo (Broot).
     Contiene guías de arquitectura, módulos y protocolos ARES.

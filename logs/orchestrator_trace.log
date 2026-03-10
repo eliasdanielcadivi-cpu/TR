@@ -1,0 +1,70 @@
+[Mon Mar  9 17:44:39 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 17:44:43 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria set-tab-color --match title:^AGENDA$ active_fg=#FF0000 inactive_fg=#AA0000 active_bg=#1A0000 inactive_bg=#0D0000
+STDOUT: 
+STDERR: Error: No matching tabs for expression: title:^AGENDA$
+
+----------------------------------------
+[Mon Mar  9 17:46:08 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 17:46:12 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria set-tab-color --match title:^AGENDA$ active_fg=#FF0000 inactive_fg=#AA0000 active_bg=#1A0000 inactive_bg=#0D0000
+STDOUT: 
+STDERR: Error: No matching tabs for expression: title:^AGENDA$
+
+----------------------------------------
+[Mon Mar  9 17:48:14 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 17:48:18 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria set-tab-color --match title:^AGENDA$ active_fg=#FF0000 inactive_fg=#AA0000 active_bg=#1A0000 inactive_bg=#0D0000
+STDOUT: 
+STDERR: Error: No matching tabs for expression: title:^AGENDA$
+
+----------------------------------------
+[Mon Mar  9 17:51:22 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 17:51:26 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria set-tab-color --match title:^AGENDA$ active_fg=#FF0000 inactive_fg=#AA0000 active_bg=#1A0000 inactive_bg=#0D0000
+STDOUT: 
+STDERR: Error: No matching tabs for expression: title:^AGENDA$
+
+----------------------------------------
+[Mon Mar  9 18:00:29 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 18:00:33 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria set-tab-color --match title:^AGENDA$ active_fg=#FF0000 inactive_fg=#AA0000 active_bg=#1A0000 inactive_bg=#0D0000
+STDOUT: 
+STDERR: Error: No matching tabs for expression: title:^AGENDA$
+
+----------------------------------------
+[Mon Mar  9 18:02:01 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 18:07:03 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar  9 20:21:36 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Tue Mar 10 05:16:12 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
