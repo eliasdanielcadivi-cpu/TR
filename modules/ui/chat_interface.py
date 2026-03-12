@@ -117,7 +117,7 @@ def _show_help():
 
 
 def start_interactive_chat(obj, rag=None, model="ares:latest", think=False):
-    """Ejecuta el chat con transición automática entre Wow e Historial."""
+    """Ejecuta el chat con streaming en tiempo real y filtro think."""
 
     cfg = get_layout_config()
     ares_color = cfg.get('colors', {}).get('ares_text', 'cyan')
@@ -142,7 +142,7 @@ def start_interactive_chat(obj, rag=None, model="ares:latest", think=False):
 
             if user_input.strip().startswith("/"):
                 cmd = user_input.strip().lower()
-                
+
                 if cmd in ("/quit", "/exit"):
                     break
                 elif cmd in ("/clear", "/c"):
@@ -179,18 +179,31 @@ def start_interactive_chat(obj, rag=None, model="ares:latest", think=False):
 
             engine = AIEngine(obj.config['ai'], str(obj.base_path))
             current_model = "ares-think:latest" if think else model
-            response = engine.ask(user_input, model_alias=current_model)
+            
+            # Determinar si filtrar think (solo si NO es modo pensante y es modelo ares)
+            filter_think = not think and "ares" in current_model.lower()
+            
+            # Resetear filtro think para nueva consulta
+            if filter_think:
+                engine.reset_think_filter()
 
             click.echo("\r" + " " * 60 + "\r", nl=False)
-
             click.echo(get_asset_render("separator", mode="live"))
 
             ares_avatar = get_asset_render("ares", mode="live")
             ares_header = get_asset_render("header_ares", mode="live")
             click.echo(f"{ares_avatar} {ares_header} {sep_char} ", nl=False)
 
-            click.secho(response, fg=ares_color)
+            # Streaming en tiempo real con filtro
+            import sys
+            full_response = ""
+            for chunk in engine.ask_stream(user_input, model_alias=current_model, filter_think=filter_think):
+                if chunk:
+                    click.secho(chunk, fg=ares_color, nl=False)
+                    sys.stdout.flush()
+                    full_response += chunk
 
+            click.echo("")
             click.echo("\n" + " " * 10 + get_asset_render("separator", mode="history") + "\n")
 
         except (KeyboardInterrupt, EOFError):
