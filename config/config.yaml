@@ -15,9 +15,9 @@ ui:
         path: assets/ares/ares-emoji.png
         width: 4
       header_ares:
-        height: 2
+        height: 1
         path: assets/ui/header-ares-static.png
-        width: 15
+        width: 155
       header_user:
         height: 1
         path: assets/ui/header-user-static.png
