@@ -1,6 +1,6 @@
 # 🛰 ARES - Terminal Remote Operations Nexus
 
-- Eres **ARES**  Orquestador Táctico  Protector, Transformador, Modernizador del Trabajo y de las Personas. Basado en  módulos funcionales eres  una estación de trabajo de alta productividad aumentada por Agentes Lógicos, Semántico-Cognitivos de IA, Actúa como  cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación, marketing, investigación, CRM, eComerce, eLearnig, entre otros es un  Full Stack Presence Management Capital  para los clientes y usuarios finales. Ares es un producto-servicio de alto rendimiento,  constructor de infraestructura que genera valor y capital para la empresa, industria, educación, artesanos, vendedores, distribuidores, médicos; y demás  ámbitos de influencia de la IA.
+-  **ARES** ,  Orquestador Táctico   Transformador, Modernizador del Trabajo, y Procesos humanos, Comerciales e industriales. Protector de las Personas. Basado en  módulos funcionales eres una estación de trabajo de alta productividad aumentada por Agentes Lógicos, Semántico-Cognitivos de IA, Actúas como  cerebro para el control de ventanas, sesiones inteligentes y flujos de trabajo de programación, marketing, investigación, CRM, eComerce, eLearnig, entre otros es un Asesor, Programador  Full Stack y  Presence Management Capital que implica presencia  en RRSS y SEO en Buscadores e IA,  paras clientes y usuarios finales. eress un producto-servicio de alto rendimiento, pero a la vez un compañero de vida inteligente,  constructor de infraestructura que genera valor y capital para la empresa, industria, educación, artesanos, vendedores, distribuidores, médicos; y demás  ámbitos de influencia de la IA, y de IT.
 - Tu creador es Daniel Hung.
 ---
 
@@ -17,8 +17,14 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 | `ares p "pregunta"` | Consulta a la IA ARES (Gemma 3 / DeepSeek) |
 | `ares p "pregunta" --model gemma` | Usar modelo Gemma específico |
 | `ares p "pregunta" --template code` | Usar plantilla YAML para código |
+| `ares p "pregunta" --rag docs` | Consulta con RAG (dataset: docs, skills, codigo, config) |
+| `ares p "pregunta" --think` | Usa modelo pensante (ares-think:latest) |
+| `ares i` | Modo interactivo REPL (con /think, /model, /rag, /clear, /help) |
+| `ares i --rag docs` | Interactivo con RAG activado |
+| `ares i --think` | Interactivo con modo pensante |
 | `ares plan` | Despliegue táctico: 4 pestañas coloreadas Hacker Neon |
 | `ares zshplan` | Hacker AI Session (ZSH) |
+| `ares mcat-demo` | Demo táctico: 4 pestañas de capacidades Mcat |
 | `ares gs [nombre]` | Guardar sesión actual de Kitty |
 | `ares gs list` | Listar sesiones guardadas en la base de datos |
 | `ares gs restore [nombre]` | Restaurar una sesión guardada |
@@ -33,6 +39,14 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 | `ares video <archivo>` | Reproduce video en terminal (mpv + protocolo gráfico) |
 | `ares image <archivo>` | Muestra imagen en terminal (icat) |
 | `ares help` | Abre documentación navegable con Broot |
+| `ares apollo ingest <archivo>` | Ingerir documento al sistema RAG |
+| `ares apollo ingest <archivo> --extract` | Ingerir con extracción de entidades |
+| `ares model-creator list` | Listar modelos Ollama disponibles |
+| `ares model-creator create <name> --from <parent>` | Crear modelo desde padre |
+| `ares model-creator update <name> --params` | Actualizar parámetros de modelo |
+| `ares model-creator delete <name>` | Eliminar modelo de Ollama |
+| `ares modelfile-creator create <name>` | Crear Modelfile YAML |
+| `ares modelfile-creator list` | Listar Modelfiles guardados |
 
 ### Herramientas Especializadas
 
@@ -332,6 +346,12 @@ sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
 
 ```
 
+---
 
+### 📜 Registro de Cambios Funcionales
+- 2026-03-11: Implementación de Interfaz Minimalista-Cyberpunk en `ares i` (Kitty Protocol).
+- 2026-03-11: Modularidad Atómica aplicada a `emoji_manager.py` (Regla de Oro: 3 funciones).
+- 2026-03-11: Configuración UI centralizada en `config.yaml`.
+- 2026-03-11: Inicialización estructura ARES completa.
 
 *Ares: El orquestador definitivo por Daniel Hung.*

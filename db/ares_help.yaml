@@ -10,9 +10,59 @@ commands:
     usage: "ares p [PROMPT] [OPTIONS]"
     category: "IA"
     options:
-      - "-m, --model TEXT": "Alias del modelo (gemma, deepseek, openrouter)."
+      - "-m, --model TEXT": "Alias del modelo (gemma, deepseek, openrouter, ares, ares-think)."
       - "-t, --template TEXT": "Plantilla YAML a aplicar (code, chat, tools)."
-    details: "Integra inyección dinámica de skills basada en palabras clave."
+      - "--rag TEXT": "Dataset RAG (docs, skills, codigo, config)."
+      - "--think": "Usar modelo pensante (ares-think:latest)."
+    details: "Integra inyección dinámica de skills y RAG híbrido."
+
+  i:
+    description: "💬 Modo Interactivo (REPL con IA)."
+    usage: "ares i [OPTIONS]"
+    category: "IA"
+    options:
+      - "--rag TEXT": "Dataset RAG por defecto."
+      - "-m, --model TEXT": "Modelo LLM inicial."
+      - "--think": "Activar modo pensante (ares-think)."
+    details: |
+      REPL interactivo con comandos especiales:
+        /quit, /exit - Salir
+        /model <nombre> - Cambiar modelo
+        /rag <dataset> - Cambiar dataset RAG
+        /think on|off - Activar/desactivar modo pensante
+        /clear - Limpiar pantalla
+        /help - Mostrar ayuda
+      Incluye emojis como imágenes PNG (Term-Image).
+
+  apollo:
+    description: "🧠 Sistema Apollo (RAG + CRM)."
+    usage: "ares apollo [COMMAND]"
+    category: "IA"
+    commands:
+      ingest: "Ingerir documento al sistema RAG."
+    details: "Sistema RAG híbrido con SQLite + sqlite-vec + Ollama embeddings."
+
+  model-creator:
+    description: "🛠️ Gestor de Modelos Ollama."
+    usage: "ares model-creator [COMMAND]"
+    category: "IA"
+    commands:
+      list: "Listar modelos disponibles."
+      create: "Crear modelo desde padre."
+      update: "Actualizar parámetros."
+      delete: "Eliminar modelo."
+      show: "Mostrar Modelfile asociado."
+
+  modelfile-creator:
+    description: "📝 Gestor de Modelfiles YAML."
+    usage: "ares modelfile-creator [COMMAND]"
+    category: "IA"
+    commands:
+      list: "Listar Modelfiles guardados."
+      create: "Crear Modelfile nuevo."
+      update: "Actualizar Modelfile."
+      delete: "Eliminar Modelfile."
+      show: "Mostrar contenido Modelfile."
 
   gs:
     description: "💾 Gestión Avanzada de Sesiones de Kitty."
@@ -35,6 +85,58 @@ commands:
     description: "⚔️ Despliegue Táctico ZSH (Hacker AI Session)."
     usage: "ares zshplan"
     category: "Táctico"
+
+  mcat-demo:
+    description: "🛠️ Mcat Demo: Despliegue de capacidades completas."
+    usage: "ares mcat-demo"
+    category: "Táctico"
+    details: |
+      📁 1. El Arsenal Táctico (Organización de Assets)
+
+      Todos los recursos residen en assets/mcat-demo/. Cada archivo tiene un propósito técnico específico para poner a prueba los motores de parseo de mcat.
+
+      ┌────────────────┬────────────────────────┬──────────────────────────────────────────────────────────────────────┐
+      │ Recurso        │ Nomenclatura           │ Propósito Didáctico                                                  │
+      ├────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────────────┤
+      │ Código Fuente  │ rs-codigo.rs           │ Probar el resaltado de sintaxis (Highlighter) y temas (-t).          │
+      │ Documento PDF  │ pdf-documento.pdf      │ Probar el parseo de binario a ANSI y el modo interactivo.            │
+      │ Archivo Office │ docx-documento.docx    │ Demostrar la conversión de formatos propietarios a Markdown.         │
+      │ Presentación   │ pptx-presentacion.pptx │ Probar la extracción de datos vía stdin (tuberías).                  │
+      │ Contenedor     │ zip-archivo.zip        │ Mostrar la inspección de estructuras de directorios comprimidos.     │
+      │ Imagen         │ png-imagen.png         │ Validar el renderizado de alta fidelidad en la celda de la terminal. │
+      │ Video          │ mp4-video.mp4          │ Probar la integración multimedia fluida.                             │
+      │ Web            │ html-web.html          │ Demostrar el motor de renderizado HTML -> Imagen/PNG.                │
+      └────────────────┴────────────────────────┴──────────────────────────────────────────────────────────────────────┘
+
+      ---
+
+      ⚙️ 2. El Pipeline de Comandos (Lógica de Ejecución)
+
+      La demo se divide en 4 Fases Tácticas, cada una desplegada en una pestaña independiente con identidad visual Hacker Neon.
+
+      Fase A: Parseo y Temas (MCAT-DOCS)
+       * Comando: mcat pdf-documento.pdf && mcat rs-codigo.rs -t monokai
+       * Explicación: Primero extrae el texto del PDF directamente a la terminal. Luego lee el código Rust aplicando el tema monokai, demostrando estética y legibilidad.
+
+      Fase B: Motor de Conversión (MCAT-CONVERT)
+       * Comando: mcat zip-archivo.zip > preview.md && mcat html-web.html -o image > page.png
+       * Explicación: Muestra la potencia de transformación. Convierte la estructura de un ZIP en un archivo Markdown legible y renderiza un sitio HTML estático en una imagen física PNG.
+
+      Fase C: Multimedia y Exploración (MCAT-MEDIA)
+       * Comando: mcat png-imagen.png && mcat ls assets/mcat-demo/
+       * Explicación: Renderiza la imagen directamente. Luego usa el subcomando ls de mcat, que genera una lista de archivos con miniaturas visuales (thumbnails) en la terminal.
+
+      Fase D: Inmersión Interactiva (MCAT-INTERACTIVE)
+       * Comando: mcat . && mcat pdf-documento.pdf -o interactive
+       * Explicación: Lanza el selector interactivo en el directorio actual (permite elegir archivos con las flechas). Finalmente, abre el visor interactivo para hacer Zoom y Pan (desplazamiento) dentro del PDF.
+
+      ---
+
+      🚀 3. Ejecución del Demo
+
+      Para activar este despliegue, el usuario soberano solo debe ejecutar el comando maestro desde cualquier punto de la terminal Kitty controlada por ARES:
+
+       ares mcat-demo
 
   status:
     description: "🔍 Diagnóstico Integral del Sistema."

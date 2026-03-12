@@ -20,6 +20,9 @@ from modules.admon.diag_manager import show_status
 from modules.admon import session_manager
 from modules.tactico.plan_manager import deploy_plan
 from modules.tactico.zsh_plan_manager import deploy_zsh_plan
+from modules.tactico.mcat_demo import deploy_mcat_demo
+
+
 from modules.ui.help_manager import HelpManager
 from modules.multimedia.media_manager import MediaManager
 
@@ -50,58 +53,80 @@ def cli(ctx, prompt, help):
         launch_ares(ctx.obj)
 
 
+@cli.command(name="mcat-demo")
+@click.pass_obj
+def mcat_demo_cmd(obj):
+    """🛠️  Mcat Demo: Despliegue de capacidades completas.
+    
+    Lanza 4 pestañas demostrando el parseo de documentos, conversión de archivos,
+    visualización multimedia en terminal y modo interactivo.
+    """
+    kitty = KittyRemote(obj)
+    if not kitty.is_running():
+        kitty.launch_hub()
+    deploy_mcat_demo(kitty, obj)
+
+
 @cli.command(name="p")
 @click.argument("prompt")
-@click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter)")
+@click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter, ares, ares-think)")
 @click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
 @click.option("--rag", help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
+@click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
 @click.pass_obj
-def p_cmd(obj, prompt, model, template, temperature, rag):
+def p_cmd(obj, prompt, model, template, temperature, rag, think):
     """🤖 Consulta Inteligente (Modo Experto).
 
     Permite interactuar con la IA especificando el modelo, la plantilla de comportamiento
     y la temperatura de respuesta.
-    
+
     Con --rag: Usa RAG para recuperar contexto del dataset especificado.
+    Con --think: Usa ares-think:latest (mantiene etiquetas <think></think>)
     """
+    # Determinar modelo final
+    final_model = model
+    if think:
+        final_model = "ares-think:latest"
+    
     # Si se usa --rag, inyectar contexto RAG
     if rag:
         from modules.ia.apollo import retrieve, compress_context, generate_answer
-        
+
         # Recuperar contexto del dataset
         results = retrieve(query=prompt, k=5, mode="fused", dataset=rag)
-        
+
         # Obtener textos de chunks
         chunks = results.get("semantic", [])[:5]
-        
+
         if chunks:
             # Comprimir contexto
             context = compress_context(chunks, query=prompt, max_tokens=1500)
-            
+
             # Generar respuesta con contexto RAG
-            llm_model = model if model else "alibayram/smollm3:latest"
+            llm_model = final_model if final_model else "ares:latest"
             response = generate_answer(
                 query=prompt,
                 context=context,
                 model=llm_model,
-                temperature=temperature
+                temperature=temperature,
+                apply_post_processing=True
             )
-            
+
             # Añadir fuentes
             from modules.ia.apollo import generate_citations
             full_response = generate_citations(response, chunks)
-            
+
             click.echo(full_response)
             ctx.exit()
         else:
             click.echo("⚠️  No se encontró contexto relevante en el dataset '{}'.".format(rag))
             # Continuar con consulta normal sin RAG
-    
+
     # Consulta normal sin RAG
     HelpManager(obj).query_ai(
         prompt,
-        model_alias=model,
+        model_alias=final_model,
         template=template,
         temperature=temperature
     )
@@ -109,145 +134,167 @@ def p_cmd(obj, prompt, model, template, temperature, rag):
 
 @cli.command(name="i")
 @click.option("--rag", help="Dataset RAG por defecto (default, docs, skills, codigo, config)")
-@click.option("--model", "-m", default="alibayram/smollm3:latest", help="Modelo LLM")
+@click.option("--model", "-m", default="ares:latest", help="Modelo LLM")
+@click.option("--think", is_flag=True, help="Activar modo pensante (usa ares-think)")
 @click.pass_obj
-def i_cmd(obj, rag, model):
-    """💬 Modo Interactivo (REPL con IA).
-
-    Inicia una sesión interactiva tipo REPL para conversar con la IA.
-    Comandos especiales:
-      /quit, /exit - Salir
-      /model <nombre> - Cambiar modelo
-      /rag <dataset> - Cambiar dataset RAG
-      /clear - Limpiar pantalla
-      /help - Ayuda
+def i_cmd(obj, rag, model, think):
+    """💬 Modo Interactivo ARES (Loop REPL).
+    
+    Delega la gestión visual y el loop interactivo al módulo especializado.
     """
-    import readline  # Historial de comandos
-    
-    current_model = model
-    current_rag = rag
-    
-    click.echo("💬 [bold cyan]MODO INTERACTIVO ARES[/bold cyan]")
-    click.echo(f"   Modelo: [green]{current_model}[/green]")
-    click.echo(f"   RAG Dataset: [green]{current_rag or 'desactivado'}[/green]")
-    click.echo("   Comandos: /quit, /model, /rag, /clear, /help")
-    click.echo("   " + "─" * 50)
-    
-    while True:
-        try:
-            # Prompt de entrada
-            user_input = click.prompt("🧑 Tú", type=str)
-            
-            # Comandos especiales
-            if user_input.strip().startswith("/"):
-                parts = user_input.strip().split(maxsplit=1)
-                command = parts[0].lower()
-                args = parts[1] if len(parts) > 1 else ""
-                
-                if command in ("/quit", "/exit"):
-                    click.echo("👋 ¡Hasta luego!")
-                    break
-                
-                elif command == "/model":
-                    if args:
-                        current_model = args
-                        click.echo(f"✅ Modelo: {current_model}")
-                    else:
-                        click.echo(f"Modelo actual: {current_model}")
-                
-                elif command == "/rag":
-                    if args:
-                        valid_datasets = ["default", "docs", "skills", "codigo", "config"]
-                        if args in valid_datasets:
-                            current_rag = args
-                            click.echo(f"✅ RAG Dataset: {current_rag}")
-                        else:
-                            click.echo(f"❌ Datasets válidos: {', '.join(valid_datasets)}")
-                    else:
-                        click.echo(f"RAG actual: {current_rag or 'desactivado'}")
-                
-                elif command == "/clear":
-                    click.clear()
-                    click.echo("💬 [bold cyan]MODO INTERACTIVO ARES[/bold cyan]")
-                
-                elif command == "/help":
-                    click.echo("""
-📚 Comandos disponibles:
-  /quit, /exit  - Salir del modo interactivo
-  /model <nombre> - Cambiar modelo LLM
-  /rag <dataset>  - Cambiar dataset RAG (default, docs, skills, codigo, config)
-  /clear          - Limpiar pantalla
-  /help           - Mostrar esta ayuda
-""")
-                
-                else:
-                    click.echo(f"❌ Comando desconocido: {command}. Usa /help")
-                continue
-            
-            # Consulta normal
-            if not user_input.strip():
-                continue
-            
-            # Si hay RAG activado, usar contexto
-            if current_rag:
-                from modules.ia.apollo import retrieve, compress_context, generate_answer, generate_citations
-                
-                click.echo("🔍 Buscando contexto relevante...", err=True)
-                results = retrieve(query=user_input, k=5, mode="fused", dataset=current_rag)
-                
-                chunks = results.get("semantic", [])[:5]
-                context = compress_context(chunks, query=user_input, max_tokens=1500) if chunks else ""
-                
-                click.echo(f"🤖 Generando respuesta con {current_model}...", err=True)
-                response = generate_answer(
-                    query=user_input,
-                    context=context,
-                    model=current_model,
-                    temperature=0.1
-                )
-                
-                # Mostrar respuesta con fuentes
-                if chunks:
-                    full_response = generate_citations(response, chunks)
-                else:
-                    full_response = response
-                
-                click.echo(f"\n{full_response}\n")
-            
-            else:
-                # Sin RAG, consulta directa
-                from modules.ia.ai_engine import AIEngine
-                engine = AIEngine(obj.config['ai'], str(obj.base_path))
-                response = engine.ask(user_input, model_alias=current_model)
-                click.echo(f"\n🤖 [cyan]{response}[/cyan]\n")
-                
-        except KeyboardInterrupt:
-            click.echo("\n👋 Interrumpido. Usa /quit para salir.")
-        except EOFError:
-            break
+    from modules.ui.chat_interface import start_interactive_chat
+    start_interactive_chat(obj, rag=rag, model=model, think=think)
 
 
 @cli.command(name="model")
-@click.argument("provider", required=False)
+@click.argument("model_name", required=False, default=None)
+@click.option("--list", "-l", "list_models", is_flag=True, help="List all available Ollama models")
+@click.option("--set-default", "-s", is_flag=True, help="Set model as default (requires model_name)")
 @click.pass_obj
-def model_cmd(obj, provider):
-    """⚙️  Configura el Provider de IA por defecto.
-    
-    Cambia entre 'gemma' (Ollama local) y 'deepseek' (API remota).
-    Si no se especifica PROVIDER, muestra la configuración actual.
+def model_cmd(obj, model_name, list_models, set_default):
+    """⚙️  Gestiona Modelos de IA por defecto.
+
+    Sin argumentos: Muestra el modelo/provider actual.
+    Con MODEL_NAME: Cambia el modelo predeterminado a cualquier modelo Ollama.
+    Con --list: Lista todos los modelos disponibles en Ollama.
+    Con --set-default: Establece el modelo como predeterminado.
+
+    Soporta todos los modelos Ollama (mistral, qwen, deepseek-r1, etc.)
+    y futuros modelos automáticamente.
     """
-    if not provider:
-        HelpManager(obj).show_config()
+    from modules.ia.ai_engine import AIEngine
+    
+    ai_engine = AIEngine(obj.config['ai'], str(obj.base_path))
+    
+    # Prioridad 1: --list flag (siempre que esté presente, listar)
+    if list_models:
+        _list_all_models(ai_engine, obj)
         return
-
-    valid_providers = ["gemma", "deepseek", "openrouter"]
-    if provider.lower() not in valid_providers:
-        click.echo(f"❌ Provider '{provider}' no reconocido. Válidos: {', '.join(valid_providers)}")
+    
+    # Prioridad 2: Sin argumentos (mostrar config actual)
+    if model_name is None:
+        _show_current_model(obj)
         return
+    
+    # Prioridad 3: Establecer nuevo modelo por defecto
+    _set_default_model(obj, model_name, set_default)
 
-    obj.config['ai']['default_provider'] = provider.lower()
+
+def _list_all_models(ai_engine, obj) -> None:
+    """Listar todos los modelos disponibles (Ollama + Cloud)."""
+    from rich.console import Console
+    from rich.table import Table
+    from rich.panel import Panel
+    
+    console = Console()
+    
+    # Modelos locales (Ollama)
+    console.print(Panel("[bold cyan]📦 Modelos Locales (Ollama)[/bold cyan]", border_style="cyan"))
+    
+    try:
+        import requests
+        response = requests.get("http://localhost:11434/api/tags", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            models = data.get("models", [])
+            
+            table = Table(show_header=True, header_style="bold green")
+            table.add_column("Nombre", style="green", width=40)
+            table.add_column("Size", style="yellow", width=12)
+            table.add_column("Modified", style="blue", width=20)
+            
+            for model in models:
+                name = model.get("name", "unknown")
+                size = model.get("size", "N/A")
+                size_str = f"{size / 1e9:.1f} GB" if isinstance(size, (int, float)) else size
+                modified = model.get("modified_at", "N/A")[:10] if isinstance(model.get("modified_at"), str) else "N/A"
+                table.add_row(name, size_str, modified)
+            
+            console.print(table)
+        else:
+            console.print("[red]❌ No se pudo conectar con Ollama[/red]")
+    except Exception as e:
+        console.print(f"[red]❌ Error: {str(e)}[/red]")
+    
+    # Modelos Cloud
+    console.print("\n[bold magenta]📡 Modelos Cloud (API)[/bold magenta]")
+    cloud_table = Table(show_header=True, header_style="bold magenta")
+    cloud_table.add_column("Provider", style="cyan")
+    cloud_table.add_column("Modelos", style="green")
+    
+    # DeepSeek
+    cloud_table.add_row("DeepSeek", "deepseek-chat, deepseek-coder")
+    # OpenRouter (placeholder)
+    cloud_table.add_row("OpenRouter", "Múltiples modelos (configurable)")
+    
+    console.print(cloud_table)
+    console.print("\n[dim]💡 Usa 'ares model <nombre> --set-default' para cambiar el modelo predeterminado[/dim]")
+
+
+def _show_current_model(obj) -> None:
+    """Mostrar modelo/provider actual."""
+    from rich.console import Console
+    from rich.panel import Panel
+    
+    console = Console()
+    ai_config = obj.config.get("ai", {})
+    gemma_config = ai_config.get("gemma", {})
+    default_model = gemma_config.get("model", "gemma3:4b")
+    default_provider = ai_config.get("default_provider", "gemma")
+    
+    panel = Panel(
+        f"[bold green]Provider Activo:[/bold green] {default_provider}\n"
+        f"[bold cyan]Modelo Predeterminado:[/bold cyan] {default_model}\n\n"
+        f"[dim]💡 Usa 'ares model --list' para ver todos los modelos[/dim]\n"
+        f"[dim]💡 Usa 'ares model <modelo> --set-default' para cambiar[/dim]",
+        title="⚙️ Configuración Actual",
+        border_style="cyan"
+    )
+    console.print(panel)
+
+
+def _set_default_model(obj, model_name: str, set_default: bool) -> None:
+    """Establecer modelo como predeterminado."""
+    from rich.console import Console
+    from rich.panel import Panel
+    
+    console = Console()
+    
+    # Verificar si el modelo existe en Ollama
+    model_exists = False
+    try:
+        import requests
+        response = requests.get("http://localhost:11434/api/tags", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            models = [m.get("name", "") for m in data.get("models", [])]
+            if model_name in models or model_name.lower() in [m.lower() for m in models]:
+                model_exists = True
+    except:
+        pass
+    
+    # Si no existe en Ollama, verificar si es un modelo cloud válido
+    cloud_models = ["deepseek-chat", "deepseek-coder"]
+    if not model_exists and model_name not in cloud_models:
+        # Advertencia pero permitir continuar (puede ser un modelo nuevo)
+        console.print(f"[yellow]⚠️  El modelo '{model_name}' no se encontró en Ollama.[/yellow]")
+        console.print("[dim]Si es un modelo cloud o nuevo, puedes continuar.[/dim]\n")
+    
+    # Actualizar configuración
+    ai_config = obj.config.get("ai", {})
+    if "gemma" not in ai_config:
+        ai_config["gemma"] = {}
+    
+    ai_config["gemma"]["model"] = model_name
+    obj.config["ai"] = ai_config
     obj.save_config()
-    click.echo(f"✅ Provider por defecto actualizado a: [bold cyan]{provider.lower()}[/bold cyan]")
+    
+    console.print(Panel(
+        f"[bold green]✅ Modelo predeterminado actualizado[/bold green]\n\n"
+        f"Modelo: [bold cyan]{model_name}[/bold cyan]\n\n"
+        f"[dim]Las próximas consultas usarán este modelo por defecto.[/dim]",
+        border_style="green"
+    ))
 
 
 @cli.command()

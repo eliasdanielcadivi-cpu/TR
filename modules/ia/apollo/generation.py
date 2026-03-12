@@ -6,18 +6,33 @@ contexto recuperado y LLM local (smollm3/DeepSeek).
 Filosofía atómica: máximo 3 funciones públicas principales.
 """
 
-import ollama
+import re
+import yaml
+from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 
 from .compression import compress_context
 
 
+# Cargar configuración de post-procesamiento
+def _load_post_processing_config() -> Dict[str, Any]:
+    """Cargar configuración de post-procesamiento desde config.yaml."""
+    config_path = Path(__file__).parent.parent.parent.parent / "config" / "config.yaml"
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        return config.get('ai', {}).get('post_processing', {})
+    except:
+        return {}
+
+
 def generate_answer(
     query: str,
     context: str,
-    model: str = "alibayram/smollm3:latest",
+    model: str = "ares:latest",
     temperature: float = 0.1,
-    max_tokens: int = 1000
+    max_tokens: int = 1000,
+    apply_post_processing: bool = True
 ) -> str:
     """Generar respuesta basada en contexto recuperado.
 
@@ -27,15 +42,17 @@ def generate_answer(
         model: Modelo LLM a usar.
         temperature: Creatividad (0.1 = preciso, 0.7 = creativo).
         max_tokens: Máximo de tokens en respuesta.
+        apply_post_processing: Si True, aplicar post-procesamiento según modelo.
 
     Returns:
-        Respuesta generada por el LLM.
+        Respuesta generada por el LLM (con post-procesamiento opcional).
 
     Nota: Instrucción estricta: responder SOLO con información del contexto.
     """
     prompt = _build_rag_prompt(query, context)
 
     try:
+        import ollama
         response = ollama.chat(
             model=model,
             messages=[
@@ -54,14 +71,25 @@ def generate_answer(
             }
         )
 
-        return response['message']['content']
+        answer = response['message']['content']
+
+        # Aplicar post-procesamiento si está habilitado
+        if apply_post_processing:
+            answer = apply_post_process(answer, model)
+
+        return answer
 
     except Exception as e:
         # Fallback a DeepSeek (si está disponible)
         try:
             from modules.ia.providers import DeepSeekProvider
             provider = DeepSeekProvider({})
-            return provider.generate(prompt)
+            answer = provider.generate(prompt)
+            
+            if apply_post_processing:
+                answer = apply_post_process(answer, "deepseek")
+            
+            return answer
         except:
             return f"Error generando respuesta: {str(e)}"
 
@@ -199,3 +227,44 @@ def _claim_in_context(claim: str, context: str) -> bool:
     matches = sum(1 for word in claim_words if word in context_lower)
 
     return matches / len(claim_words) >= 0.7 if claim_words else False
+
+
+def apply_post_process(answer: str, model: str) -> str:
+    """Aplicar post-procesamiento según modelo.
+
+    Args:
+        answer: Respuesta generada.
+        model: Nombre del modelo usado.
+
+    Returns:
+        Respuesta procesada según configuración.
+    """
+    config = _load_post_processing_config()
+    model_config = config.get(model, {})
+
+    # Extraer nombre base del modelo (sin :latest)
+    model_base = model.split(":")[0] if ":" in model else model
+
+    # Si no hay config específica, intentar con nombre base
+    if not model_config and model_base in config:
+        model_config = config[model_base]
+
+    # Aplicar transformaciones
+    if model_config.get("strip_think_tags", False):
+        answer = strip_think_tags(answer)
+
+    return answer
+
+
+def strip_think_tags(text: str) -> str:
+    """Eliminar etiquetas <think></think> del texto.
+
+    Args:
+        text: Texto con posibles etiquetas think.
+
+    Returns:
+        Texto sin etiquetas think.
+    """
+    # Patrón para eliminar <think>...</think>
+    pattern = r'<think>.*?</think>'
+    return re.sub(pattern, '', text, flags=re.DOTALL).strip()

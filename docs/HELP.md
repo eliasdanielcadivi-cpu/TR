@@ -22,6 +22,7 @@
 | `ares image <archivo>` | Muestra imagen en kitty |
 | `ares plan` | Despliegue táctico (4 pestañas) |
 | `ares zshPlan` | Hacker AI Session (ZSH) |
+| `ares mcat-demo` | Demo exhaustiva de capacidades Mcat |
 | `ayuda zsh` | Ver hoja de trucos WOW y productividad Zsh |
 | `sherlok --help` | Ojo Forense: Escanea e indexa tus programas propios |
 

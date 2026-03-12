@@ -1,124 +1,53 @@
 ai:
-  aliases:
-    deepseek:
-      model: deepseek-chat
-      provider: deepseek
-    gemma:
-      model: gemma3:4b
-      provider: gemma
-    gemma12b:
-      model: gemma3:12b
-      provider: gemma
-    openrouter:
-      model: google/gemma-3-4b-it
-      provider: openrouter
-    smollm3:
-      model: alibayram/smollm3:latest
-      provider: gemma
-  deepseek:
-    api_key_env: sk-2ceebfa3da2d444199e242bbc17feedc
-    base_url: https://api.deepseek.com
-    model: deepseek-chat
   default_provider: gemma
   enabled: true
   gemma:
-    base_url: http://localhost:11434
-    model: gemma3:4b
-    templates_dir: modules/ia/templates/gemma
-  openrouter:
-    api_key_env: OPENROUTER_API_KEY
-    base_url: https://openrouter.ai/api/v1
-    model: google/gemma-3-4b-it
-  apollo:
-    # Sistema RAG + CRM
-    enabled: true
-    db_dir: bd/apollo
-    knowledge_db: bd/apollo/knowledge.db
-    users_db: bd/apollo/users.db
-    embeddings:
-      model: mxbai-embed-large:335m
-      dimensions: 1024
-      metric: cosine
-    llm:
-      local_model: alibayram/smollm3:latest
-      fallback_api: deepseek
-    chunking:
-      max_tokens: 256
-      overlap_tokens: 25
-    retrieval:
-      default_k: 5
-      rrf_k: 60
-      compress: true
-      max_context_tokens: 2000
-    # Etiquetas de datos personalizables (ontologías)
-    datasets:
-      default:
-        description: "Todos los documentos ingeridos"
-        filters: {}
-      docs:
-        description: "Documentación técnica del proyecto"
-        filters:
-          source_pattern: "docs/*"
-      skills:
-        description: "Skills y capacidades de ARES"
-        filters:
-          source_pattern: "docs/skills/*"
-      codigo:
-        description: "Código fuente Python"
-        filters:
-          source_pattern: "*.py"
-      config:
-        description: "Archivos de configuración"
-        filters:
-          source_pattern: "config/*"
-identity:
-  full_name: Terminal Remote Operations Nexus
-  name: ARES
-  window_title: Ares por Daniel Hung
-kitty:
-  allow_remote_control: 'yes'
-  conf_path: config/kitty.conf
-  socket: unix:/tmp/mykitty
-  socket_path: /tmp/mykitty
-paths:
-  db: db/tr.sqlite
-  logs: logs/session.jsonl
-  sessions: data/sessions
-templates:
-  base_dir: modules/ia/templates
-  deepseek:
-  - description: "Plantilla b\xE1sica para DeepSeek"
-    name: default
-  defaults:
-    deepseek: default
-    gemma: default
-  enabled: true
-  gemma:
-  - description: "Plantilla b\xE1sica para consultas generales"
-    name: default
-  - description: Optimizada para conversaciones multi-turno
-    name: chat
-  - description: "Generaci\xF3n y explicaci\xF3n de c\xF3digo"
-    name: code
-  - description: Function calling con herramientas
-    name: tools
-tools:
-  available:
-  - api_key_env: SERPER_API_KEY
-    enabled: true
-    name: google_search
-  - api_key_env: ''
-    enabled: true
-    name: translate_text
-  - api_key_env: OPENWEATHER_API_KEY
-    enabled: true
-    name: get_weather
-  - enabled: true
-    name: execute_shell
-    timeout: 30
-  - enabled: true
-    max_lines: 100
-    name: read_file
-  - enabled: true
-    name: write_file
-  enabled: true
+    model: ares:latest
+ui:
+  chat:
+    colors:
+      ares_text: cyan
+      system_msg: magenta
+      user_text: white
+    history_light:
+      ares:
+        height: 2
+        path: assets/ares/ares-emoji.png
+        width: 4
+      header_ares:
+        height: 2
+        path: assets/ui/header-ares-static.png
+        width: 15
+      header_user:
+        height: 1
+        path: assets/ui/header-user-static.png
+        width: 10
+      separator:
+        height: 1
+        path: assets/ui/neon-ray-fixed.png
+        width: 40
+      user:
+        height: 1
+        path: assets/user/user-emoji.png
+        width: 2
+    live_wow:
+      ares:
+        height: 2
+        path: assets/ares/ares-wow.mp4
+        width: 4
+      header_ares:
+        height: 2
+        path: assets/ui/header-ares-glow.gif
+        width: 15
+      separator:
+        height: 1
+        path: assets/ui/neon-ray-alive.gif
+        width: 40
+      spinner:
+        height: 2
+        path: assets/ui/spinner-dual.mp4
+        width: 12
+    separator_char: "\u2503"
+    style: minimal
+  terminal: kitty
+  theme: tron-legacy

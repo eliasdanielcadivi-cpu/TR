@@ -3,6 +3,10 @@
 
 export usuario="${SUDO_USER:-${USER}}"
 
+# --- ECOSISTEMA TRON ---
+# Ruta absoluta a tu carpeta ENTORNOS/python (donde está el pyproject.toml general)
+export TRON_PY_ROOT="$HOME/tron/programas/ENTORNOS/python"
+
 # Servidores Casa
 export tronDream='tron@172.16.0.141'
 export clienteNode='cliente@172.16.0.124'

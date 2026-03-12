@@ -32,6 +32,31 @@
 - `investigador/`: Módulo especializado en exploración web e inteligencia.
   - **CLI**: `tr-investigador buscar|otear|docs` | **Tipo**: Herramienta CLI (Tipo 2)
   - **Funciones**: `investigar()` (Google), `otear()` (URLs), `consultar_docs()`
+- `apollo/` — **Sistema RAG + CRM** (FASE 0-2 COMPLETADO)
+  - **apollo_db.py**: Persistencia SQLite + sqlite-vec (knowledge.db, users.db)
+    - Funciones: `init_db()`, `get_connection()`, `close_db()`, `db_context()`
+  - **embeddings.py**: Generación de embeddings con Ollama (mxbai-embed-large:335m)
+    - Funciones: `embed_text()`, `embed_documents()`, `quantize_embeddings()`
+  - **ingest.py**: Ingesta de documentos con chunking semántico
+    - Funciones: `semantic_chunk()`, `ingest_file()`, `ingest_directory()`
+  - **extraction.py**: Extracción de entidades y relaciones con LLM
+    - Funciones: `extract_entities_relations()`, `store_entities()`, `store_relations()`
+  - **retrieval.py**: Recuperación híbrida (vectorial + grafo + relacional)
+    - Funciones: `retrieve()`, `_vector_search()`, `_graph_search()`, `_relational_search()`
+  - **compression.py**: Compresión contextual de documentos
+    - Funciones: `compress_context()`, `_select_relevant_docs()`, `_extract_key_sentences()`
+  - **generation.py**: Generación de respuestas con post-procesamiento
+    - Funciones: `generate_answer()`, `generate_citations()`, `detect_hallucination()`, `apply_post_process()`
+  - **emoji_manager.py**: Emojis como imágenes con term-image
+    - Funciones: `show_emoji()`, `format_output_with_emoji()`, `get_emoji_path()`
+  - **cli_ingest.py**: CLI de ingesta (`python -m modules.ia.apollo.cli_ingest`)
+  - **init_apollo_db.py**: Inicialización de bases de datos (`python -m modules.ia.apollo.init_apollo_db`)
+  - **Comandos ARES**:
+    - `ares i` — Modo interactivo REPL (con /think, /model, /rag)
+    - `ares i --rag <dataset>` — Con RAG activado
+    - `ares i --think` — Con modo pensante (ares-think)
+    - `ares p "pregunta" --rag <dataset>` — Consulta con RAG
+    - `ares p "pregunta" --think` — Con modo pensante
 
 ### ui/ - Interfaz y Estética
 **Propósito:** Control visual y documentación interactiva.
@@ -51,6 +76,7 @@
 **Propósito:** Despliegue de entornos de trabajo predefinidos.
 - `plan_manager.py`: Ejecución de `arn plan` y verificación de handshake.
 - `zsh_plan_manager.py`: Ejecución de `ares zshPlan` para sesiones de IA en Zsh.
+- `mcat_demo.py`: Demo táctico de capacidades de Mcat (4 pestañas).
 
 ### whatsapp/ - Comunicaciones Externas
 **Propósito:** Puente entre ARES y la red de mensajería para distribución de datos.

@@ -1,0 +1,128 @@
+
+============================================================
+[2026-03-08T16:56:23.391075] EJECUTANDO AVISO
+ID: 1
+Mensaje: test de aviso
+Comando: zenity
+Fecha programada: 2026-03-08 16:25
+============================================================
+
+============================================================
+[2026-03-08T16:59:08.278661] EJECUTANDO AVISO
+ID: 1
+Mensaje: test de aviso
+Comando: zenity
+Fecha programada: 2026-03-08 16:25
+============================================================
+
+============================================================
+[2026-03-08T17:00:13.912005] EJECUTANDO AVISO
+ID: 1
+Mensaje: test de aviso
+Comando: zenity
+Fecha programada: 2026-03-08 16:25
+============================================================
+
+============================================================
+[2026-03-08T17:00:19.996541] EJECUTANDO AVISO
+ID: 2
+Mensaje: prueba de aviso sin comillas
+Comando: zenity
+Fecha programada: 2026-03-08 16:26
+============================================================
+
+============================================================
+[2026-03-08T17:00:21.515730] EJECUTANDO AVISO
+ID: 3
+Mensaje: PRUEBA AVISO
+Comando: zenity
+Fecha programada: 2026-03-08 16:47
+============================================================
+
+============================================================
+[2026-03-08T17:00:23.514926] EJECUTANDO AVISO
+ID: 4
+Mensaje: TEST DEBUG
+Comando: zenity
+Fecha programada: 2026-03-08 16:53
+============================================================
+
+============================================================
+[2026-03-08T17:00:25.427396] EJECUTANDO AVISO
+ID: 5
+Mensaje: TEST DIRECTO
+Comando: zenity
+Fecha programada: 2026-03-08 16:54
+============================================================
+
+============================================================
+[2026-03-08T17:00:27.393692] EJECUTANDO AVISO
+ID: 6
+Mensaje: TEST DE AVISO - Si ves esto, funciona!
+Comando: zenity
+Fecha programada: 2026-03-08 16:57
+============================================================
+
+============================================================
+[2026-03-08T17:02:58.782429] EJECUTANDO AVISO
+ID: 7
+Mensaje: PRUEBA FINAL DE FLUJO
+Comando: zenity
+Fecha programada: 2026-03-08 17:02
+============================================================
+
+============================================================
+[2026-03-09T05:13:22.234865] EJECUTANDO AVISO
+ID: 8
+Mensaje: ejecutar comando sherlock
+Comando: sherlock
+Fecha programada: 2026-03-08 20:00
+============================================================
+
+============================================================
+[2026-03-09T09:00:23.838752] EJECUTANDO AVISO
+ID: 9
+Mensaje: Revisar agenda ARES: Modulo aviso integrado
+Comando: zenity
+Fecha programada: 2026-03-09 09:00
+============================================================
+
+============================================================
+[2026-03-09T09:00:34.614664] EJECUTANDO AVISO
+ID: 10
+Mensaje: Para mañana lunes: Solo necesitarás ejecutar: ares gs restore ultima. Esto abrirá todas las pestañas y ejecutará automáticamente los programas solicitados, mientras el daemon de aviso te notifica en segundo plano.
+Comando: zenity
+Fecha programada: 2026-03-09 09:00
+============================================================
+
+============================================================
+[2026-03-09T20:12:09.845448] EJECUTANDO AVISO
+ID: 12
+Mensaje: Continuar con Fase 3 (CRM) y pruebas de ares i --rag
+Comando: zenity
+Fecha programada: 2026-03-09 07:00
+============================================================
+
+============================================================
+[2026-03-10T20:11:25.447960] EJECUTANDO AVISO
+ID: 11
+Mensaje: Continuar con Fase 3 (CRM) y pruebas de ares i --rag
+Comando: zenity
+Fecha programada: 2026-03-10 20:11
+============================================================
+
+============================================================
+[2026-03-10T21:03:06.590168] EJECUTANDO AVISO
+ID: 13
+Mensaje: AGENDA FASE 3: 1) Probar emojis term-image, 2) Probar ares i --think, 3) Probar ares p --rag --think, 4) Verificar post-procesamiento, 5) Instalar mcat, 6) Actualizar INDEX.md y LEEME.md ya hecho
+Comando: zenity
+Fecha programada: 2026-03-10 07:00
+============================================================
+
+============================================================
+[2026-03-10T21:04:17.192713] EJECUTANDO AVISO
+ID: 14
+Mensaje: PRUEBAS FASE 3: 1) ares i (emojis), 2) ares i --think, 3) ares p --rag --think, 4) post-procesamiento, 5) instalar mcat (bash scripts/install_mcat.sh), 6) Ver INDEX.md y LEEME.md actualizados. Docs: docs/AGENDA-PRUEBAS-FASE3.md
+Comando: zenity
+Fecha programada: 2026-03-10 07:00
+============================================================

@@ -1,0 +1,18 @@
+[IMG: ares-emoji.png] MODO INTERACTIVO ARES
+   Modelo: ares:latest
+   RAG Dataset: desactivado
+   Think Mode: OFF
+   Comandos: /quit, /model, /rag, /think, /clear, /help
+   ──────────────────────────────────────────────────
+
+[IMG: user-emoji.png] Tú: ¿Qué es ARES?
+
+🤖 Generando respuesta con ares:latest...
+
+[IMG: ares-emoji.png] ARES (Terminal Remote Operations Nexus) es un orquestador táctico diseñado para operar en la terminal Kitty. 
+Permite la integración de IA multi-provider, gestión de sesiones, visualización multimedia (imágenes y video) 
+y despliegue de entornos de trabajo automatizados.
+
+📚 **Fuentes**:
+[1] docs/arquitectura.md (chunk 0, similitud: 0.95)
+[2] README.md (chunk 2, similitud: 0.88)
