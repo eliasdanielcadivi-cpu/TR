@@ -14,23 +14,20 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 
 def get_asset_render(asset_id: str, mode: str = "history", width: int = None, height: int = None) -> str:
     """Renderiza un asset basado en el estado de la interacción (live/history)."""
+    path = get_asset_path(asset_id, mode)
     ui_cfg = _get_ui_config()
     
-    # Seleccionar el grupo de la configuración
     group = "live_wow" if mode == "live" else "history_light"
     a_cfg = ui_cfg.get(group, {}).get(asset_id, {})
     
-    # Fallback al otro grupo si el ID no existe en el actual
     if not a_cfg:
         fallback_group = "history_light" if group == "live_wow" else "live_wow"
         a_cfg = ui_cfg.get(fallback_group, {}).get(asset_id, {})
 
     w = width or a_cfg.get('width', 4)
     h = height or a_cfg.get('height', 2)
-    asset_rel = a_cfg.get('path', f"assets/ui/{asset_id}.png")
-    path = PROJECT_ROOT / asset_rel
 
-    if not path.exists():
+    if not path or not Path(path).exists():
         return f"[{asset_id.upper()}]"
 
     try:
@@ -39,6 +36,18 @@ def get_asset_render(asset_id: str, mode: str = "history", width: int = None, he
         return format(img, f"{w}.{h}#")
     except Exception:
         return f"[{asset_id.upper()}]"
+
+def get_asset_path(asset_id: str, mode: str = "history") -> str:
+    """Obtiene la ruta física del asset según el modo solicitado (Soberanía del CWD)."""
+    ui_cfg = _get_ui_config()
+    group = "live_wow" if mode == "live" else "history_light"
+    path_rel = ui_cfg.get(group, {}).get(asset_id, {}).get('path')
+    
+    if not path_rel:
+        other_group = "history_light" if group == "live_wow" else "live_wow"
+        path_rel = ui_cfg.get(other_group, {}).get(asset_id, {}).get('path')
+    
+    return str(PROJECT_ROOT / path_rel) if path_rel else ""
 
 def _get_ui_config() -> dict:
     """Carga la configuración centralizada de la interfaz."""
