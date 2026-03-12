@@ -29,9 +29,22 @@
 ### ia/ - Cerebro Agéntico
 **Propósito:** Conectividad con modelos de lenguaje y lógica de prompts.
 - `ai_engine.py`: Conector multi-provider para Ollama, DeepSeek y OpenRouter.
+  - **Funciones principales**: `ask()`, `ask_stream()`, `chat()`
+  - **Streaming en tiempo real**: `ask_stream()` con filtro think opcional
+  - **Filtro think**: `_filter_think_chunk()` elimina etiquetas <think></think> en streaming
+  - **Soporte multi-modelo**: Detección automática de modelos (gemma, ares, mistral, qwen, llama, phi, smol, deepseek)
 - `investigador/`: Módulo especializado en exploración web e inteligencia.
   - **CLI**: `tr-investigador buscar|otear|docs` | **Tipo**: Herramienta CLI (Tipo 2)
   - **Funciones**: `investigar()` (Google), `otear()` (URLs), `consultar_docs()`
+- `providers/` - Providers multi-modelo:
+  - `base_provider.py`: Interfaz abstracta (generate, chat, list_models)
+  - `gemma_provider.py`: Ollama local con streaming (`generate_stream()`)
+  - `deepseek_provider.py`: API DeepSeek cloud
+  - `openrouter_provider.py`: API OpenRouter (placeholder)
+- `templates/`: Gestión de plantillas YAML
+  - `manager.py`: `TemplateManager` con `apply()`, `get_config()`, `list_templates()`
+- `tools/`: Function calling y herramientas
+  - `tool_registry.py`: Registro de herramientas (google_search, translate, weather, shell, file ops)
 - `apollo/` — **Sistema RAG + CRM** (FASE 0-2 COMPLETADO)
   - **apollo_db.py**: Persistencia SQLite + sqlite-vec (knowledge.db, users.db)
     - Funciones: `init_db()`, `get_connection()`, `close_db()`, `db_context()`
@@ -52,15 +65,25 @@
   - **cli_ingest.py**: CLI de ingesta (`python -m modules.ia.apollo.cli_ingest`)
   - **init_apollo_db.py**: Inicialización de bases de datos (`python -m modules.ia.apollo.init_apollo_db`)
   - **Comandos ARES**:
-    - `ares i` — Modo interactivo REPL (con /think, /model, /rag)
+    - `ares i` — Modo interactivo REPL (con /think, /model, /rag, /clear, /help)
     - `ares i --rag <dataset>` — Con RAG activado
     - `ares i --think` — Con modo pensante (ares-think)
     - `ares p "pregunta" --rag <dataset>` — Consulta con RAG
     - `ares p "pregunta" --think` — Con modo pensante
+    - `ares model` — Gestionar modelo predeterminado (listar, establecer)
+    - `ares model --list` — Listar todos los modelos Ollama disponibles
+    - `ares model <nombre> --set-default` — Establecer modelo predeterminado
+    - `ares models` — Listar modelos por provider
 
 ### ui/ - Interfaz y Estética
 **Propósito:** Control visual y documentación interactiva.
 - `help_manager.py`: Visualización de manuales neón y orquestación de IA en terminal.
+  - **Funciones**: `show_enhanced_help()`, `query_ai()`, `list_models()`, `list_templates()`, `list_tools()`, `show_config()`
+- `chat_interface.py`: Modo interactivo REPL con streaming en tiempo real.
+  - **Funciones**: `start_interactive_chat()`, `_list_models_and_switch()`, `_show_help()`
+  - **Comandos interactivos**: `/model`, `/m`, `/think`, `/rag`, `/clear`, `/c`, `/help`, `/h`, `/quit`, `/exit`
+  - **Streaming**: Respuesta en tiempo real con flush() para baja latencia
+  - **Filtro think**: Elimina etiquetas <think></think> para modelos no pensantes (ares:latest)
 
 ### color/ - Identidad Visual Dinámica
 **Propósito:** Motor de coloreado de pestañas Kitty con identidad Hacker Neon.

@@ -32,8 +32,10 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 | `ares status` | Diagnóstico del socket Kitty y estado del sistema |
 | `ares config` | Ver/Inspeccionar configuración de IA y entorno |
 | `ares init` | Gestión de infraestructura y enlaces simbólicos |
-| `ares model [provider]` | Configurar provider de IA por defecto (gemma/deepseek) |
-| `ares models` | Listar modelos disponibles (Ollama + Cloud) |
+| `ares model` | Mostrar modelo predeterminado actual |
+| `ares model --list` | Listar todos los modelos Ollama disponibles (mistral, qwen, deepseek-r1, etc.) |
+| `ares model <nombre> --set-default` | Establecer modelo predeterminado (ej: `mistral:7b`) |
+| `ares models` | Listar modelos por provider (Ollama + Cloud) |
 | `ares templates` | Listar plantillas YAML de comportamiento |
 | `ares tools` | Listar herramientas (function calling) disponibles |
 | `ares video <archivo>` | Reproduce video en terminal (mpv + protocolo gráfico) |
@@ -61,6 +63,12 @@ ARES es el **cerebro** que controla la terminal Kitty para crear flujos de traba
 ---
 
 ## 🏛 FILOSOFÍA DE MODULARIDAD ATÓMICA
+
+### 🤝 COEXISTENCIA IA (MULTI-AGENTES)
+Para evitar colisiones entre múltiples IAs operando simultáneamente, es obligatorio registrarse en el cuaderno de apartado:
+👉 **[`dont-touch-my-eggs.md`](/dont-touch-my-eggs.md)**
+
+---
 
 ### ⚡ Regla de Oro: Máximo 3 Funciones por Módulo
 Cada componente de ARES debe ser quirúrgico. Esto permite:
@@ -117,9 +125,46 @@ Los módulos están agrupados jerárárquicamente en `modules/`:
 
 | Provider | Modelos | Tipo |
 |----------|---------|------|
-| **Gemma** | gemma3:1b, gemma3:4b, gemma3:12b, gemma3:27b | Local (Ollama) |
+| **Gemma/Ollama** | Todos los modelos Ollama (mistral, qwen, llama, phi, ares, smol, etc.) | Local |
 | **DeepSeek** | deepseek-chat, deepseek-coder | API Cloud |
 | **OpenRouter** | Múltiples modelos | API Cloud (placeholder) |
+
+### Gestión de Modelos
+
+```bash
+# Listar todos los modelos disponibles en Ollama
+ares model --list
+
+# Establecer modelo predeterminado
+ares model mistral:7b --set-default
+
+# Ver modelo actual
+ares model
+
+# Listar modelos por provider
+ares models
+```
+
+### Modo Interactivo con Streaming
+
+El modo interactivo `ares i` ahora soporta **streaming en tiempo real** con filtrado inteligente de etiquetas think:
+
+```bash
+# Iniciar modo interactivo
+ares i
+
+# Comandos disponibles:
+# /model, /m       - Listar y cambiar modelo
+# /think           - Activar/desactivar modo pensante
+# /rag             - Activar/desactivar RAG
+# /clear, /c       - Limpiar pantalla
+# /help, /h        - Mostrar ayuda
+# /quit, /exit     - Salir
+```
+
+**Streaming con filtro think:**
+- `ares:latest` (no pensante): Filtra automáticamente etiquetas `<think></think>` vacías
+- `ares-think:latest` (pensante): Muestra proceso de razonamiento completo
 
 ###Aliases de Modelos
 
@@ -349,6 +394,11 @@ sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
 ---
 
 ### 📜 Registro de Cambios Funcionales
+- **2026-03-12**: Streaming en tiempo real implementado en `ares i` con filtro think automático.
+- **2026-03-12**: Comando `ares model` mejorado para gestionar todos los modelos Ollama (listar, establecer predeterminado).
+- **2026-03-12**: Comandos interactivos añadidos: `/model`, `/think`, `/rag`, `/clear`, `/help`.
+- **2026-03-12**: Filtro think elimina etiquetas `<think></think>` en modelos no pensantes (ares:latest).
+- **2026-03-12**: Documentación técnica: `docs/STREAMING.md` con informe forense detallado.
 - 2026-03-11: Implementación de Interfaz Minimalista-Cyberpunk en `ares i` (Kitty Protocol).
 - 2026-03-11: Modularidad Atómica aplicada a `emoji_manager.py` (Regla de Oro: 3 funciones).
 - 2026-03-11: Configuración UI centralizada en `config.yaml`.

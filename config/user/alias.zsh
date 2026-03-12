@@ -249,6 +249,7 @@ alias queinstaleubuntu="micro $programas/Mudanza/quinetaleenubu18sencillo.sh"
 alias quekerneltengo="uname -srm"
 alias quienpuerto="sudo ss -tunelp | grep "
 alias ratonOff='xinput disable 9'
+alias ro="ratonOff"
 alias raton="xinput enable 9"
 alias red="nmtui"
 alias reiniciaKdeconet="killall kdeconnectd; kdeconnectd &"
