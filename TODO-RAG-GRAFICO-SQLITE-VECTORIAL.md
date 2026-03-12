@@ -1,12 +1,12 @@
 # 🧠 TODO: SISTEMA APOLLO — RAG HÍBRIDO ULTRALIGERO (SQLite + Vector + Grafo)
 
 **Fecha:** 2026-03-09
-**Estado:** FASE 0 ✅ | FASE 1 ✅ | FASE 2 ✅ | FASE 3 (CRM) EN PROGRESO
-**Prioridad:** FASE 3 (Imitamos — CRM de Clientes)
+**Estado:** FASE 0 ✅ | FASE 1 ✅ | FASE 2 ✅ | FASE 3 (Modelos + Assets) EN PROGRESO
+**Prioridad:** FASE 3 (Imitamos — Model Creator + Assets + Post-procesamiento)
 
 ---
 
-## 📊 ESTADO ACTUAL (2026-03-09 22:30)
+## 📊 ESTADO ACTUAL (2026-03-09 23:00)
 
 ### ✅ FASE 0 (Gateamos) — COMPLETADA
 
@@ -41,7 +41,7 @@
 
 | Componente | Estado | Funciones Públicas | Notas |
 |------------|--------|-------------------|-------|
-| retrieval.py | ✅ 298 líneas | `retrieve()`, `_vector_search()`, `_graph_search()`, `_relational_search()`, `_rrf()` | Búsqueda híbrida con RRF |
+| retrieval.py | ✅ 311 líneas | `retrieve()`, `_vector_search()`, `_graph_search()`, `_relational_search()`, `_rrf()` | Búsqueda híbrida con RRF |
 | compression.py | ✅ 189 líneas | `compress_context()`, `_select_relevant_docs()`, `_extract_key_sentences()` | Compresión 50-75% tokens |
 | generation.py | ✅ 201 líneas | `generate_answer()`, `generate_citations()`, `detect_hallucination()` | Respuestas con fuentes |
 | config.yaml | ✅ Actualizado | 5 datasets (default, docs, skills, codigo, config) + alias smollm3 |
@@ -52,19 +52,83 @@
 
 ---
 
-## 📋 PRÓXIMOS PASOS (FASE 3: Imitamos — CRM)
+## 📋 FASE 3 EN PROGRESO (Modelos + Assets + Post-procesamiento + CRM)
 
-### 3.1 Módulo CRM Básico
+### 3.1 Assets y Emojis en Terminal (OBLIGATORIO)
+
+- [x] **Instalar term-image** — `uv add term-image` para mostrar imágenes PNG en terminal
+- [x] **Crear assets/ares/** — Carpeta con emoji fijo de ARES (tron-uprising-.png)
+- [x] **Crear assets/user/** — Carpeta con emoji de usuario (luke-skywalker-.png)
+- [x] **Módulo emoji_manager.py** — Funciones para mostrar emojis con term-image
+- [ ] **Instalar mcat** — Ejecutar `bash scripts/install_mcat.sh` (obligatorio para visualización alternativa)
+- [ ] **Integración en ares i** — Emojis en prompt y respuestas (COMPLETADO)
+
+### 3.2 Model Creator (CLI con flags)
+
+- [ ] **model_creator.py** — `list`, `create`, `update`, `delete` modelos Ollama
+  - `ares model-creator list` — Listar modelos disponibles (ollama list)
+  - `ares model-creator create <name> --from <parent> --params ...` — Crear modelo desde padre
+  - `ares model-creator update <name> --params ...` — Actualizar parámetros
+  - `ares model-creator delete <name>` — Eliminar modelo de Ollama
+  - `ares model-creator show <name>` — Mostrar Modelfile asociado
+
+### 3.3 Modelfile Creator (CLI con flags)
+
+- [ ] **modelfile_creator.py** — `create`, `update`, `delete`, `list` Modelfiles
+  - `ares modelfile-creator create <name> --from <parent> --system "..." --params ...`
+  - `ares modelfile-creator update <name> --system "..." --params ...`
+  - `ares modelfile-creator delete <name>`
+  - `ares modelfile-creator list` — Listar Modelfiles guardados
+  - `ares modelfile-creator show <name>` — Mostrar contenido
+
+### 3.4 Persistencia de Modelfiles
+
+- [ ] **bd/apollo/modelfiles.yaml** — Base de datos YAML con Modelfiles
+  - Estructura: `{model_name: {parent, system, parameters, template, created_at}}`
+  - Backup automático en cada modificación
+
+### 3.5 Post-procesamiento Configurable
+
+- [ ] **config.yaml** — Lista de post-procesamiento por modelo
+  ```yaml
+  post_processing:
+    ares:
+      strip_think_tags: true  # Eliminar <think></think>
+    ares-think:
+      strip_think_tags: false  # Mantener etiquetas
+    smollm3:
+      strip_think_tags: true
+  ```
+- [ ] **generation.py** — Aplicar post-procesamiento según modelo
+
+### 3.6 Flags Think en Comandos
+
+- [ ] **main.py** — `ares i --think` y `ares p --think`
+  - `--think` fuerza uso de modelo pensante (ares-think)
+  - Sin `--think` usa modelo normal (ares)
+  - Prioridad: flag > config > default
+
+### 3.7 Documentación de Modelos
+
+- [ ] **docs/MODELOS-ARES.md** — Documentación completa
+  - Lista de modelos disponibles
+  - Modelfiles originales (padres)
+  - Parámetros configurados
+  - Instrucciones de recreación
+
+---
+
+### 3.8 Módulo CRM Básico (MANTENER - Original)
 
 - [ ] **crm.py** — `create_client()`, `update_client()`, `search_clients()`
 - [ ] **interactions.py** — `log_interaction()`, `get_client_history()`, `get_follow_ups()`
 - [ ] **whatsapp_integration.py** — `import_whatsapp_chat()`, `link_client_to_documents()`, `generate_client_summary()`
 
-### 3.2 CLI de CRM
+### 3.9 CLI de CRM (MANTENER - Original)
 
 - [ ] **ares apollo crm** — Subcomandos: `list`, `view`, `add`, `interact`, `followups`, `import-whatsapp`
 
-### 3.3 Integración con WhatsApp
+### 3.10 Integración con WhatsApp (MANTENER - Original)
 
 - [ ] Parser de exportaciones TXT de WhatsApp
 - [ ] Detección automática de clientes por número
@@ -95,10 +159,14 @@ ares p "¿Qué es Apollo?" --rag docs
 ares p "¿Cómo usar skills?" --rag skills
 ares p "Explica este código" --rag codigo
 
+# Con modo think (usa ares-think)
+ares p "¿Quién eres?" --rag docs --think
+
 # Modo interactivo
 ares i                      # Sin RAG
 ares i --rag docs           # Con RAG en dataset docs
 ares i --rag skills --model gemma3:4b
+ares i --think              # Con modo pensante
 ```
 
 ### Comandos Interactivos (/help)
@@ -107,8 +175,50 @@ ares i --rag skills --model gemma3:4b
 /quit, /exit  - Salir
 /model <nombre> - Cambiar modelo LLM
 /rag <dataset>  - Cambiar dataset (default, docs, skills, codigo, config)
+/think          - Activar/desactivar modo pensante
 /clear          - Limpiar pantalla
 /help           - Ayuda
+```
+
+### Model Creator (NUEVO)
+
+```bash
+# Listar modelos
+ares model-creator list
+
+# Crear modelo desde padre
+ares model-creator create ares-custom --from alibayram/smollm3:latest \
+  --temperature 0.4 --top_p 0.9 --num_predict 2048
+
+# Actualizar parámetros
+ares model-creator update ares-custom --temperature 0.7
+
+# Eliminar modelo
+ares model-creator delete ares-custom
+
+# Mostrar Modelfile
+ares model-creator show ares
+```
+
+### Modelfile Creator (NUEVO)
+
+```bash
+# Crear Modelfile
+ares modelfile-creator create ares-think --from alibayram/smollm3:latest \
+  --system "Eres ARES, orquestador táctico..." \
+  --param temperature 0.4 --param top_p 0.9
+
+# Actualizar Modelfile
+ares modelfile-creator update ares-think --system "Nuevo system prompt..."
+
+# Eliminar Modelfile
+ares modelfile-creator delete ares-think
+
+# Listar Modelfiles guardados
+ares modelfile-creator list
+
+# Mostrar Modelfile
+ares modelfile-creator show ares-think
 ```
 
 ---

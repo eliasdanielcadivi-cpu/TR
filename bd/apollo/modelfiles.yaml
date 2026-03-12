@@ -1,0 +1,21 @@
+# Modelfiles de ARES - Base de datos YAML
+# Fecha: 2026-03-09
+
+ares:latest:
+  parent: alibayram/smollm3:latest
+  description: "ARES - Orquestador Tactico (sin think)"
+  system: "Eres ARES. Tu creador es Daniel Hung. Responde en espanol."
+  parameters:
+    temperature: 0.7
+    top_p: 0.9
+    num_predict: 2048
+
+ares-think:latest:
+  parent: alibayram/smollm3:latest
+  description: "ARES - Modo Think (con razonamiento)"
+  system: "Eres ARES en modo razonamiento. Antes de responder, escribe razonamiento en etiquetas think."
+  parameters:
+    temperature: 0.4
+    top_p: 0.9
+    num_predict: 2048
+  stop: []

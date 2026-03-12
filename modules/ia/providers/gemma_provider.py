@@ -147,26 +147,24 @@ class GemmaProvider(BaseProvider):
             return f"Error JSON: {str(e)}"
 
     def list_models(self) -> List[str]:
-        """Listar modelos Gemma disponibles en Ollama.
-        
+        """Listar todos los modelos disponibles en Ollama.
+
         Returns:
-            Lista de modelos Gemma disponibles.
+            Lista de todos los modelos Ollama disponibles.
         """
         url = f"{self.base_url}/api/tags"
-        
+
         try:
             response = requests.get(url, timeout=30)
             response.raise_for_status()
             result = response.json()
-            
+
             models = result.get("models", [])
-            gemma_models = [
-                m["name"] for m in models 
-                if "gemma" in m["name"].lower()
-            ]
-            
-            return gemma_models if gemma_models else ["gemma3:4b", "gemma3:12b"]
-            
+            # Retornar TODOS los modelos, no solo Gemma
+            all_models = [m["name"] for m in models]
+
+            return all_models if all_models else ["gemma3:4b", "gemma3:12b"]
+
         except requests.exceptions.RequestException:
             return ["gemma3:4b", "gemma3:12b", "gemma3:1b"]
 

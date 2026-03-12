@@ -82,7 +82,7 @@ alias crom-tienda='google-chrome --profile-directory="Profile 6"'
 alias crom='/usr/bin/google-chrome-stable %U'
 alias crush='(cd /home/daniel/tron/programas/proyectos_principales/proyecto_pizza/cli/crush/ && crush)'
 alias cualesmiiplocal="hostname -i"
-alias da="descargarAudio"
+alias da='sudo apt update && sudo yt-dlp -U && yt-dlp -x -f "bestaudio" --ppa "EmbedThumbnail+ffmpeg_o:-c:v copy" --audio-quality 0'
 alias depurar='set -x; set -v; set -e' 
 alias descargarAudio='sudo yt-dlp -U; yt-dlp -x -f "bestaudio" --ppa "EmbedThumbnail+ffmpeg_o:-c:v copy" --audio-quality 0'
 alias descargarsubin='sudo yt-dlp -U; yt-dlp --impersonate Chrome-116 --sub-format srt --write-subs --write-auto-sub --sub-lang "en" --convert-subs srt --skip-download -o "%(title)s.%(ext)s"'
@@ -100,7 +100,13 @@ alias dondeestoy="lsblk"
 alias dor="xinput disable 9; systemctl suspend"
 alias dream="ssh tron@172.16.141"
 alias drive="autoSincroDri"
-alias dv='descargarVideo'
+alias dv='sudo apt update && sudo yt-dlp -U && yt-dlp'
+# Descargar video 1080p máximo (útil para ahorrar espacio)
+alias dv1080='sudo apt update && sudo yt-dlp -U && yt-dlp -f "best[height<=1080]"'
+# Descargar subtítulos en inglés (SRT) sin video
+alias ds='sudo apt update && sudo yt-dlp -U && yt-dlp --impersonate Chrome-116 --sub-format srt --write-subs --write-auto-sub --sub-lang "en" --convert-subs srt --skip-download -o "%(title)s.%(ext)s"'
+# Descargar audio como MP3 con metadatos completos
+alias da3='sudo apt update && sudo yt-dlp -U && yt-dlp -x --audio-format mp3 --embed-thumbnail --add-metadata --audio-quality 0'
 alias e="cd /home/daniel/Escritorio"
 alias editaraudio="$tron_plugins/AppImage/audacity-linux-3.2.3-x64.AppImage"
 alias editar='ini="PWD"; cd /home/daniel/tron/programas/Admon; source /home/daniel/.venv/bin/activate; python3 /home/daniel/tron/programas/Admon/config_editor.py; cd "$ini"'
@@ -209,7 +215,32 @@ alias promted="promtCarp"
 alias promt="guardaPromts"
 alias prueba="pruebas"
 alias pruebas="if [[ ! -d $programas/pruebas ]]; then mkdir $programas/pruebas; fi; cd $programas/pruebas"
-alias py='/home/daniel/.venv/bin/python3'
+# pyp: Gestor (Uso: pyp add <pkg>, pyp remove <pkg>, pyp list)
+alias pyp='env -u VIRTUAL_ENV uv --project "$TRON_PY_ROOT"'
+
+# py: Ejecutor de Python
+alias py='env -u VIRTUAL_ENV uv run --project "$TRON_PY_ROOT" python'
+
+# gallery-dl: Comando directo
+# --- ALIAS QUIRÚRGICOS PINTEREST ---
+
+# --- ECOSISTEMA TRON: PINTEREST AUTO-UPDATE ---
+
+# 1. El Motor (Actualiza gallery-dl y yt-dlp a la última versión disponible)
+alias pint-up='pyp add -U gallery-dl yt-dlp'
+
+# 2. El básico (Actualiza y descarga en carpeta actual)
+alias pint='pint-up; gallery-dl'
+
+# 3. El organizado (Actualiza y descarga en tu carpeta de colección)
+alias pint-dl='pint-up; gallery-dl -d ~/Descargas/Pinterest'
+
+# 4. El privado (Actualiza y usa cookies para tableros secretos)
+alias pint-priv='pint-up; gallery-dl --cookies ~/cookies.txt'
+
+# 5. El buscador (Actualiza y solo muestra las URLs)
+alias pint-url='pint-up; gallery-dl -g'
+alias gallery-dl='env -u VIRTUAL_ENV uv run --project "$TRON_PY_ROOT" gallery-dl'
 alias qdOff='sudo systemctl stop qdrant.service fastembed.service splade.service'
 alias qdOn='sudo systemctl start qdrant.service fastembed.service splade.service'
 alias qdStatus='systemctl status qdrant.service fastembed.service splade.service'

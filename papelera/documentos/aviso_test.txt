@@ -1,0 +1,7 @@
+TEST DE AVISO
+=============
+ID: 6
+Fecha programada: 2026-03-08 16:57
+Fecha creación: 2026-03-08T16:56:03.176492
+Espera: 1 minuto
+Verifica: ejecuta 'aviso verificar' o 'aviso daemon'
