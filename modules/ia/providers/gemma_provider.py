@@ -44,11 +44,11 @@ class GemmaProvider(BaseProvider):
 
     def generate(self, prompt: str, **kwargs) -> str:
         """Generar respuesta usando API /api/generate de Ollama.
-        
+
         Args:
             prompt: Prompt de entrada.
             **kwargs: model, template, stream, temperature, etc.
-            
+
         Returns:
             Respuesta generada por el modelo Gemma.
         """
@@ -62,15 +62,10 @@ class GemmaProvider(BaseProvider):
             model_info = self._get_model_info(model)
             native_template = model_info.get("template")
             if native_template:
-                # Usar la plantilla nativa directamente con Ollama
-                # Ollama maneja el formateo internamente
-                pass  # No aplicamos template manualmente, Ollama lo hace
-            # Si no hay template nativo, usamos fallback
+                pass
         else:
-            # Usar plantilla YAML específica
             prompt = self._load_template(template_name, prompt)
 
-        # Fusionar opciones con parámetros del modelo
         model_options = self._get_model_options(model)
         if model_options:
             for key, value in model_options.items():
@@ -85,24 +80,79 @@ class GemmaProvider(BaseProvider):
         }
 
         url = f"{self.base_url}/api/generate"
-        
+
         try:
-            # Timeout más largo para carga de modelo (5 minutos)
             response = requests.post(url, json=payload, timeout=300)
             response.raise_for_status()
-            
+
             if stream:
                 return self._parse_stream(response)
             else:
                 result = response.json()
                 return result.get("response", "Error: Sin respuesta.")
-                
+
         except requests.exceptions.Timeout:
-            return f"Error: Timeout - El modelo '{model}' está tardando en cargar. Intenta nuevamente o usa un modelo más pequeño."
+            return f"Error: Timeout - El modelo '{model}' está tardando en cargar."
         except requests.exceptions.RequestException as e:
             return f"Error Ollama/Gemma: {str(e)}"
         except json.JSONDecodeError as e:
             return f"Error JSON: {str(e)}"
+
+    def generate_stream(self, prompt: str, **kwargs):
+        """Generar respuesta con streaming en tiempo real.
+
+        Args:
+            prompt: Prompt de entrada.
+            **kwargs: model, template, options, etc.
+
+        Yields:
+            Fragmentos de respuesta (chunks).
+        """
+        model = kwargs.get("model", self.default_model)
+        template_name = kwargs.get("template")
+        options = kwargs.get("options", {})
+
+        if not template_name:
+            model_info = self._get_model_info(model)
+            native_template = model_info.get("template")
+            if native_template:
+                pass
+        else:
+            prompt = self._load_template(template_name, prompt)
+
+        model_options = self._get_model_options(model)
+        if model_options:
+            for key, value in model_options.items():
+                if key not in options:
+                    options[key] = value
+
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "stream": True,
+            "options": options
+        }
+
+        url = f"{self.base_url}/api/generate"
+
+        try:
+            response = requests.post(url, json=payload, timeout=300, stream=True)
+            response.raise_for_status()
+
+            for line in response.iter_lines():
+                if line:
+                    try:
+                        data = json.loads(line)
+                        content = data.get("response", "")
+                        if content:
+                            yield content
+                        if data.get("done", False):
+                            break
+                    except json.JSONDecodeError:
+                        continue
+
+        except requests.exceptions.RequestException as e:
+            yield f"Error: {str(e)}"
 
     def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
         """Generar respuesta en modo chat usando API /api/chat.

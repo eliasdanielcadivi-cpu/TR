@@ -30,7 +30,7 @@ class AIEngine:
 
     def __init__(self, config: Dict[str, Any], base_path: str):
         """Inicializar AIEngine.
-        
+
         Args:
             config: Configuración de IA desde config.yaml.
             base_path: Ruta base del proyecto TR.
@@ -39,36 +39,42 @@ class AIEngine:
         self.base_path = base_path
         self.default_provider = config.get("default_provider", "ollama")
         self.aliases = config.get("aliases", {})
-        
+
         # Inicializar providers
         self._providers: Dict[str, BaseProvider] = {}
         self._init_providers(config)
-        
+
         # Inicializar gestor de plantillas
         templates_dir = os.path.join(base_path, "modules", "ia", "templates")
         self.template_manager = TemplateManager(templates_dir)
-        
+
         # Inicializar registro de herramientas
         self.tool_registry = ToolRegistry()
         self._register_default_tools()
+        
+        # Estado del filtro think para streaming
+        self._think_filter_state = {
+            "in_think_block": False,
+            "buffer": ""
+        }
 
-    def ask(self, prompt: str, model_alias: Optional[str] = None, 
+    def ask(self, prompt: str, model_alias: Optional[str] = None,
             template: Optional[str] = None, **kwargs) -> str:
         """Consultar a la IA con prompt.
-        
+
         Args:
             prompt: Prompt de entrada.
             model_alias: Alias de modelo (gemma, deepseek, etc.).
             template: Nombre de plantilla YAML a aplicar.
             **kwargs: Parámetros adicionales (temperature, max_tokens, etc.).
-            
+
         Returns:
             Respuesta de la IA.
         """
         # --- INYECCIÓN DINÁMICA DE SKILLS ---
         skills_dir = os.path.join(self.base_path, "docs", "skills")
         injected_context = ""
-        
+
         # Mapa de palabras clave a skills
         skill_map = {
             "sesion": "skill-sesion.md",
@@ -83,13 +89,13 @@ class AIEngine:
             "producir": "skill-produccion.md",
             "globalizar": "skill-produccion.md"
         }
-        
+
         found_skills = set()
         prompt_lower = prompt.lower()
         for key, skill_file in skill_map.items():
             if key in prompt_lower:
                 found_skills.add(skill_file)
-        
+
         for skill_file in found_skills:
             skill_path = os.path.join(skills_dir, skill_file)
             if os.path.exists(skill_path):
@@ -98,14 +104,14 @@ class AIEngine:
                         injected_context += f"\n\n--- SKILL INYECTADO: {skill_file} ---\n{f.read()}\n"
                 except:
                     pass
-        
+
         if injected_context:
             prompt = f"{injected_context}\n\n--- CONSULTA USUARIO ---\n{prompt}"
         # ------------------------------------
 
         # Determinar provider y modelo
         provider, model = self._resolve_provider_and_model(model_alias, template)
-        
+
         # Aplicar plantilla si se especifica
         if template:
             prompt = self.template_manager.apply(
@@ -113,20 +119,196 @@ class AIEngine:
                 template,
                 prompt=prompt
             )
-        
+
         # Obtener configuración de plantilla si existe
         template_config = {}
         if template:
             provider_name = self._get_provider_name(provider)
             template_config = self.template_manager.get_config(provider_name, template)
-        
+
         # Fusionar parámetros
         params = {**template_config, **kwargs}
         if model:
             params["model"] = model
-        
+
         # Ejecutar consulta
         return provider.generate(prompt, **params)
+
+    def ask_stream(self, prompt: str, model_alias: Optional[str] = None,
+                   template: Optional[str] = None, filter_think: bool = False,
+                   **kwargs):
+        """Consultar a la IA con streaming en tiempo real.
+
+        Args:
+            prompt: Prompt de entrada.
+            model_alias: Alias de modelo.
+            template: Nombre de plantilla YAML.
+            filter_think: Si True, filtra etiquetas <think>
+</think>
+
+ en tiempo real.
+            **kwargs: Parámetros adicionales.
+
+        Yields:
+            Fragmentos de respuesta (chunks).
+        """
+        # --- INYECCIÓN DINÁMICA DE SKILLS ---
+        skills_dir = os.path.join(self.base_path, "docs", "skills")
+        injected_context = ""
+
+        skill_map = {
+            "sesion": "skill-sesion.md",
+            "pestaña": "skill-sesion.md",
+            "abre": "skill-sesion.md",
+            "gs": "skill-sesion.md",
+            "inicializa": "skill-inicializacion.md",
+            "proyecto": "skill-inicializacion.md",
+            "desarrolla": "skill-desarrollo.md",
+            "módulo": "skill-desarrollo.md",
+            "mantén": "skill-mantenimiento.md",
+            "producir": "skill-produccion.md",
+            "globalizar": "skill-produccion.md"
+        }
+
+        found_skills = set()
+        prompt_lower = prompt.lower()
+        for key, skill_file in skill_map.items():
+            if key in prompt_lower:
+                found_skills.add(skill_file)
+
+        for skill_file in found_skills:
+            skill_path = os.path.join(skills_dir, skill_file)
+            if os.path.exists(skill_path):
+                try:
+                    with open(skill_path, "r", encoding="utf-8") as f:
+                        injected_context += f"\n\n--- SKILL INYECTADO: {skill_file} ---\n{f.read()}\n"
+                except:
+                    pass
+
+        if injected_context:
+            prompt = f"{injected_context}\n\n--- CONSULTA USUARIO ---\n{prompt}"
+
+        # Determinar provider y modelo
+        provider, model = self._resolve_provider_and_model(model_alias, template)
+
+        # Aplicar plantilla si se especifica
+        if template:
+            prompt = self.template_manager.apply(
+                provider.name if hasattr(provider, 'name') else self._get_provider_name(provider),
+                template,
+                prompt=prompt
+            )
+
+        # Obtener configuración de plantilla
+        template_config = {}
+        if template:
+            provider_name = self._get_provider_name(provider)
+            template_config = self.template_manager.get_config(provider_name, template)
+
+        # Fusionar parámetros
+        params = {**template_config, **kwargs}
+        params["stream"] = True
+        if model:
+            params["model"] = model
+
+        # Ejecutar consulta con streaming
+        if hasattr(provider, 'generate_stream'):
+            for chunk in provider.generate_stream(prompt, **params):
+                if filter_think:
+                    chunk = self._filter_think_chunk(chunk)
+                if chunk:
+                    yield chunk
+        else:
+            # Fallback: usar generate normal
+            yield provider.generate(prompt, **params)
+
+    def _filter_think_chunk(self, chunk: str) -> str:
+        """Filtrar etiquetas <think>
+</think>
+
+ de un chunk en tiempo real.
+
+        Usa estado para rastrear bloques think a través de múltiples chunks.
+        Maneja tanto formatos Unicode (\u003cthink\u003e) como normales (<think>).
+
+        Args:
+            chunk: Fragmento de texto.
+
+        Returns:
+            Chunk filtrado.
+        """
+        # Normalizar Unicode a caracteres normales
+        chunk = chunk.replace('\\u003c', '<').replace('\\u003e', '>')
+        chunk = chunk.replace('\u003c', '<').replace('\u003e', '>')
+        
+        buffer = self._think_filter_state["buffer"]
+        in_think = self._think_filter_state["in_think_block"]
+        
+        # Acumular chunk en buffer
+        buffer += chunk
+        
+        # Verificar si estamos en un bloque think
+        if not in_think:
+            # Buscar inicio de bloque think (varias variantes)
+            think_start = -1
+            for variant in ['<think>', '<think>']:
+                idx = buffer.find(variant)
+                if idx != -1 and (think_start == -1 or idx < think_start):
+                    think_start = idx
+            
+            if think_start != -1:
+                # Verificar si hay cierre en el mismo buffer
+                think_end = -1
+                for variant in ['</think>', '</think>']:
+                    idx = buffer.find(variant, think_start)
+                    if idx != -1 and (think_end == -1 or idx < think_end):
+                        think_end = idx
+                
+                if think_end != -1:
+                    # Bloque completo en buffer, eliminarlo
+                    end_marker = '</think>' if '</think>' in buffer[think_end:think_end+10] else '</think>'
+                    filtered = buffer[:think_start] + buffer[think_end + len(end_marker):]
+                    self._think_filter_state["buffer"] = ""
+                    self._think_filter_state["in_think_block"] = False
+                    return filtered
+                else:
+                    # Inicio de bloque, pero sin cierre aún
+                    # Retener solo lo anterior a <think>
+                    output = buffer[:think_start]
+                    self._think_filter_state["buffer"] = buffer[think_start:]
+                    self._think_filter_state["in_think_block"] = True
+                    return output
+            else:
+                # No hay bloque think, retornar buffer y limpiar
+                self._think_filter_state["buffer"] = ""
+                return buffer
+        else:
+            # Estamos dentro de un bloque think
+            think_end = -1
+            end_marker = None
+            for variant in ['</think>', '</think>']:
+                idx = buffer.find(variant)
+                if idx != -1:
+                    think_end = idx
+                    end_marker = variant
+                    break
+            
+            if think_end != -1:
+                # Fin del bloque think
+                self._think_filter_state["buffer"] = ""
+                self._think_filter_state["in_think_block"] = False
+                # Retener solo lo posterior a </think>
+                return buffer[think_end + len(end_marker):]
+            else:
+                # Continuar dentro del bloque, no retornar nada
+                return ""
+
+    def reset_think_filter(self):
+        """Resetear estado del filtro think."""
+        self._think_filter_state = {
+            "in_think_block": False,
+            "buffer": ""
+        }
 
     def chat(self, messages: List[Dict[str, str]], 
              model_alias: Optional[str] = None,
@@ -244,11 +426,11 @@ class AIEngine:
                 return provider or self._get_default_provider(), model
 
             # Detectar provider por nombre de modelo
-            if "gemma" in alias_lower:
+            if "gemma" in alias_lower or "ares" in alias_lower:
                 return self._providers.get("gemma", self._get_default_provider()), alias_lower
             elif "deepseek" in alias_lower:
                 return self._providers.get("deepseek"), alias_lower
-            elif "phi" in alias_lower or "llama" in alias_lower or "qwen" in alias_lower:
+            elif "phi" in alias_lower or "llama" in alias_lower or "qwen" in alias_lower or "mistral" in alias_lower or "smol" in alias_lower:
                 # Modelos Ollama genéricos
                 return self._providers.get("gemma", self._get_default_provider()), alias_lower
 
