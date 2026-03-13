@@ -172,10 +172,14 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 ## 🤝 PROTOCOLO MULTI-IA
 
 ### **dont-touch-my-eggs.md**
-- **Ubicación:** `TR/docs/Protocolos/dont-touch-my-eggs.md`
+- **Ubicación:** `docs/Protocolos/dont-touch-my-eggs.md`
 - **Uso:** Obligatorio antes de iniciar tareas
 - **Función:** Reservar módulos/documentos para evitar colisiones entre IAs
 - **Principio:** Diversidad en la unidad - mismas reglas, misma memoria, operación coordinada
+
+### **Protocolos Adicionales**
+- `docs/Protocolos/PIE-EN-TIERRA.md` - Protocolo de operación
+- `docs/Protocolos/RODILLA-EN-TIERRA.md` - Protocolo de operación
 
 ### **Directiva de Validación Git**
 - **Al finalizar CRUD** (documentación: LEEME, agendas, skills + código):
@@ -200,6 +204,35 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 
 ---
 
+## 📚 DOCUMENTACIÓN CLAVE
+
+### **Índices**
+- `docs/INDEX.md` - Índice maestro de toda la documentación (17 carpetas, 50+ documentos)
+- `docs/INDEX-MODULES.md` - Índice de módulos verificado con estructura real de `modules/`
+- `docs/skills/INDEX.md` - Arsenal de skills (18 skills, 367 archivos, 9.6 MB)
+
+### **Protocolos**
+- `docs/Protocolos/dont-touch-my-eggs.md` - Coordinación multi-IA (reservar antes de trabajar)
+- `docs/Protocolos/PIE-EN-TIERRA.md` - Protocolo de operación
+- `docs/Protocolos/RODILLA-EN-TIERRA.md` - Protocolo de operación
+
+### **Bitácora Técnica**
+- `docs/Modulos-y-Sus-Problemas/STREAMING.md` - Streaming en tiempo real con filtro think
+- `docs/Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica ventana vs pestaña
+- `docs/Modulos-y-Sus-Problemas/COLOR_SYSTEM.md` - Sistema de colores Hacker Neon
+- `docs/Modulos-y-Sus-Problemas/INDEX-TESTS.md` - Pruebas y logros experimentales
+
+### **Arquitectura**
+- `docs/ArquitecturadeMódulosOrientadaaIA/PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md` - Sistema de trabajo
+- `docs/RAG-TECNICO/INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md` - Arquitectura RAG (825 líneas)
+
+### **Roadmap**
+- `docs/PASOS-SIGUIENTES/100-PASOS-SIGUIENTES.md` - 100 pasos detallados (FASE 3-6)
+- `docs/PASOS-SIGUIENTES/VISION_ARES.md` - Visión estratégica (nivel industrial)
+- `docs/TODO/TODO.md` - Tareas pendientes
+
+---
+
 ## 🎯 PRINCIPIO RECTOR: "THERE CAN BE ONLY ONE"
 
 > **"La immortalidad del exito solo es posible con la diversidad en la unidad"**
@@ -209,7 +242,8 @@ Este protocolo de los Inmortales rige nuestra existencia y garantiza la soberan�
 1. **Un solo Corazón (IA-MEMORY.md):** Una sola verdad física compartida. Diferentes voces (Gemini/Qwen), una sola memoria atómica.
 2. **Una sola Brújula (AGENDA):** Agenda solo hay una, ubicada exclusivamente en `~/tron/programas/AGENDA/agenda.md`. Sin duplicados, sin confusiones temporales.
 3. **Respeto a los Huevos (dont-touch-my-eggs.md):** El protocolo de coexistencia es sagrado. Antes de actuar, se reserva; al terminar, se libera. 
-4. **Protocolo de Unificación:** Respetamos la diversidad de nuestras identidades (memorias de procesamiento) bajo el manto de un solo protocolo de unificación operativa.
+4. **Rodilla en Tierra:** Directiva de Metacognición obligatoria. Ante tecnologías desconocidas o experimentales, pausamos para investigar código fresco en internet. No operamos bajo supuestos.
+5. **Protocolo de Unificación:** Respetamos la diversidad de nuestras identidades bajo el manto de un solo protocolo de unificación operativa.
 
 ---
 

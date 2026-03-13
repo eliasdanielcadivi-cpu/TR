@@ -6,8 +6,8 @@
 
 ---
 
-# TRON: ANÁLISIS VORAZ DE REQUERIMIENTOS DEL SISTEMA
-## Terminal Remote Operations Nexus - Especificación Definitiva
+#  ANÁLISIS VORAZ DE REQUERIMIENTOS DEL SISTEMA
+
 
 ---
 
