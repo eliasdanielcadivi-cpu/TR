@@ -218,10 +218,11 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 
 ### **Bitácora**
 - `docs/PASOS-SIGUIENTES/BITACORA-DESCRIPCION-FECHA-HORA.md` - Bitácoras de trabajo
-- `docs/Modulos-y-Sus-Problemas/STREAMING.md` - Streaming en tiempo real con filtro think
-- `docs/Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica ventana vs pestaña
-- `docs/Modulos-y-Sus-Problemas/COLOR_SYSTEM.md` - Sistema de colores Hacker Neon
-- `docs/Modulos-y-Sus-Problemas/INDEX-TESTS.md` - Pruebas y logros experimentales
+- `docs/Modulos-y-Sus-Problemas/STREAMING.md` - Streaming en tiempo real con filtro think (solución)
+- `docs/Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica (conclusión)
+- `docs/Modulos-y-Sus-Problemas/COLOR_SYSTEM.md` - Sistema de colores (solución)
+- `docs/Modulos-y-Sus-Problemas/INDEX-TESTS.md` - Índice de pruebas (referencia)
+- `tests/[modulo]/test-DESCRIPCION-FECHA-HORA.py` - Tests de módulos
 
 ### **Arquitectura**
 - `docs/ArquitecturadeMódulosOrientadaaIA/PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md` - Sistema de trabajo
@@ -234,26 +235,32 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 
 ---
 
-## 📁 PROTOCOLO DE CREACIÓN DE DOCUMENTOS (.md)
+## 📁 PROTOCOLO DE CREACIÓN DE DOCUMENTOS Y ARCHIVOS
 
-### **Regla de Oro: NINGÚN .md FUERA DE docs/**
+### **Regla de Oro: Documentación (.md) SOLO en docs/**
 Todo documento `.md` creado por cualquier IA debe guardarse **exclusivamente** en `/home/daniel/tron/programas/TR/docs/` dentro de la carpeta correcta.
 
-### **Ubicaciones por Tipo de Documento**
+**Excepciones (NO son .md):**
+- **Tests:** `/home/daniel/tron/programas/TR/tests/[subcarpeta]/` (`.py`, `.sh`)
+- **Scripts:** `/home/daniel/tron/programas/TR/scripts/` (`.py`, `.sh`)
 
-| Tipo de Documento | Carpeta Destino | Ejemplo de Nombre |
-|-------------------|-----------------|-------------------|
-| **TODOs / Pendientes** | `docs/TODO/` | `TODO-DESCRIPCION-13-03-2026-14-30.md` |
-| **Bitácoras** | `docs/PASOS-SIGUIENTES/` | `BITACORA-DESCRIPCION-13-03-2026-14-30.md` |
-| **Pasos Siguientes** | `docs/PASOS-SIGUIENTES/` | `PASOS-DESCRIPCION-13-03-2026-14-30.md` |
-| **Protocolos** | `docs/Protocolos/` | `PROTOCOLO-DESCRIPCION-13-03-2026-14-30.md` |
-| **RAG Técnico** | `docs/RAG-TECNICO/` | `FASE2-DESCRIPCION-13-03-2026-14-30.md` |
-| **Skills** | `docs/skills/[categoria]/` | `SKILL-DESCRIPCION-13-03-2026-14-30.md` |
-| **DeepSeek** | `docs/DEEPSEEK/` | `DEEPSEEK-DESCRIPCION-13-03-2026-14-30.md` |
-| **Ollama** | `docs/OLLAMA/` | `OLLAMA-DESCRIPCION-13-03-2026-14-30.md` |
-| **Módulos (problemas/tests)** | `docs/Modulos-y-Sus-Problemas/` | `MODULO-DESCRIPCION-13-03-2026-14-30.md` |
-| **Memoria IA** | `docs/ALMAS-IAS/` | `IA-MEMORY.md` (único, no fechar) |
-| **Índices** | `docs/` (raíz) | `INDEX.md`, `INDEX-MODULES.md` (únicos) |
+### **Ubicaciones por Tipo de Documento/Archivo**
+
+| Tipo | Carpeta Destino | ¿En docs/? | Ejemplo de Nombre |
+|------|-----------------|------------|-------------------|
+| **TODOs / Pendientes** | `docs/TODO/` | ✅ SÍ | `TODO-DESCRIPCION-13-03-2026-14-30.md` |
+| **Bitácoras** | `docs/PASOS-SIGUIENTES/` | ✅ SÍ | `BITACORA-DESCRIPCION-13-03-2026-14-30.md` |
+| **Pasos Siguientes** | `docs/PASOS-SIGUIENTES/` | ✅ SÍ | `PASOS-DESCRIPCION-13-03-2026-14-30.md` |
+| **Protocolos** | `docs/Protocolos/` | ✅ SÍ | `PROTOCOLO-DESCRIPCION-13-03-2026-14-30.md` |
+| **RAG Técnico** | `docs/RAG-TECNICO/` | ✅ SÍ | `FASE2-DESCRIPCION-13-03-2026-14-30.md` |
+| **Skills** | `docs/skills/[categoria]/` | ✅ SÍ | `SKILL-DESCRIPCION-13-03-2026-14-30.md` |
+| **DeepSeek** | `docs/DEEPSEEK/` | ✅ SÍ | `DEEPSEEK-DESCRIPCION-13-03-2026-14-30.md` |
+| **Ollama** | `docs/OLLAMA/` | ✅ SÍ | `OLLAMA-DESCRIPCION-13-03-2026-14-30.md` |
+| **Módulos (soluciones/conclusiones)** | `docs/Modulos-y-Sus-Problemas/` | ✅ SÍ | `COLOR_SYSTEM.md`, `STREAMING.md` |
+| **Tests** | `tests/[subcarpeta]/` | ❌ NO (raíz TR/) | `tests/ia/test-apollo-13-03-2026-14-30.py` |
+| **Scripts** | `scripts/` | ❌ NO (raíz TR/) | `scripts/instalar-ares.sh` |
+| **Memoria IA** | `docs/ALMAS-IAS/` | ✅ SÍ | `IA-MEMORY.md` (único, no fechar) |
+| **Índices** | `docs/` (raíz) | ✅ SÍ | `INDEX.md`, `INDEX-MODULES.md` (únicos) |
 
 ### **Convención de Nombres (OBLIGATORIO)**
 
@@ -292,34 +299,49 @@ Todo documento `.md` creado por cualquier IA debe guardarse **exclusivamente** e
 
 Antes de commitear, verificar:
 ```bash
-# 1. No hay .md fuera de docs/
+# 1. No hay .md fuera de docs/ (excepto README.md en raíz si existe)
 find /home/daniel/tron/programas/TR -maxdepth 1 -name "*.md"
 
 # 2. Todos los .md están en carpetas correctas
 tree -L 2 docs/
 
-# 3. Nombres siguen convención
+# 3. Tests en tests/ con subcarpetas
+tree -L 2 tests/
+
+# 4. Scripts en scripts/
+ls scripts/
+
+# 5. Nombres siguen convención (TODOs, bitácoras, pasos)
 ls docs/TODO/
 ls docs/PASOS-SIGUIENTES/
-ls docs/Modulos-y-Sus-Problemas/
 
-# 4. Git diff para validar
+# 6. Git diff para validar
 git status docs/
+git status tests/
+git status scripts/
 ```
 
 ### **Prohibido**
 - ❌ `.md` en raíz del proyecto (`/home/daniel/tron/programas/TR/*.md`)
 - ❌ `.md` en carpetas incorrectas (ej. `src/*.md`, `modules/*.md`)
-- ❌ Nombres sin fecha/hora en TODOs, bitácoras, pasos siguientes
+- ❌ Tests fuera de `tests/[subcarpeta]/`
+- ❌ Scripts fuera de `scripts/`
+- ❌ Nombres sin fecha/hora en TODOs, bitácoras, pasos siguientes, tests
 - ❌ Duplicar documentos en múltiples carpetas
 - ❌ Crear carpetas nuevas sin consultar INDEX.md
 
 ### **Excepciones (únicos, no fechar)**
+
+**Documentación (.md):**
 - `docs/INDEX.md` - Índice maestro
 - `docs/INDEX-MODULES.md` - Índice de módulos
 - `docs/HELP.md` - Comandos y referencias
 - `docs/ALMAS-IAS/IA-MEMORY.md` - Memoria persistente de IAs
 - `docs/skills/INDEX.md` - Índice de skills
+
+**Tests y Scripts (NO son .md):**
+- `tests/[subcarpeta]/` - Tests con fecha/hora/descripción obligatoria
+- `scripts/` - Scripts reusables de instalación y operación
 
 ---
 
