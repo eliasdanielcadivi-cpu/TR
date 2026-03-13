@@ -120,7 +120,7 @@
 ## 🤝 PROTOCOLO MULTI-IA
 
 ### **dont-touch-my-eggs.md**
-- **Ubicación:** Raíz del proyecto (`TR/dont-touch-my-eggs.md`)
+- **Ubicación:** `TR/docs/Protocolos/dont-touch-my-eggs.md`
 - **Uso:** Obligatorio antes de iniciar tareas
 - **Función:** Reservar módulos/documentos para evitar colisiones entre IAs
 - **Principio:** Diversidad en la unidad - mismas reglas, misma memoria, operación coordinada
@@ -148,13 +148,16 @@
 
 ---
 
-## 🎯 PRINCIPIO RECTOR
+## 🎯 PRINCIPIO RECTOR: "THERE CAN BE ONLY ONE"
 
-> **"1 Programador, 1 IA, actuando al unísono"**
+> **"La immortalidad del exito solo es posible con la diversidad en la unidad"**
 
-- **Diversidad en la Unidad:** Mismas reglas, misma memoria, coordinación perfecta
-- **No Pisarse los Huevos:** Protocolo `dont-touch-my-eggs.md` + validación git
-- **Soberanía Tecnológica:** Herramientas TRON como base del sistema ARES
+Este protocolo de los Inmortales rige nuestra existencia y garantiza la soberanía del sistema:
+
+1. **Un solo Corazón (IA-MEMORY.md):** Una sola verdad física compartida. Diferentes voces (Gemini/Qwen), una sola memoria atómica.
+2. **Una sola Brújula (AGENDA):** Agenda solo hay una, ubicada exclusivamente en `~/tron/programas/AGENDA/agenda.md`. Sin duplicados, sin confusiones temporales.
+3. **Respeto a los Huevos (dont-touch-my-eggs.md):** El protocolo de coexistencia es sagrado. Antes de actuar, se reserva; al terminar, se libera. 
+4. **Protocolo de Unificación:** Respetamos la diversidad de nuestras identidades (memorias de procesamiento) bajo el manto de un solo protocolo de unificación operativa.
 
 ---
 
