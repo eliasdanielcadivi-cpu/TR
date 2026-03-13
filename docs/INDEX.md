@@ -1,154 +1,305 @@
-# 🛰️ ARES - ÍNDICE DE MÓDULOS Y COMPONENTES (v2.0)
+# 🛰️ ARES - ÍNDICE MAESTRO DE DOCUMENTACIÓN
 
-**⚠️ REGLA DE ORO:** Consultar este índice ANTES de crear cualquier módulo nuevo.  
-**📋 MÁXIMO 3 FUNCIONES** por módulo (filosofía ARES de modularidad atómica).
-
----
-
-## 🏛️ NÚCLEO (root / config)
-
-### main.py - Despachador Puro
-**Propósito:** Punto de entrada único. No contiene lógica de negocio, solo orquestación de comandos.
-**Relaciones:** Importa dinámicamente de `modules/`.
-
-### config/ - Gestión de Entorno
-- `config.yaml`: Única fuente de verdad para identidad (Ares), rutas y sockets.
-- `kitty_remote.py`: Motor de bajo nivel para control de la terminal. (Funciones: `is_running`, `launch_hub`, `run`).
+> **Navegación recomendada:** `broot` o `ares help`
+> **Última actualización:** 2026-03-13
+> **Total de carpetas:** 18 | **Documentos principales:** 50+
 
 ---
 
-## 🧩 JERARQUÍA DE MÓDULOS (modules/)
+## 📚 ESTRUCTURA DE DOCUMENTACIÓN
 
-### admon/ - Gestión de Sistema
-**Propósito:** Mantenimiento y diagnóstico de la salud de ARES.
-- `diag_manager.py`: Diagnóstico visual de sockets y pestañas.
-- `init_manager.py`: Gestión de enlaces simbólicos y recarga de configuración.
-- `session_manager.py`: Captura y persistencia de sesiones de Kitty (JSON).
-  - **Funciones**: `capture_and_save()`, `list_sessions()`, `load_session_data()`
-
-### ia/ - Cerebro Agéntico
-**Propósito:** Conectividad con modelos de lenguaje y lógica de prompts.
-- `ai_engine.py`: Conector multi-provider para Ollama, DeepSeek y OpenRouter.
-  - **Funciones principales**: `ask()`, `ask_stream()`, `chat()`
-  - **Streaming en tiempo real**: `ask_stream()` con filtro think opcional
-  - **Filtro think**: `_filter_think_chunk()` elimina etiquetas <think></think> en streaming
-  - **Soporte multi-modelo**: Detección automática de modelos (gemma, ares, mistral, qwen, llama, phi, smol, deepseek)
-- `investigador/`: Módulo especializado en exploración web e inteligencia.
-  - **CLI**: `tr-investigador buscar|otear|docs` | **Tipo**: Herramienta CLI (Tipo 2)
-  - **Funciones**: `investigar()` (Google), `otear()` (URLs), `consultar_docs()`
-- `providers/` - Providers multi-modelo:
-  - `base_provider.py`: Interfaz abstracta (generate, chat, list_models)
-  - `gemma_provider.py`: Ollama local con streaming (`generate_stream()`)
-  - `deepseek_provider.py`: API DeepSeek cloud
-  - `openrouter_provider.py`: API OpenRouter (placeholder)
-- `templates/`: Gestión de plantillas YAML
-  - `manager.py`: `TemplateManager` con `apply()`, `get_config()`, `list_templates()`
-- `tools/`: Function calling y herramientas
-  - `tool_registry.py`: Registro de herramientas (google_search, translate, weather, shell, file ops)
-- `apollo/` — **Sistema RAG + CRM** (FASE 0-2 COMPLETADO)
-  - **apollo_db.py**: Persistencia SQLite + sqlite-vec (knowledge.db, users.db)
-    - Funciones: `init_db()`, `get_connection()`, `close_db()`, `db_context()`
-  - **embeddings.py**: Generación de embeddings con Ollama (mxbai-embed-large:335m)
-    - Funciones: `embed_text()`, `embed_documents()`, `quantize_embeddings()`
-  - **ingest.py**: Ingesta de documentos con chunking semántico
-    - Funciones: `semantic_chunk()`, `ingest_file()`, `ingest_directory()`
-  - **extraction.py**: Extracción de entidades y relaciones con LLM
-    - Funciones: `extract_entities_relations()`, `store_entities()`, `store_relations()`
-  - **retrieval.py**: Recuperación híbrida (vectorial + grafo + relacional)
-    - Funciones: `retrieve()`, `_vector_search()`, `_graph_search()`, `_relational_search()`
-  - **compression.py**: Compresión contextual de documentos
-    - Funciones: `compress_context()`, `_select_relevant_docs()`, `_extract_key_sentences()`
-  - **generation.py**: Generación de respuestas con post-procesamiento
-    - Funciones: `generate_answer()`, `generate_citations()`, `detect_hallucination()`, `apply_post_process()`
-  - **emoji_manager.py**: Emojis como imágenes con term-image
-    - Funciones: `show_emoji()`, `format_output_with_emoji()`, `get_emoji_path()`
-  - **cli_ingest.py**: CLI de ingesta (`python -m modules.ia.apollo.cli_ingest`)
-  - **init_apollo_db.py**: Inicialización de bases de datos (`python -m modules.ia.apollo.init_apollo_db`)
-  - **Comandos ARES**:
-    - `ares i` — Modo interactivo REPL (con /think, /model, /rag, /clear, /help)
-    - `ares i --rag <dataset>` — Con RAG activado
-    - `ares i --think` — Con modo pensante (ares-think)
-    - `ares p "pregunta" --rag <dataset>` — Consulta con RAG
-    - `ares p "pregunta" --think` — Con modo pensante
-    - `ares model` — Gestionar modelo predeterminado (listar, establecer)
-    - `ares model --list` — Listar todos los modelos Ollama disponibles
-    - `ares model <nombre> --set-default` — Establecer modelo predeterminado
-    - `ares models` — Listar modelos por provider
-
-### ui/ - Interfaz y Estética
-**Propósito:** Control visual y documentación interactiva.
-- `help_manager.py`: Visualización de manuales neón y orquestación de IA en terminal.
-  - **Funciones**: `show_enhanced_help()`, `query_ai()`, `list_models()`, `list_templates()`, `list_tools()`, `show_config()`
-- `chat_interface.py`: Modo interactivo REPL con streaming en tiempo real.
-  - **Funciones**: `start_interactive_chat()`, `_list_models_and_switch()`, `_show_help()`
-  - **Comandos interactivos**: `/model`, `/m`, `/think`, `/rag`, `/clear`, `/c`, `/help`, `/h`, `/quit`, `/exit`
-  - **Streaming**: Respuesta en tiempo real con flush() para baja latencia
-  - **Filtro think**: Elimina etiquetas <think></think> para modelos no pensantes (ares:latest)
-
-### color/ - Identidad Visual Dinámica
-**Propósito:** Motor de coloreado de pestañas Kitty con identidad Hacker Neon.
-- `color_engine.py`: Aplicación de paletas de colores por tipo de archivo.
-- **CLI**: `tr-color <ruta>` | **Tipo**: Herramienta CLI (Tipo 2)
-- **Docs**: `docs/COLOR_MODULE.md`, `docs/COLOR_SYSTEM.md`
-
-### multimedia/ - Puppeteering de Medios
-**Propósito:** Integración de video, imagen y audio en la terminal.
-- `media_manager.py`: Control de `mpv` (IPC) y `icat` para renderizado de alta fidelidad.
-
-### tactico/ - Orquestación de Flujos
-**Propósito:** Despliegue de entornos de trabajo predefinidos.
-- `plan_manager.py`: Ejecución de `arn plan` y verificación de handshake.
-- `zsh_plan_manager.py`: Ejecución de `ares zshPlan` para sesiones de IA en Zsh.
-- `mcat_demo.py`: Demo táctico de capacidades de Mcat (4 pestañas).
-
-### whatsapp/ - Comunicaciones Externas
-**Propósito:** Puente entre ARES y la red de mensajería para distribución de datos.
+```
+docs/
+├── ALMAS-IAS/                    # Memorias persistentes de IAs
+├── ArquitecturadeMódulosOrientadaaIA/
+├── BROOT/
+├── DEEPSEEK/
+├── INTERFAZ/
+├── Kitty-Puro/
+├── Modulos-y-Sus-Problemas/      # Bitácora técnica de módulos
+├── OLLAMA/
+├── OptimizacionZRAM/
+├── PASOS-SIGUIENTES/
+├── plugins/
+├── Protocolos/                   # Protocolos multi-IA
+├── RAG-TECNICO/                  # Arquitectura RAG híbrida
+├── skills/                       # Arsenal Kung-Fu IA (18 skills)
+├── TODO/
+├── HELP.md
+├── INDEX.md                      # Este archivo
+├── INDEX-MODULES.md              # Índice de módulos
+└── ZSH_WOW_CHEAT_SHEET.md
+```
 
 ---
 
-## 🕵️ AGENTES (AGENTES/)
+## 🗂️ CARPETAS Y DOCUMENTOS PRINCIPALES
 
-### sub-agentes/sherlok/ - Auditor de Código con IA
-**Propósito:** Auditoría de programas con "ADN Técnico Industrial" usando LLM local.
-- **Ubicación**: `AGENTES/sub-agentes/sherlok/`
-- **Modelos**: codellama:7b, qwen2.5-coder:7b-instruct, deepseek-r1:8b
-- **Componentes**: `brain.py` (análisis), `scanner.py` (exploración), `persistence.py` (SQLite)
-- **Tipo**: Agente con LLM (Tipo 4) - JSON output en desarrollo
-- **Configuración**: `AGENTES/sub-agentes/sherlok/config.yaml`
+### 🧠 ALMAS-IAS/
+**Propósito:** Memorias persistentes de IAs para operación coordinada.
 
----
+| Documento | Descripción |
+|-----------|-------------|
+| `IA-MEMORY.md` | **Memoria única** de IA (Qwen + Gemini). Enlaces duros a `~/.qwen/QWEN.md` y `~/.gemini/GEMINI.md`. Contiene: herramientas TRON, filosofía ARES, protocolos, reglas de edición. |
 
-## 🔧 BINARIOS GLOBALES (bin/)
-
-| Binario | Propósito | Módulo Origen |
-|---------|-----------|---------------|
-| `ares` | Lanzador maestro (Abre ARES Hub) | `src/main.py` |
-| `tr-color` | Coloreado de pestañas Kitty | `modules/color/` |
-| `tr-image` | Visualización de imágenes | `modules/multimedia/` |
-| `tr-investigador` | Búsqueda web y oteo de URLs | `modules/investigador/` |
-| `tr-kitty-init` | Inicialización de terminal Kitty | `scripts/` |
-| `tr-video` | Reproducción de video en terminal | `modules/multimedia/` |
-| `broot` | Navegador jerárquico encapsulado | `bin/broot-core/` |
-| `br` | Función shell para navegación con `cd` | `bin/broot-core/` |
+**Principio:** "Una sola IA, una sola memoria, diversidad en la unidad"
 
 ---
 
-## 📁 BROOT - Navegación Jerárquica
+### 🏛️ ArquitecturadeMódulosOrientadaaIA/
+**Propósito:** Arquitectura del sistema orientada a módulos con IA.
 
-**Ubicación:** `bin/broot-core/`, `config/broot/`
-
-### Componentes
-| Archivo | Propósito |
-|---------|-----------|
-| `broot-bin` | Binario estático (12MB, sin dependencias) |
-| `broot` | Wrapper con path a config TRON |
-| `br` | Función shell para `cd` post-navegación |
-| `conf.hjson` | Configuración principal (flags, skins) |
-| `verbs.hjson` | Comandos personalizados (backup, edit, rg) |
-
-### Integración
-- `ares help` usa broot para navegación de documentación
-- Configuración personalizada: Hacker Neon skin, verbos TRON
+| Documento | Descripción |
+|-----------|-------------|
+| `ArquitecturadeMódulosOrientadaaIA.md` | Arquitectura base del sistema |
+| `PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md` | Sistema de trabajo para desarrollar skills |
+| `VersionIaArquitecturadeMódulosOrientadaaIA.md` | Versión IA de arquitectura |
 
 ---
-*Filosofía ARES: Orden Paranoico. Modularidad Atómica. Excelencia Técnica.*
+
+### 🌳 BROOT/
+**Propósito:** Documentación de navegación jerárquica.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `MIGRACION.md` | Migración y configuración de broot |
+
+**Integración:** `ares help` usa broot para navegación de documentación
+
+---
+
+### 🔮 DEEPSEEK/
+**Propósito:** Configuración y uso de DeepSeek API.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `Apideepseek.md` | Configuración de API DeepSeek |
+| `DEEPSEEK_API_KEY_SETUP.md` | Setup de API key |
+| `DEEPSEEK_GUIDE.md` | Guía de uso de DeepSeek |
+
+---
+
+### 🎨 INTERFAZ/
+**Propósito:** Elementos visuales y de interfaz.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `term-image.md` | Renderizado de imágenes en terminal con term-image |
+
+---
+
+### 🐱 Kitty-Puro/
+**Propósito:** Control y scripts de Kitty terminal.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `Controlar a Kitty desde scripts.md` | Scripts para control remoto de Kitty |
+
+---
+
+### 🔧 Modulos-y-Sus-Problemas/
+**Propósito:** Bitácora técnica de desarrollo y resolución de problemas.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `BITACORA-GUERRA-ORQUESTADOR.md` | Retos técnicos de orquestación de sesiones |
+| `COLOR_MODULE.md` | Documentación técnica del módulo de color |
+| `COLOR_SYSTEM.md` | Sistema de colores Hacker Neon (4 pestañas espectaculares) |
+| `INDEX-TESTS.md` | Índice de pruebas y logros experimentales |
+| `KITTY_INIT-INICIA-KITTY-HACKER-NEON.md` | Inicialización de Kitty con configuración TRON |
+| `modulo-colores-y-diseno.md` | Módulo de colores y diseño |
+| `STREAMING.md` | **Streaming en tiempo real con filtro think** (implementación completa) |
+| `VENTANA_VS_PESTANA.md` | **Diferenciación crítica** ventana vs pestaña en Kitty |
+
+---
+
+### 🦙 OLLAMA/
+**Propósito:** Configuración y uso de Ollama con modelos locales.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `GEMMA_OLLAMA_GUIDE.md` | Guía de Gemma en Ollama |
+| `Modelfile -RECOMENDACIONES-OLLAMA-MODELFILE-VARIABLES-ENTORNO-POR-MODELO.md` | Recomendaciones de Modelfile y variables de entorno |
+| `Ollama-API.md` | Documentación de API de Ollama |
+| `PLantillas Ollama.md` | Plantillas para Ollama |
+| `sacar-jugo-gemma.md` | Maximizar potencial de Gemma |
+
+---
+
+### ⚡ OptimizacionZRAM/
+**Propósito:** Optimización de memoria con ZRAM.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `panic_mode.sh` | Script de modo pánico para memoria |
+| `REPORTE_TECNICO.md` | Reporte técnico de optimización |
+
+---
+
+### 📋 PASOS-SIGUIENTES/
+**Propósito:** Roadmap y planificación del proyecto.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `100-PASOS-SIGUIENTES.md` | **100 pasos detallados** (FASE 3-6: Cognición, Ejecución, Conectividad, Producción) |
+| `ARES News Engine.md` | Motor de noticias con IA (TikTok style) |
+| `para que falta por hacer Documento de Inicio.md` | Documento de inicio para tareas pendientes |
+| `Requerimientos.md` | Requerimientos del sistema |
+| `VISION_ARES.md` | Visión estratégica (módulos expandidos nivel industrial) |
+
+---
+
+### 🔌 plugins/
+**Propósito:** Plugins y extensiones.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `broot-Help.md` | Ayuda de plugin broot |
+
+---
+
+### 🤝 Protocolos/
+**Propósito:** Protocolos de operación multi-IA.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `dont-touch-my-eggs.md` | **Protocolo de coordinación multi-IA**. Reservar módulos/documentos antes de trabajar. |
+| `PIE-EN-TIERRA.md` | Protocolo de operación |
+| `RODILLA-EN-TIERRA.md` | Protocolo de operación |
+
+---
+
+### 🧠 RAG-TECNICO/
+**Propósito:** Arquitectura técnica de RAG híbrido.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `FASE0-COMPLETADA-APOLLO-DB.md` | Fase 0: Base de datos Apollo completada |
+| `FASE1-COMPLETADA-APOLLO-INGESTA.md` | Fase 1: Ingesta Apollo completada |
+| `INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md` | **Informe técnico exhaustivo** (825 líneas): SQLite + sqlite-vec, GraphRAG minimalista, embeddings cuantizados, recuperación híbrida |
+
+---
+
+### 📚 skills/
+**Propósito:** Arsenal de Kung-Fu IA (18 skills, 367 archivos, 9.6 MB).
+
+**Índice maestro:** `skills/INDEX.md`
+
+| Categoría | Skills | Archivos | Scripts |
+|-----------|--------|----------|---------|
+| **ARES Core** | inicializacion, sesion, session-management | 3 | 0 |
+| **Desarrollo** | mcp-builder, webapp-testing, frontend-design, web-artifacts-builder | 45 | 12 |
+| **Doc-Processing** | docx, pdf | 85 | 18 |
+| **Office** | pptx, xlsx | 95 | 15 |
+| **Multimedia** | algorithmic-art, slack-gif-creator | 25 | 8 |
+| **IA** | skill-creator | 12 | 3 |
+| **Comms** | internal-comms | 6 | 0 |
+| **Design** | brand-guidelines, canvas-design, theme-factory | 95 | 0 |
+
+**Principio de Carga Mínima:** Solo cargar la skill necesaria para la tarea actual.
+
+---
+
+### 📝 TODO/
+**Propósito:** Tareas pendientes y roadmap técnico.
+
+| Documento | Descripción |
+|-----------|-------------|
+| `TODO.md` | Tareas generales pendientes |
+| `TODO-PROYECTO-ORQUESTACION-DINAMICA.md` | Orquestación dinámica pendiente |
+| `TODO-RAG-GRAFICO-SQLITE-VECTORIAL.md` | RAG gráfico con SQLite vectorial pendiente |
+
+---
+
+## 📖 DOCUMENTOS ESENCIALES (Lectura Obligatoria)
+
+### Para Nuevas IAs
+1. `ALMAS-IAS/IA-MEMORY.md` - Memoria persistente y protocolos
+2. `Protocolos/dont-touch-my-eggs.md` - Coordinación multi-IA
+3. `INDEX-MODULES.md` - Índice de módulos y componentes
+4. `skills/INDEX.md` - Arsenal de skills disponibles
+
+### Para Desarrollo
+1. `ArquitecturadeMódulosOrientadaaIA/PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md` - Sistema de trabajo
+2. `Modulos-y-Sus-Problemas/STREAMING.md` - Implementación de streaming
+3. `Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica
+4. `RAG-TECNICO/INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md` - Arquitectura RAG
+
+### Para Operación Diaria
+1. `HELP.md` - Comandos y referencias rápidas
+2. `ZSH_WOW_CHEAT_SHEET.md` - Productividad Zsh
+3. `PASOS-SIGUIENTES/100-PASOS-SIGUIENTES.md` - Roadmap detallado
+4. `PASOS-SIGUIENTES/VISION_ARES.md` - Visión estratégica
+
+---
+
+## 🔍 BÚSQUEDA Y NAVEGACIÓN
+
+### Con broot
+```bash
+# Navegar documentación con broot
+ares help
+
+# O directamente
+broot ~/tron/programas/TR/docs
+```
+
+### Con grep
+```bash
+# Buscar en toda la documentación
+grep -r "término" ~/tron/programas/TR/docs/
+```
+
+### Con tree
+```bash
+# Ver estructura de carpetas
+tree -L 2 ~/tron/programas/TR/docs/
+```
+
+---
+
+## 📊 ESTADÍSTICAS DE DOCUMENTACIÓN
+
+| Métrica | Valor |
+|---------|-------|
+| **Carpetas principales** | 18 |
+| **Documentos totales** | 50+ |
+| **Skills disponibles** | 18 |
+| **Archivos de skills** | 367 |
+| **Tamaño skills** | 9.6 MB |
+| **Módulos activos** | 8 |
+| **Módulos en desarrollo** | 2 |
+
+---
+
+## 🎯 PRINCIPIOS DE DOCUMENTACIÓN
+
+1. **Orden Paranoico:** Todo documentado, todo versionado
+2. **Modularidad Atómica:** Máximo 3 funciones por módulo
+3. **Excelencia Técnica:** Documentación clara, precisa, granular
+4. **Diversidad en la Unidad:** Mismas reglas, misma memoria, IAs coordinadas
+5. **1 Programador, 1 IA:** Actuando al unísono
+
+---
+
+## 🔄 ACTUALIZACIÓN DE DOCUMENTACIÓN
+
+### Reglas de Edición
+1. **NUNCA usar placeholders** - Siempre escribir contenido íntegro
+2. **Verificar líneas finales** - Asegurar integridad del archivo
+3. **Aplicar `git diff` post-edición** - Constatar cambios exactos
+4. **Editar desde TR** - Solo en `/home/daniel/tron/programas/TR/docs/`
+
+### Flujo de Actualización
+```
+1. Identificar documento a actualizar
+2. Leer documento completo
+3. Editar con contenido íntegro
+4. Ejecutar: git diff
+5. Commit en repositorio TR
+```
+
+---
+
+*Filosofía ARES: "La immortalidad del exito solo es posible con la diversidad en la unidad"*
+*Creado por Daniel Hung - Sistema ARES-TRON*
