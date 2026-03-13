@@ -216,7 +216,8 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 - `docs/Protocolos/PIE-EN-TIERRA.md` - Protocolo de operación
 - `docs/Protocolos/RODILLA-EN-TIERRA.md` - Protocolo de operación
 
-### **Bitácora Técnica**
+### **Bitácora**
+- `docs/PASOS-SIGUIENTES/BITACORA-DESCRIPCION-FECHA-HORA.md` - Bitácoras de trabajo
 - `docs/Modulos-y-Sus-Problemas/STREAMING.md` - Streaming en tiempo real con filtro think
 - `docs/Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica ventana vs pestaña
 - `docs/Modulos-y-Sus-Problemas/COLOR_SYSTEM.md` - Sistema de colores Hacker Neon
@@ -243,14 +244,14 @@ Todo documento `.md` creado por cualquier IA debe guardarse **exclusivamente** e
 | Tipo de Documento | Carpeta Destino | Ejemplo de Nombre |
 |-------------------|-----------------|-------------------|
 | **TODOs / Pendientes** | `docs/TODO/` | `TODO-DESCRIPCION-13-03-2026-14-30.md` |
-| **Bitácoras Técnicas** | `docs/Modulos-y-Sus-Problemas/` | `BITACORA-DESCRIPCION-13-03-2026-14-30.md` |
+| **Bitácoras** | `docs/PASOS-SIGUIENTES/` | `BITACORA-DESCRIPCION-13-03-2026-14-30.md` |
 | **Pasos Siguientes** | `docs/PASOS-SIGUIENTES/` | `PASOS-DESCRIPCION-13-03-2026-14-30.md` |
 | **Protocolos** | `docs/Protocolos/` | `PROTOCOLO-DESCRIPCION-13-03-2026-14-30.md` |
 | **RAG Técnico** | `docs/RAG-TECNICO/` | `FASE2-DESCRIPCION-13-03-2026-14-30.md` |
 | **Skills** | `docs/skills/[categoria]/` | `SKILL-DESCRIPCION-13-03-2026-14-30.md` |
 | **DeepSeek** | `docs/DEEPSEEK/` | `DEEPSEEK-DESCRIPCION-13-03-2026-14-30.md` |
 | **Ollama** | `docs/OLLAMA/` | `OLLAMA-DESCRIPCION-13-03-2026-14-30.md` |
-| **Módulos** | `docs/Modulos-y-Sus-Problemas/` | `MODULO-DESCRIPCION-13-03-2026-14-30.md` |
+| **Módulos (problemas/tests)** | `docs/Modulos-y-Sus-Problemas/` | `MODULO-DESCRIPCION-13-03-2026-14-30.md` |
 | **Memoria IA** | `docs/ALMAS-IAS/` | `IA-MEMORY.md` (único, no fechar) |
 | **Índices** | `docs/` (raíz) | `INDEX.md`, `INDEX-MODULES.md` (únicos) |
 
