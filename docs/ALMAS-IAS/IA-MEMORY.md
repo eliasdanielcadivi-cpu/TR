@@ -233,6 +233,95 @@ Solo cargar la skill necesaria para la tarea actual. Las skills están diseñada
 
 ---
 
+## 📁 PROTOCOLO DE CREACIÓN DE DOCUMENTOS (.md)
+
+### **Regla de Oro: NINGÚN .md FUERA DE docs/**
+Todo documento `.md` creado por cualquier IA debe guardarse **exclusivamente** en `/home/daniel/tron/programas/TR/docs/` dentro de la carpeta correcta.
+
+### **Ubicaciones por Tipo de Documento**
+
+| Tipo de Documento | Carpeta Destino | Ejemplo de Nombre |
+|-------------------|-----------------|-------------------|
+| **TODOs / Pendientes** | `docs/TODO/` | `TODO-DESCRIPCION-13-03-2026-14-30.md` |
+| **Bitácoras Técnicas** | `docs/Modulos-y-Sus-Problemas/` | `BITACORA-DESCRIPCION-13-03-2026-14-30.md` |
+| **Pasos Siguientes** | `docs/PASOS-SIGUIENTES/` | `PASOS-DESCRIPCION-13-03-2026-14-30.md` |
+| **Protocolos** | `docs/Protocolos/` | `PROTOCOLO-DESCRIPCION-13-03-2026-14-30.md` |
+| **RAG Técnico** | `docs/RAG-TECNICO/` | `FASE2-DESCRIPCION-13-03-2026-14-30.md` |
+| **Skills** | `docs/skills/[categoria]/` | `SKILL-DESCRIPCION-13-03-2026-14-30.md` |
+| **DeepSeek** | `docs/DEEPSEEK/` | `DEEPSEEK-DESCRIPCION-13-03-2026-14-30.md` |
+| **Ollama** | `docs/OLLAMA/` | `OLLAMA-DESCRIPCION-13-03-2026-14-30.md` |
+| **Módulos** | `docs/Modulos-y-Sus-Problemas/` | `MODULO-DESCRIPCION-13-03-2026-14-30.md` |
+| **Memoria IA** | `docs/ALMAS-IAS/` | `IA-MEMORY.md` (único, no fechar) |
+| **Índices** | `docs/` (raíz) | `INDEX.md`, `INDEX-MODULES.md` (únicos) |
+
+### **Convención de Nombres (OBLIGATORIO)**
+
+**Formato:** `TIPO-DESCRIPCION-DD-MM-AAAA-HH-MM.md`
+
+| Componente | Formato | Ejemplo |
+|------------|---------|---------|
+| **TIPO** | Mayúsculas, descriptivo | `TODO`, `BITACORA`, `PASOS`, `PROTOCOLO` |
+| **DESCRIPCION** | Breve, descriptivo, mayúsculas | `RAG-GRAFICO`, `ORQUESTACION-DINAMICA` |
+| **FECHA** | `DD-MM-AAAA` | `13-03-2026` |
+| **HORA** | `HH-MM` (24h, zona local) | `14-30` |
+
+**Ejemplos Correctos:**
+- ✅ `TODO-RAG-GRAFICO-SQLITE-VECTORIAL-13-03-2026-14-30.md`
+- ✅ `BITACORA-ORQUESTADOR-13-03-2026-15-45.md`
+- ✅ `PASOS-INTEGRACION-WHATSAPP-13-03-2026-16-00.md`
+
+**Ejemplos Incorrectos:**
+- ❌ `todo.md` (sin fecha, sin descripción)
+- ❌ `TODO-13-03-2026.md` (sin descripción, sin hora)
+- ❌ `mi_documento.md` (sin tipo, sin fecha)
+- ❌ `/home/daniel/tron/programas/TR/TODO.md` (fuera de docs/)
+
+### **Flujo de Creación de Documentos**
+
+```
+1. Identificar tipo de documento (TODO, BITACORA, PASOS, etc.)
+2. Determinar carpeta destino según tabla de ubicaciones
+3. Generar nombre: TIPO-DESCRIPCION-DD-MM-AAAA-HH-MM.md
+4. Crear archivo en carpeta correcta
+5. Ejecutar: git add docs/[carpeta]/[archivo].md
+6. Commit: git commit -m "docs: crear [descripción corta]"
+```
+
+### **Verificación Pre-Commit**
+
+Antes de commitear, verificar:
+```bash
+# 1. No hay .md fuera de docs/
+find /home/daniel/tron/programas/TR -maxdepth 1 -name "*.md"
+
+# 2. Todos los .md están en carpetas correctas
+tree -L 2 docs/
+
+# 3. Nombres siguen convención
+ls docs/TODO/
+ls docs/PASOS-SIGUIENTES/
+ls docs/Modulos-y-Sus-Problemas/
+
+# 4. Git diff para validar
+git status docs/
+```
+
+### **Prohibido**
+- ❌ `.md` en raíz del proyecto (`/home/daniel/tron/programas/TR/*.md`)
+- ❌ `.md` en carpetas incorrectas (ej. `src/*.md`, `modules/*.md`)
+- ❌ Nombres sin fecha/hora en TODOs, bitácoras, pasos siguientes
+- ❌ Duplicar documentos en múltiples carpetas
+- ❌ Crear carpetas nuevas sin consultar INDEX.md
+
+### **Excepciones (únicos, no fechar)**
+- `docs/INDEX.md` - Índice maestro
+- `docs/INDEX-MODULES.md` - Índice de módulos
+- `docs/HELP.md` - Comandos y referencias
+- `docs/ALMAS-IAS/IA-MEMORY.md` - Memoria persistente de IAs
+- `docs/skills/INDEX.md` - Índice de skills
+
+---
+
 ## 🎯 PRINCIPIO RECTOR: "THERE CAN BE ONLY ONE"
 
 > **"La immortalidad del exito solo es posible con la diversidad en la unidad"**
