@@ -41,8 +41,11 @@
 ## 🛠️ HERRAMIENTAS TRON
 
 ### **1. `ini` (Generador de Lanzadores)**
+- **Versión:** v2.0
 - **Ubicación:** `~/tron/programas/.../ini`
 - **Función:** Globaliza scripts Python/Node creando wrappers en `/usr/bin/`
+- **Gestión de venv:** `ini venv` (sin `cd` global)
+- **Publicación:** `ini prod`
 - **Uso:** `ini` en directorio del proyecto | `ini -i` (modo manual si no detecta proyecto)
 
 ### **2. `com` (Gestor de Comandos)**
@@ -50,8 +53,10 @@
 - **Uso:** `com codigo <programa>` (ver fuente) | `com ruta <programa>` (ver ubicación)
 
 ### **3. `repo` (Orquestación Git)**
+- **Versión:** v5.0
 - **Backups:** `repo resp` (comprimidos con timestamp en `~/tron/programas/a-DIRECTORIO/GIT/backups/`)
 - **Sync GitHub:** `repo nube` o `repo sync` (gestiona SSH keys por perfil: `eliasdanielcadivi`, `hungdaniel007`, `elprofesoverdad`)
+- **Auditoría:** `repo status` (cambios), `repo audit <modulo>` (alcance)
 - **Crear:** `repo nuevo`
 - **Registrar existente:** `repo registrar`
 - **Ver organización:** `repo list`
@@ -70,14 +75,61 @@
 
 ---
 
+## 📚 SKILLS - ARSENAL KUNG-FU IA
+
+### **Índice Central**
+- **Ubicación:** `docs/skills/INDEX.md`
+- **Contenido:** 18 skills, 367 archivos, 9.6 MB
+- **Función:** Punto de entrada único al arsenal completo
+
+### **Categorías Disponibles**
+| Categoría | Ruta | Skills | Archivos | Scripts |
+|-----------|------|--------|----------|---------|
+| **ARES Core** | `docs/skills/` | inicializacion, sesion, session-management | 3 | 0 |
+| **Desarrollo** | `docs/skills/dev/` | mcp-builder, webapp-testing, frontend-design, web-artifacts-builder | 45 | 12 |
+| **Doc-Processing** | `docs/skills/doc-processing/` | docx, pdf | 85 | 18 |
+| **Office** | `docs/skills/office/` | pptx, xlsx | 95 | 15 |
+| **Multimedia** | `docs/skills/multimedia/` | algorithmic-art, slack-gif-creator | 25 | 8 |
+| **IA** | `docs/skills/ia/` | skill-creator | 12 | 3 |
+| **Comms** | `docs/skills/comms/` | internal-comms | 6 | 0 |
+| **Design** | `docs/skills/design/` | brand-guidelines, canvas-design, theme-factory | 95 | 0 |
+
+### **Flujo de Uso**
+1. Leer `INDEX.md` completo para entender arsenal disponible
+2. Identificar categoría y skill específica
+3. Leer `SKILL.md` de la skill (punto de entrada)
+4. Usar scripts bajo demanda (`scripts/`, `reference/`, `assets/`)
+
+### **Principio de Carga Mínima**
+Solo cargar la skill necesaria para la tarea actual. Las skills están diseñadas para cargarse bajo demanda (progressive disclosure).
+
+---
+
 ## 🧬 FILOSOFÍA ARES
 
-### **Arquitectura**
+### **Rutas Clave**
+- `src/`: Puntos de entrada y orquestación
+- `modules/`: Lógica atómica por especialidad
+- `config/`: Archivos `.conf` y YAML
+- `docs/skills/`: Arsenal completo de Kung-Fu IA (18 skills, 367 archivos, 9.6 MB)
+
+### **Arquitectura Core**
+- **Raíz Proyecto:** `/home/daniel/tron/programas/TR`
+- **Orquestador:** `src/main.py` (Delegación pura, sin lógica pesada)
+- **Configuración:** `config/config.yaml` (Soberanía de datos)
+- **Socket Kitty:** `/tmp/mykitty` (Configurado en YAML)
 - **Cerebro Headless:** Despachador Puro. La interfaz es solo un módulo más
 - **Lema:** "El cliente come pantalla, pero ARES respira lógica"
 - **Prohibida:** Superficialidad tipo Notion
 - **Prioridad:** SQLite, RagGraph, RAG Semántico en bajos recursos
-- **Modularidad Atómica:** Máximo 3 funciones por módulo
+
+### **Reglas de Oro (Modularidad)**
+1. **Atomicidad:** Máximo 3 funciones por módulo en `modules/`
+2. **Aislamiento:** Un módulo no debe conocer la existencia del CLI
+3. **Auditoría:** Antes de terminar, ejecutar `repo status` y `repo audit <modulo>`
+
+### **Modularidad Atómica**
+- Máximo 3 funciones por módulo
 
 ### **Comandos ARES**
 | Comando | Función |
