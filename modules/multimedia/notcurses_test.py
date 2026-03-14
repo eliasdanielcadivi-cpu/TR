@@ -26,15 +26,23 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 # Imports de notcurses
 try:
-    from notcurses import Notcurses, NotcursesOptions, PlaneOptions, Visual
-    from notcurses import NCBLIT_DEFAULT, NCBLIT_PIXEL, NCBLIT_OCTANT, NCBLIT_BRAILLE
-    from notcurses import NCSCALE_SCALE, NCSCALE_STRETCH, NCSCALE_NONE
+    from notcurses import Notcurses, PlaneOptions, Visual
+    # Las constantes no están disponibles en el wrapper v3.0.7
+    # Usamos valores numéricos directos o dejamos que notcurses use defaults
+    NCBLIT_DEFAULT = 0  # notcurses elige automáticamente
+    NCBLIT_PIXEL = 7    # gráficos de píxeles nativos (Kitty, etc.)
+    NCBLIT_OCTANT = 5   # 4x2 (Unicode 16)
+    NCBLIT_BRAILLE = 6  # 2x4 (Braille)
+    NCSCALE_SCALE = 1   # mantener aspect ratio
+    NCSCALE_STRETCH = 2 # estirar para llenar
+    NCSCALE_NONE = 0    # sin scaling
+    logger.info("✅ notcurses importado (wrapper básico v3.0.7)")
 except ImportError as e:
     print(f"❌ Error: No se pudo importar notcurses")
     print(f"   Detalle: {e}")
     print(f"\n💡 Instalación requerida:")
     print(f"   sudo apt-get install libnotcurses-dev notcurses-bin")
-    print(f"   pip install notcurses")
+    print(f"   pip install notcurses (o build from source)")
     sys.exit(1)
 
 # Imports del proyecto

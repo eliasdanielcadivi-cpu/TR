@@ -33,7 +33,8 @@ print("=" * 60 + "\n")
 
 try:
     from notcurses import Notcurses
-    print("✅ notcurses: OK")
+    print("✅ notcurses: OK (wrapper básico v3.0.7)")
+    print("   ⚠️  Algunas opciones avanzadas no disponibles")
 except ImportError as e:
     print("❌ notcurses: NO INSTALADO")
     print(f"\n   Error: {e}")
@@ -75,71 +76,61 @@ print("=" * 60 + "\n")
 
 def prueba_rapida():
     """Prueba rápida de notcurses sin configuración YAML"""
-    
+
     print("🧪 Prueba Rápida de Notcurses\n")
-    
+
     try:
         # Inicializar notcurses
         print("  1. Inicializando notcurses...")
         nc = Notcurses()
         print("     ✅ Notcurses inicializado")
-        print(f"     Terminal: {nc.termname}")
-        print(f"     Dimensiones: {nc.stdplane.cols}x{nc.stdplane.rows}")
         
         stdplane = nc.stdplane()
         
+        # Obtener dimensiones
+        rows, cols = stdplane.getDimensions()
+        print(f"     Terminal: {cols}x{rows} celdas")
+
         # Mensaje de bienvenida
         print("\n  2. Renderizando mensaje...")
-        stdplane.set_fg_rgb8(0, 255, 255)  # Cyan
-        stdplane.putstr_yx(0, 0, "╔════════════════════════════════════╗")
-        stdplane.putstr_yx(1, 0, "║     ARES-TRON Notcurses Test       ║")
-        stdplane.putstr_yx(2, 0, "║           ¡Funciona! 🎉            ║")
-        stdplane.putstr_yx(3, 0, "╚════════════════════════════════════╝")
+        stdplane.setFgRGB(0, 255, 255)  # Cyan
+        
+        # Escribir carácter por carácter (wrapper básico)
+        mensaje = "ARES-TRON Notcurses Test - Funciona!"
+        y, x = 2, (cols - len(mensaje)) // 2
+        for i, char in enumerate(mensaje):
+            stdplane.putEGCYX(y, x + i, char)
+        
         nc.render()
         print("     ✅ Mensaje renderizado")
-        
-        # Probar imagen si existe
+
+        # Probar imagen si existe - NO DISPONIBLE en wrapper básico
         avatar_path = PROJECT_ROOT / 'assets' / 'ares' / 'ares-neon.png'
-        
         if avatar_path.exists():
-            print(f"\n  3. Cargando imagen: {avatar_path}")
-            
-            try:
-                from notcurses import PlaneOptions, Visual
-                
-                # Crear plano para imagen
-                plane_opts = PlaneOptions(rows=8, cols=16, yoff=5, xoff=0)
-                img_plane = stdplane.create(plane_opts)
-                
-                # Cargar y blitear imagen
-                visual = Visual(str(avatar_path))
-                visual.blit(img_plane)
-                nc.render()
-                
-                print("     ✅ Imagen renderizada correctamente")
-                
-            except Exception as e:
-                print(f"     ⚠️  Error renderizando imagen: {e}")
-        else:
-            print(f"\n  3. ⚠️  Imagen no encontrada: {avatar_path}")
-        
+            print(f"\n  3. ⚠️  Imagen encontrada: {avatar_path}")
+            print("     ❌ Renderizado de imágenes NO disponible en wrapper básico")
+            print("     Se requiere wrapper completo con ncvisual")
+
         # Instrucciones
         print("\n" + "=" * 60)
-        print("Presiona 'q' para salir")
+        print("Presiona 'q' para salir (puede requerir Enter después)")
         print("=" * 60)
-        
-        # Loop de input
-        while True:
-            input_val = nc.getc_blocking()
-            if input_val == ord('q'):
-                print("\n  Saliendo...")
-                break
-        
-        nc.stop()
+
+        # Loop de input - el wrapper básico no tiene getc_blocking
+        # Usamos input() estándar como fallback
+        print("\n  Input: ", end='', flush=True)
+        try:
+            input_val = input()
+        except EOFError:
+            pass
+        print("  Saliendo...")
+
+        # El destructor de Notcurses llama notcurses_stop automáticamente
+        del nc
         print("  ✅ Notcurses detenido correctamente")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"\n❌ Error en prueba rápida: {e}")
         import traceback
@@ -152,22 +143,20 @@ def prueba_rapida():
 # =============================================================================
 
 def prueba_completa():
-    """Prueba completa usando configuración YAML"""
-    
+    """Prueba completa usando módulo básico (wrapper v3.0.7)"""
+
     print("\n" + "=" * 60)
-    print("PRUEBA COMPLETA CON CONFIGURACIÓN")
+    print("PRUEBA COMPLETA - WRAPPER BÁSICO")
     print("=" * 60 + "\n")
-    
-    # Importar módulo de prueba
+
+    # Ejecutar módulo básico
     try:
-        from modules.multimedia import notcurses_test
-        print("✅ Módulo notcurses_test cargado")
+        from modules.multimedia import notcurses_test_basico
+        print("✅ Módulo notcurses_test_basico cargado")
+        return notcurses_test_basico.main() == 0
     except ImportError as e:
         print(f"❌ Error cargando módulo: {e}")
         return False
-    
-    # Ejecutar main del módulo
-    return notcurses_test.main() == 0
 
 
 # =============================================================================
