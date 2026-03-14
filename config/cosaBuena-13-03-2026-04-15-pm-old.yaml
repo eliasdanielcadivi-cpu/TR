@@ -1,0 +1,36 @@
+content:
+  color: cyan
+  margin_left: 7
+  margin_right: 4
+footer:
+  separator:
+    center: true
+    height: 1
+    path: /home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif
+    width_pct: 0.9
+header:
+  height: 3
+  width_pct: 0.8
+  z_index: -1
+identity:
+  ares:
+    margin_left: 2
+    margin_right: 1
+    path: /home/daniel/tron/programas/TR/assets/ares/ares-neon.png
+    size: 4
+  user:
+    margin_left: 2
+    margin_right: 1
+    path: /home/daniel/tron/programas/TR/assets/user/user-emoji.png
+    size: 2
+thinking:
+  current_index: 1
+  size: 4
+  spinners:
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spiner1.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner2.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner3.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner4.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner 6.gif
+  - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif

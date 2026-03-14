@@ -1,0 +1,123 @@
+# =============================================================================
+# CONFIGURACIÓN PARA PRUEBA NOTCURSES - ARES-TRON
+# =============================================================================
+# Propósito: Prueba encapsulada de renderizado de imágenes con notcurses
+# Módulo: modules/multimedia/notcurses_test.py
+# Uso: python -m modules.multimedia.notcurses_test
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN GENERAL
+# -----------------------------------------------------------------------------
+general:
+  nombre_prueba: "notcurses_image_test"
+  version: "1.0.0"
+  descripcion: "Prueba de renderizado de imágenes con notcurses"
+  log_level: "DEBUG"  # DEBUG, INFO, WARNING, ERROR
+
+# -----------------------------------------------------------------------------
+# RUTAS DE ACTIVOS VISUALES
+# -----------------------------------------------------------------------------
+assets:
+  # Avatares
+  avatar_ia_png: "/home/daniel/tron/programas/TR/assets/ares/ares-neon.png"
+  avatar_ia_mp4: "/home/daniel/tron/programas/TR/assets/ares/ares-wow.mp4"
+  avatar_usuario_png: "/home/daniel/tron/programas/TR/assets/user/user-emoji.png"
+  
+  # UI Elements
+  spinners:
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner1.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner2.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner3.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner4.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner6.gif"
+    - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif"
+  
+  separador_gif: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+  header_ares_png: "/home/daniel/tron/programas/TR/assets/ui/layaout/header-ares.png"
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE LAYOUT
+# -----------------------------------------------------------------------------
+layout:
+  # Dimensiones del avatar IA (en celdas de terminal)
+  avatar_ia:
+    columnas: 4
+    filas: 4
+    posicion_x: 0
+    posicion_y: 0
+  
+  # Dimensiones del cintillo banner
+  banner:
+    columnas: 40
+    filas: 4
+    posicion_x: 4  # Inmediatamente después del avatar
+    posicion_y: 0
+  
+  # Área de cuerpo (texto streaming)
+  body:
+    columnas: 80
+    filas: 15
+    posicion_x: 0
+    posicion_y: 4
+  
+  # Separador footer
+  separador:
+    columnas: 40
+    filas: 2
+    posicion_x: 20  # Centrado
+    posicion_y: 19
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE NOTCURSES
+# -----------------------------------------------------------------------------
+notcurses:
+  # Nivel de log
+  log_level: 3  # 0=QUIET, 1=ERROR, 2=WARNING, 3=INFO, 4=DEBUG, 5=TRACE
+  
+  # Banderas de inicialización
+  flags:
+    cli_mode: false          # Modo CLI (sin banners)
+    suppress_banners: true   # Suprimir banners de inicio
+    enable_mouse: true       # Habilitar mouse
+    enable_bracketed_paste: true  # Bracketed paste
+  
+  # Configuración de rendering
+  rendering:
+    default_blitter: "pixel"  # pixel, octant, sextant, braille, ascii
+    colors: 24                # 0, 2, 8, 256, 24 (truecolor)
+    dithering: "floyd-steinberg"  # none, floyd-steinberg
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE PRUEBAS
+# -----------------------------------------------------------------------------
+pruebas:
+  # Duración de cada prueba en segundos
+  duracion_prueba: 10
+  
+  # Pruebas a ejecutar
+  ejecutar:
+    - "test_imagen_estatica"      # PNG estático
+    - "test_imagen_con_transparencia"  # PNG con alpha
+    - "test_gif_animado"          # GIF animado (frames)
+    - "test_layout_completo"      # Layout completo ARES
+    - "test_blitters"             # Diferentes blitters
+    - "test_scaling"              # Escalado de imágenes
+  
+  # Verificación de activos
+  verificar_assets: true  # Verificar que los archivos existen antes de probar
+
+# -----------------------------------------------------------------------------
+# CONFIGURACIÓN DE DEBUG
+# -----------------------------------------------------------------------------
+debug:
+  # Guardar screenshots de prueba
+  guardar_frames: false
+  frame_dir: "/home/daniel/tron/programas/TR/logs/notcurses_test/"
+  
+  # Mostrar información de terminal
+  mostrar_info_terminal: true
+  
+  # Mostrar estadísticas de rendering
+  mostrar_estadisticas: true

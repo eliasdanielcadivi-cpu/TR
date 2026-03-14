@@ -15,4 +15,10 @@ dependencies = [
     "rich>=14.3.3",
     "sqlite-vec>=0.1.6",
     "term-image>=0.7.2",
+    # notcurses: Usar paquete del sistema (python3-notcurses)
+    # No instalar desde PyPI porque no es compatible con libnotcurses del sistema
 ]
+
+[tool.uv]
+# System package: python3-notcurses (APT)
+# El wrapper Python oficial tiene problemas de compilación con la versión del sistema
