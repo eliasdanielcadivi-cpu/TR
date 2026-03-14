@@ -2,7 +2,6 @@ content:
   color: cyan
   margin_left: 7
   margin_right: 4
-  margin_top: 0
 footer:
   separator:
     center: true
