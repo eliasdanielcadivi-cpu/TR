@@ -5,27 +5,30 @@ content:
   margin_top: 0
 footer:
   separator:
-    center: true
-    height: 600
-    path: /home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif
-    width_pct: 0.9
+    height: 2
+    margin_left: 0
+    path: /home/daniel/tron/programas/TR/assets/ui/layaout/separador_inferirior_central_contra_90_recorte_vert_40_estira_horiz_120.gif
+    width: 65
+    y_offset: 10
+    z_index: 2
 header:
-  height: 3
+  separator:
+    height: 3
+    margin_left: 7
+    path: /home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif
+    width: 40
+    y_offset: 0
+    z_index: 1
   width_pct: 0.25
-  z_index: -1
 identity:
   ares:
     margin_left: 3
     margin_right: 3
     path: /home/daniel/tron/programas/TR/assets/ares/ares-neon.png
     size: 10
-  user:
-    margin_left: 2
-    margin_right: 1
-    path: /home/daniel/tron/programas/TR/assets/user/user-emoji.png
-    size: 10
+    z_index: 3
 thinking:
-  current_index: 4
+  current_index: 5
   size: 10
   spinners:
   - /home/daniel/tron/programas/TR/assets/ui/layaout/spiner1.gif
@@ -35,3 +38,4 @@ thinking:
   - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif
   - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner 6.gif
   - /home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif
+  z_index: 4
