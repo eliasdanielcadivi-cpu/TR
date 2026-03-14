@@ -146,6 +146,18 @@ def i_cmd(obj, rag, model, think):
     start_interactive_chat(obj, rag=rag, model=model, think=think)
 
 
+@cli.command(name="maq")
+@click.pass_obj
+def maq_cmd(obj):
+    """🎨 Modo Prueba de Maquetación Industrial V18.
+    
+    Permite probar el posicionamiento de avatares y cintillos
+    usando el motor de inyección binaria directa.
+    """
+    from modules.ui.industrial_engine import render_industrial_maq
+    render_industrial_maq()
+
+
 @cli.command(name="model")
 @click.argument("model_name", required=False, default=None)
 @click.option("--list", "-l", "list_models", is_flag=True, help="List all available Ollama models")
