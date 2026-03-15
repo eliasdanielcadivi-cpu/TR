@@ -1,7 +1,8 @@
-"""Industrial Engine V30: Orquestador Purificado.
+"""Industrial Engine V29: Orquestador Modular de Maquetación.
 
-Gestiona la maquetación industrial delegando a componentes atómicos.
-Lienzo limpio para maquetación soberana del usuario.
+Gestiona la carga de configuración y delega el renderizado a:
+- ares_render.py (Identidad IA)
+- user_render.py (Identidad Usuario)
 """
 
 import sys
@@ -40,7 +41,7 @@ class KittyOrchestrator:
         sys.stdout.buffer.flush()
 
 def render_industrial_maq():
-    """Ejecución V30: El lienzo visual puro."""
+    """Ejecución V29: El gran test modular."""
     from .ares_render import render_ares_block
     from .user_render import render_user_block
     
@@ -48,17 +49,22 @@ def render_industrial_maq():
     with open(config_path, "r") as f:
         cfg = yaml.safe_load(f)
     
-    # 1. Reset Total del lienzo
+    # 1. Reset Total
     KittyOrchestrator.reset()
     
-    # 2. Renderizar Bloque IA
+    # --- FLUJO DE MAQUETACIÓN ---
+    
+    # Paso A: Renderizar Identidad ARES
     y_next = render_ares_block(cfg, y_base=2)
     
-    # 3. Renderizar Bloque Usuario (Separado por margen de seguridad)
+    # Paso B: Espacio para el streaming (Simulado)
+    sys.stdout.write(f"\033[{y_next};5H\033[3m[STREAMING AREA ARES]\033[0m")
+    
+    # Paso C: Renderizar Identidad Usuario
     y_final = render_user_block(cfg, y_base=y_next + 4)
 
-    # El cursor se posiciona al final, sin mensajes adicionales
-    sys.stdout.write(f"\033[{y_final + 2};1H")
+    # FINALIZAR
+    sys.stdout.write(f"\033[{y_final + 2};1H\n   \033[1;32m[CONQUISTA V29: ARQUITECTURA MODULAR COMPLETA]\033[0m\n")
     sys.stdout.flush()
 
 if __name__ == "__main__":
