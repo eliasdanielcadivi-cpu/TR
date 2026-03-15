@@ -1,0 +1,76 @@
+# ARES Layout Configuration - MODULAR MAPPING (V29)
+# Soberanía de Componentes: Secciones independientes para IA y Usuario
+
+# =========================================================================
+# SECCIÓN 1: IDENTIDAD ARES (IA)
+# =========================================================================
+ares_ui:
+  avatar:
+    path: "/home/daniel/tron/programas/TR/assets/ares/ares-neon.png"
+    size: 10
+    margin_left: 3
+    z_index: 3
+  
+  header:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+    width: 40
+    height: 3
+    margin_left: 3
+    y_offset: 0
+    z_index: 1
+  
+  footer:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+    width: 120
+    height: 1
+    y_offset: 10
+    margin_left: 3
+    z_index: 1
+
+  thinking:
+    size: 10
+    z_index: 4
+    spinners:
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spiner1.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner2.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner3.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner4.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner 6.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif"
+
+# =========================================================================
+# SECCIÓN 2: IDENTIDAD USUARIO (HUMANO)
+# =========================================================================
+user_ui:
+  avatar:
+    path: "/home/daniel/tron/programas/TR/assets/user/user-emoji.png"
+    size: 10
+    margin_left: 3
+    z_index: 3
+  
+  header:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+    width: 30
+    height: 2
+    margin_left: 3
+    y_offset: 0
+    z_index: 1
+  
+  footer:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+    width: 100
+    height: 1
+    y_offset: 8
+    margin_left: 3
+    z_index: 1
+
+# =========================================================================
+# CONFIGURACIÓN GLOBAL DE CONTENIDO
+# =========================================================================
+content:
+  ares_color: "cyan"
+  user_color: "green"
+  margin_left: 7
+  margin_top: 0
+  thinking_index: 4

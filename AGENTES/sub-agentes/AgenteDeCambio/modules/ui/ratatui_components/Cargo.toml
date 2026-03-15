@@ -1,0 +1,20 @@
+[package]
+name = "ratatui_components"
+version = "0.1.0"
+edition = "2021"
+description = "Componentes visuales Ratatui para AgenteDeCambio CLI"
+authors = ["Daniel Hung <daniel@tron.com>"]
+
+[lib]
+name = "ratatui_components"
+crate-type = ["cdylib"]  # Biblioteca dinámica para FFI
+
+[dependencies]
+ratatui = "0.30"
+crossterm = "0.28"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[profile.release]
+opt-level = 3
+lto = true
