@@ -5,10 +5,11 @@
 
 use ratatui::{
     layout::Rect,
-    style::{Style, Color},
+    style::Style,
     widgets::{Sparkline, Block, Borders},
     buffer::Buffer,
 };
+use ratatui::prelude::Widget;
 use crate::buffer_to_string;
 
 /// Renderiza un sparkline de métricas

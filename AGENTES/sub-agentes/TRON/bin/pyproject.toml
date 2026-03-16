@@ -1,0 +1,13 @@
+[project]
+name = "tron"
+version = "4.0.0"
+description = "TRON - El Orquestador de IA"
+authors = [{name = "TRON Team", email = "info@tron.local"}]
+requires-python = ">=3.8"
+
+dependencies = [
+    "PyYAML>=6.0"
+]
+
+[project.scripts]
+tron = "tron:main"

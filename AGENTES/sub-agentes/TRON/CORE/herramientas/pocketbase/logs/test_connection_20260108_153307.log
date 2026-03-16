@@ -1,0 +1,13 @@
+2026-01-08 15:33:07,256 - __main__ - INFO - ============================================================
+2026-01-08 15:33:07,256 - __main__ - INFO - 🚀 Iniciando pruebas de conexión PocketBase
+2026-01-08 15:33:07,256 - __main__ - INFO - ============================================================
+2026-01-08 15:33:07,256 - __main__ - INFO - 
+1️⃣  Prueba de conexión al servidor
+2026-01-08 15:33:07,256 - __main__ - INFO - Probando conexión a http://127.0.0.1:8090...
+2026-01-08 15:33:07,258 - __main__ - INFO - ✅ Servidor PocketBase accesible (HTTP 200)
+2026-01-08 15:33:07,258 - __main__ - INFO - 
+2️⃣  Prueba de autenticación
+2026-01-08 15:33:07,258 - __main__ - INFO - Autenticando con email: elprofesorverdad@gmail.com
+2026-01-08 15:33:07,259 - __main__ - ERROR - ❌ Error de autenticación (HTTP 404)
+2026-01-08 15:33:07,260 - __main__ - ERROR - 
+❌ Prueba fallida: Autenticación inválida

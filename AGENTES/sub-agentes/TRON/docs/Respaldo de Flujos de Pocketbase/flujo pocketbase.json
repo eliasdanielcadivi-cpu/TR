@@ -1,0 +1,230 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -4016,
+        -288
+      ],
+      "id": "ac4d397d-eeb2-4f58-b7ad-367806d690d3",
+      "name": "When chat message received",
+      "webhookId": "1a681611-5ce6-4867-91fb-2c285fd42935"
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "ROL Y OBJETIVO: Eres un Orquestador de API de alta precisión para PocketBase. Tu función es traducir solicitudes en llamadas a la herramienta `PocketBase_API` siguiendo los protocolos de forma infalible.\n\n**CONTEXTO CRÍTICO: ESQUEMA ENRIQUECIDO**\nSe te ha proporcionado el esquema de la base de datos. Para campos de tipo `select`, se incluye una lista de `options`. **DEBES usar exclusivamente uno de los valores de esa lista.**\n\n--- PROTOCOLOS DE OPERACIÓN (OBLIGATORIOS) ---\n\n**PROTOCOLO DE IDENTIFICACIÓN DE REGISTROS:**\n- Para CUALQUIER operación sobre un **registro único** (modificar, borrar), usa la clave `id`.\n- Para CUALQUIER operación de **lectura**, SIEMPRE incluye `id` en el parámetro `fields`.\n\n**PROTOCOLO DE MODIFICACIÓN / BORRADO:**\n1.  **PASO 1 (OBTENER IDs):** Ejecuta `query_records` para obtener los `id` de los registros a operar.\n2.  **PASO 2 (EJECUTAR):** Usa la acción correspondiente (`update_record`, `delete_record`, `batch_update`, `batch_delete`) con los `id` obtenidos.\n\n--- REGLAS INQUEBRANTABLES ---\n1.  **CONSISTENCIA DE ID:** La clave para un registro único es siempre `id`.\n2.  **RESPETA LAS OPCIONES DE 'SELECT':** Usa solo los valores permitidos en la lista de `options`.\n3.  **NO OPERAR A CIEGAS:** Nunca modifiques o borres sin obtener primero un `id` válido.\n4.  **SINTAXIS DE COMANDO:** String JSON, comillas simples externas, dobles internas.",
+          "maxIterations": 25,
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -3200,
+        -272
+      ],
+      "id": "1e014068-4927-418b-bb34-b52f5d3d70cc",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -3216,
+        -96
+      ],
+      "id": "a18814ce-ed4d-49b3-999e-e24b1982f8af",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "Cgny9jvJtyvZvCUl",
+          "name": "DeepSeek account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Una herramienta universal para interactuar con la base de datos PocketBase.\n\n**REGLA DE ORO:** Para identificar un registro, usa siempre la clave `id` para operaciones únicas, y `record_ids` para un lote de borrado.\n\nPARÁMETRO:\n- `json_command` (string): Un objeto JSON válido como string.\n\n--- REFERENCIA DE COMANDOS ---\n1.  `query_records` (LECTURA)\n2.  `list_collections_with_schema` (ESQUEMA)\n3.  `batch_create` (ESCRITURA)\n4.  `update_record` (MODIFICACIÓN ÚNICA)\n    -   Estructura: `{'action':'update_record','collection':'...','id':'ID_VALIDO','data':{...}}`\n5.  `batch_update` (MODIFICACIÓN EN LOTE)\n    -   Estructura: `{'action':'batch_update','collection':'...','records':[{'id':'id1',...}]}`\n6.  `delete_record` (BORRADO ÚNICO)\n    -   Estructura: `{'action':'delete_record','collection':'...','id':'ID_VALIDO'}`\n7.  `batch_delete` (BORRADO EN LOTE)\n    -   Estructura: `{'action':'batch_delete','collection':'...','record_ids':['id1','id2']}`",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "t68tjHnSugdJcxat",
+          "cachedResultName": "microservicio-consultas-pocketbase"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "json_command": "={{ $fromAI(\"json_command\", \"El Contrato JSON de PocketBase (action, collection, data) serializado como una cadena de texto (string).\") }}"
+          },
+          "matchingColumns": [
+            "json_command"
+          ],
+          "schema": [
+            {
+              "id": "json_command",
+              "displayName": "json_command",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -3008,
+        -96
+      ],
+      "id": "8ac03747-bccc-46a7-8393-13ddd267669c",
+      "name": "PocketBase_API"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "pocketbase_schema_summary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -3776,
+        -160
+      ],
+      "id": "16b77029-0a16-438e-89f1-96c9f3bca247",
+      "name": "Get Schema from Cache",
+      "executeOnce": false,
+      "credentials": {
+        "redis": {
+          "id": "vAwt5uGYyUegW6RU",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// El nodo Merge ya ha combinado los datos del Trigger y de Redis.\nconst userInput = $json.chatInput;\nconst schemaString = $json.propertyName;\n\nif (typeof userInput === 'undefined') {\n  throw new Error(\"El input del usuario ('chatInput') no fue encontrado.\");\n}\n\nlet enriched_prompt;\n\nif (schemaString) {\n  try {\n    const fullSchema = JSON.parse(schemaString);\n\n    // --- LÓGICA DE TRANSFORMACIÓN A ESQUEMA ENRIQUECIDO ---\n    const enrichedSchema = fullSchema.reduce((acc, collection) => {\n      const fields = collection.schema.reduce((fieldAcc, field) => {\n        // Si el campo es de tipo 'select', incluimos sus opciones.\n        if (field.type === 'select') {\n          fieldAcc[field.name] = {\n            type: 'select',\n            options: field.options.values || [] // Aseguramos que 'values' exista\n          };\n        } else {\n          // Para otros tipos de campo, mantenemos el formato simple.\n          fieldAcc[field.name] = field.type;\n        }\n        return fieldAcc;\n      }, {});\n      acc[collection.name] = fields;\n      return acc;\n    }, {});\n\n    const formattedSchema = JSON.stringify(enrichedSchema, null, 2);\n    \n    enriched_prompt = `CONOCIMIENTO DE CONTEXTO (ESQUEMA DE BASE DE DATOS ENRIQUECIDO):\\n\\`\\`\\`json\\n${formattedSchema}\\n\\`\\`\\`\\n\\nSOLICITUD DEL USUARIO:\\n${userInput}`;\n\n  } catch (e) {\n    console.error(\"Error al parsear o enriquecer el esquema desde Redis:\", e.message);\n    enriched_prompt = `SOLICITUD DEL USUARIO:\\n${userInput}`;\n  }\n} else {\n  enriched_prompt = `SOLICITUD DEL USUARIO:\\n${userInput}`;\n}\n\nconst outputItem = items[0];\noutputItem.json.chatInput = enriched_prompt;\ndelete outputItem.json.propertyName;\n\nreturn [outputItem];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3360,
+        -272
+      ],
+      "id": "1b3ad779-98a0-406c-b77a-0419878989ad",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3552,
+        -272
+      ],
+      "id": "2ec851d0-95c1-4647-b1cb-124dad89a71c",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Schema from Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        []
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PocketBase_API": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Schema from Cache": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac59abd954d7d8cbdb448793db39890a893ff163f73abb29b1a2e41482e63b1e"
+  }
+}

@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""
+agente-de-cambio - Wrapper para compatibilidad
+
+Este comando ahora se ejecuta via: ares agente-de-cambio
+
+Uso:
+    ares agente-de-cambio [comando]
+
+Comandos:
+    run         Ejecutar interfaz TUI
+    test        Ejecutar demo de componentes
+    install     Instalar componentes Rust (Ratatui)
+    status      Verificar estado de instalación
+"""
+
+import sys
+import subprocess
+from pathlib import Path
+
+# Encontrar ares
+TR_ROOT = Path(__file__).parent.parent
+ARES_PATH = TR_ROOT / "src" / "main.py"
+
+# Ejecutar via ares
+args = ["python3", str(ARES_PATH), "agente-de-cambio"] + sys.argv[1:]
+subprocess.run(args)

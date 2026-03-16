@@ -37,6 +37,7 @@ alias apariencia-ventanas="lxappearance"
 alias ap='export DISPLAY=:0; xset dpms force off'
 alias audifonos="pactl set-sink-port alsa_output.pci-0000_00_1f.3.analog-stereo analog-output-headphones"
 alias audio="python3 /home/daniel/tron/programas/a-DIRECTORIO/EDICION-VIDEO-IMAGENES/audioTel.py"
+alias audiofix='~/tron/programas/audio/fix-hdmi.sh'
 alias audioVer="pactl list modules"
 alias av="playerctl position 10+"
 alias bajar="playerctl volume 0.1-"
@@ -290,7 +291,7 @@ alias umount='umount -v'
 alias updatedbed='editar /etc/updatedb.conf'
 alias var='FunVariables'
 alias vertabla='fnvertabla'
-alias vol="alsamixer"
+alias vol='~/tron/programas/audio/vol.sh'
 alias volumen="alsamixer"
 alias warp-off="warp-cli disconnect"
 alias warp-on="warp-cli connect"

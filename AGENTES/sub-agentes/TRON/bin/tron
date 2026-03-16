@@ -1,0 +1,28 @@
+#!/usr/bin/env uv run
+import os
+import sys
+import subprocess
+
+# --- CONSTANTE DE PROYECTO ---
+PROJECT_ROOT = "/home/daniel/tron/programas/TR/AGENTES/sub-agentes/TRON/bin"
+# -----------------------------
+
+def main():
+    # Nos movemos a la cápsula del proyecto
+    os.chdir(PROJECT_ROOT)
+    
+    # El script que realmente quieres ejecutar dentro de tu bin/
+    # He puesto 'tron' por defecto basándome en tu estructura
+    target_script = os.path.join(PROJECT_ROOT, "tron")
+
+    # Ejecutamos vía uv run para heredar el entorno .venv y pyproject.toml
+    # Pasamos $@ (todos los argumentos) mediante sys.argv
+    cmd = ["uv", "run", "--project", PROJECT_ROOT, "python", target_script] + sys.argv[1:]
+    
+    try:
+        subprocess.run(cmd)
+    except KeyboardInterrupt:
+        sys.exit(0)
+
+if __name__ == "__main__":
+    main()

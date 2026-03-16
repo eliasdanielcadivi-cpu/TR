@@ -1,0 +1,37 @@
+
+# --- Credenciales (Sensible) ---
+keys:
+  deepseek_live: "sk-40911d890144453aa2bb03f1d3adb578"
+  openrouter_live: "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"
+  pocketbase_user: "elprofesorverdad@gmail.com"
+  pocketbase_pass: "Copa007copa."
+
+# --- Configuración Global ---
+global_env:
+  # Variables comunes que no estorban
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+
+# --- Perfiles de Ejecución ---
+profiles:
+  # PERFIL DEEPSEEK (Optimizado para Claude Code según docs)
+  deepseek:
+    base_url: "https://api.deepseek.com/anthropic"
+    env_vars:
+      ANTHROPIC_MODEL: "deepseek-chat"
+      ANTHROPIC_SMALL_FAST_MODEL: "deepseek-chat"
+      # Timeout de 10 minutos para evitar desconexiones en respuestas largas
+      API_TIMEOUT_MS: "600000" 
+    auth_strategy: "deepseek_mode"
+    provider_key_ref: "deepseek_live"
+
+  # PERFIL OPENROUTER
+  openrouter:
+    base_url: "https://openrouter.ai/api"
+    env_vars:
+      # Modelo por defecto si no se especifica otro en la línea de comandos
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "anthropic/claude-3.5-sonnet"
+      # IMPORTANTE: Forzar vacío para evitar conflictos
+      ANTHROPIC_API_KEY: ""
+    auth_strategy: "openrouter_mode"
+    provider_key_ref: "openrouter_live"
+

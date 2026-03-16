@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+import os
+import sys
+import yaml
+from pathlib import Path
+
+def cargar_config():
+    """Carga el YAML de configuración relativo al script."""
+    ruta_yaml = Path(__file__).resolve().parent / "tron_config.yaml"
+    if not ruta_yaml.exists():
+        print(f"Error: No se encuentra {ruta_yaml}", file=sys.stderr)
+        sys.exit(1)
+    
+    with open(ruta_yaml, 'r') as f:
+        return yaml.safe_load(f)
+
+def construir_entorno(perfil_nombre, config, modelo_override=None):
+    """Construye el diccionario de variables de entorno."""
+    
+    env = os.environ.copy()
+    
+    # 1. Cargar globales
+    env.update(config.get('global_env', {}))
+    
+    # 2. Validar perfil
+    perfil = config['profiles'].get(perfil_nombre)
+    if not perfil:
+        print(f"Error: El perfil '{perfil_nombre}' no existe en el YAML.", file=sys.stderr)
+        sys.exit(1)
+    
+    # 3. Configurar URL Base
+    env['ANTHROPIC_BASE_URL'] = perfil['base_url']
+    
+    # 4. Configurar Variables del perfil
+    vars_perfil = perfil.get('env_vars', {})
+    for k, v in vars_perfil.items():
+        env[k] = str(v)
+
+    # 5. INYECCIÓN DE MODELO (Override para OpenRouter)
+    if modelo_override and perfil_nombre == "openrouter":
+        # Sobrescribimos el modelo "Sonnet" que usa Claude Code por defecto
+        env['ANTHROPIC_DEFAULT_SONNET_MODEL'] = modelo_override
+        # También actualizamos la variable genérica por si se usa Python SDK
+        env['ANTHROPIC_MODEL'] = modelo_override
+        
+    # 6. Estrategias de Autenticación
+    clave_ref = perfil['provider_key_ref']
+    api_key_real = config['keys'].get(clave_ref, "")
+    estrategia = perfil['auth_strategy']
+
+    if estrategia == "deepseek_mode":
+        # DeepSeek usa la misma key para todo
+        env['ANTHROPIC_AUTH_TOKEN'] = api_key_real
+        env['ANTHROPIC_API_KEY'] = api_key_real
+        
+    elif estrategia == "openrouter_mode":
+        # OpenRouter exige Token lleno y API Key vacía
+        env['ANTHROPIC_AUTH_TOKEN'] = api_key_real
+        env['ANTHROPIC_API_KEY'] = "" 
+        
+    return env
+
+def main():
+    if len(sys.argv) < 3:
+        print("Uso: iaRouter [perfil] [modelo_opcional] [comando]")
+        sys.exit(1)
+
+    perfil = sys.argv[1]
+    args_restantes = sys.argv[2:]
+    
+    modelo_override = None
+    comando = []
+
+    # LÓGICA INTELIGENTE DE ARGUMENTOS
+    # Si el perfil es openrouter y el siguiente argumento parece un modelo (tiene / o :)
+    # entonces lo tomamos como modelo y el comando es lo que sigue.
+    posible_modelo = args_restantes[0]
+    
+    if perfil == "openrouter" and ("/" in posible_modelo or ":" in posible_modelo or "@" in posible_modelo):
+        modelo_override = posible_modelo
+        comando = args_restantes[1:] # El comando es lo que queda después del modelo
+    else:
+        comando = args_restantes # No hay modelo extra, todo es comando
+
+    if not comando:
+        print("Error: No especificaste ningún comando para ejecutar (ej. claude, python3, etc).", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        config = cargar_config()
+        nuevo_entorno = construir_entorno(perfil, config, modelo_override)
+        
+        # Ejecutar el reemplazo
+        os.execvpe(comando[0], comando, nuevo_entorno)
+        
+    except Exception as e:
+        print(f"Error crítico en iaRouter: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

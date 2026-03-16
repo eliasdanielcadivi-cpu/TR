@@ -15,8 +15,8 @@ Este cuaderno es el mecanismo de sincronización para evitar colisiones entre m�
 
 | IA | Fecha/Hora | Módulos/Documentos Reservados | Estado |
 |----|------------|-----------------------------|--------|
-| Gemini-CLI | 2026-03-13 09:00 | /src/main.py, /modules/ui/layout_engine.py, /config/layout_config.yaml, /scripts/maq_prototype.py | [TRABAJANDO] |
-| Qwen-Code | 2026-03-15 [COMPLETADO] | /docs/AgenteDeCambio/ (4 docs), /docs/Ratatui/ (2 docs), /docs/Textual/ (3 docs), /AGENTES/sub-agentes/AgenteDeCambio/ (estructura + Rust components) | [LIBERADO - Documentación y estructura base listas. Implementación pendiente cuando usuario decida continuar] |
+| Gemini-CLI | 2026-03-16 06:45 | /modules/ui/industrial_engine.py, /modules/ui/ares_factory.py, /modules/ui/user_factory.py, /config/layout_config.yaml | [LIBERADO] |
+| Gemini-CLI | 2026-03-13 09:00 | /src/main.py, /modules/ui/layout_engine.py, /config/layout_config.yaml | [LIBERADO] |
 
 ---
 *Mantén el orden paranoico. No toques los huevos de otra IA.*

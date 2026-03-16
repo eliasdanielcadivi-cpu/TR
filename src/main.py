@@ -555,12 +555,79 @@ def video(obj, archivo, **kwargs):
 @click.pass_obj
 def image(obj, archivos, **kwargs):
     """🖼️  Multimedia: Visualizador de Imágenes.
-    
+
     Renderiza imágenes directamente en las celdas de Kitty usando el protocolo
     icat. Soporta cuadrículas, escalado y alineación dinámica.
     """
     MediaManager(obj).show_image(archivos, **kwargs)
 
+
+# ============================================================================
+# AGENTES - Despachador de Sub-Agentes Standalone
+# ============================================================================
+
+@cli.group(name="agente")
+@click.pass_obj
+def agente(obj):
+    """🤖 Despachador de Sub-Agentes Standalone.
+    
+    Ejecuta sub-agentes especializados de forma independiente.
+    Cada sub-agente es una aplicación autónoma con su propia UI/CLI.
+    
+    Usa: ares agente [nombre_agente]
+    
+    Sub-Agentes Disponibles:
+      AgenteDeCambio  - Interfaz TUI híbrida (90% Textual + 10% Ratatui)
+      sherlok         - Auditor de código con ADN Técnico Industrial
+    
+    Ejemplos:
+      ares agente AgenteDeCambio run      - Ejecutar AgenteDeCambio TUI
+      ares agente AgenteDeCambio status   - Verificar estado
+      ares agente sherlok                 - Ejecutar auditoría Sherlok
+    """
+    pass
+
+
+# ============================================================================
+# AGENTE DE CAMBIO - Sub-agente TUI Híbrido (90% Textual + 10% Ratatui)
+# ============================================================================
+
+@agente.command(name="AgenteDeCambio")
+@click.argument("accion", default="run", type=click.Choice(["run", "test", "install", "status"]))
+@click.pass_obj
+def agente_agente_de_cambio(obj, accion):
+    """🤖 AgenteDeCambio: Interfaz TUI híbrida para extracción cognitiva.
+    
+    Interfaz 90% Textual + 10% Ratatui con prompts vivos, métricas de deriva
+    y modo dual chat/cuestionario.
+    
+    ACCION:
+      run     - Ejecutar interfaz TUI completa (default)
+      test    - Test de componentes Rust/Textual
+      install - Instalar componentes Rust (Ratatui)
+      status  - Verificar estado de instalación
+    
+    Ejemplo:
+      ares agente AgenteDeCambio run      - Ejecutar TUI
+      ares agente AgenteDeCambio test     - Test componentes
+      ares agente AgenteDeCambio install  - Instalar Rust
+      ares agente AgenteDeCambio status   - Verificar estado
+    """
+    if accion == "run":
+        from modules.ui.agente_de_cambio import run_demo
+        run_demo()
+    elif accion == "test":
+        from modules.ui.agente_de_cambio import run_tests
+        run_tests()
+    elif accion == "install":
+        from modules.ui.agente_de_cambio import install_rust_components
+        install_rust_components()
+    elif accion == "status":
+        from modules.ui.agente_de_cambio import show_status
+        show_status()
+
+
+# ============================================================================
 
 if __name__ == "__main__":
     cli()

@@ -5,10 +5,11 @@
 
 use ratatui::{
     layout::Rect,
-    style::{Style, Color},
-    widgets::{Gauge, LineGauge, Block, Borders},
+    style::Style,
+    widgets::{Gauge, Block, Borders},
     buffer::Buffer,
 };
+use ratatui::prelude::Widget;
 use crate::buffer_to_string;
 
 /// Renderiza un gauge de deriva tradicional
@@ -79,8 +80,6 @@ pub extern "C" fn render_line_gauge(
     threshold: f64,
     width: usize,
 ) -> *mut std::os::raw::c_char {
-    use ratatui::symbols::line;
-    
     // Calcular caracteres llenos
     let filled = ((delta.min(1.0)) * width as f64) as usize;
     
@@ -154,7 +153,7 @@ mod tests {
     fn test_line_gauge_ok() {
         let result = render_line_gauge(0.2, 0.3, 40);
         unsafe {
-            let c_str = CStr::from_ptr(result);
+            let c_str = std::ffi::CStr::from_ptr(result);
             let str_slice = c_str.to_str().unwrap();
             assert!(str_slice.contains("✓ OK"));
             crate::free_c_string(result);
@@ -165,7 +164,7 @@ mod tests {
     fn test_line_gauge_warning() {
         let result = render_line_gauge(0.5, 0.3, 40);
         unsafe {
-            let c_str = CStr::from_ptr(result);
+            let c_str = std::ffi::CStr::from_ptr(result);
             let str_slice = c_str.to_str().unwrap();
             assert!(str_slice.contains("⚠ REVIEW"));
             crate::free_c_string(result);
@@ -176,7 +175,7 @@ mod tests {
     fn test_line_gauge_error() {
         let result = render_line_gauge(0.8, 0.3, 40);
         unsafe {
-            let c_str = CStr::from_ptr(result);
+            let c_str = std::ffi::CStr::from_ptr(result);
             let str_slice = c_str.to_str().unwrap();
             assert!(str_slice.contains("✗ REJECT"));
             crate::free_c_string(result);

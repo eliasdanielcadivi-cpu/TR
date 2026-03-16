@@ -1,0 +1,40 @@
+13:54:04.624 | TID:126364077318272 | CRITICAL | === INICIANDO SECUENCIA DE ARRANQUE NUCLEAR ===
+13:54:04.624 | TID:126364077318272 |     INFO | Objetivo: /home/daniel/tron/programas/ProyectoPizza/TRON/docs
+13:54:04.629 | TID:126364077318272 |     INFO | TRON detectado en: /usr/bin/tron
+13:54:04.630 | TID:126364052092608 |    DEBUG | Worker iniciado y esperando víctimas...
+13:54:04.630 | TID:126364077318272 | CRITICAL | INICIANDO OBSERVADOR DE SISTEMA DE ARCHIVOS...
+13:54:14.108 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:54:14.116 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:54:14.165 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:54:14.270 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:54:14.282 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:54:14.318 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:54:14.324 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:54:14.388 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:54:14.431 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:54:14.551 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:54:14.568 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:54:14.574 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:56:52.602 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:56:52.620 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:56:52.626 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:56:52.631 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:56:52.635 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:57:00.772 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:57:00.789 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:57:01.108 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:57:01.203 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:57:01.209 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:57:01.214 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:57:04.724 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:57:04.730 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> IDENTIDAD_SISTEMA.md
+13:57:04.860 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:57:04.876 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> documentos-de-claude.md
+13:57:04.981 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:57:04.992 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> claves-api-arthropic-claude-deepseek-openrouter-como.md
+13:57:07.252 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:57:07.259 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> bateria_comandos_consola.md
+13:57:07.342 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:57:07.364 | TID:126364026914496 |  FORENSE | [HEX] EVENTO FS: opened -> api-modelos-openrouter-referencia.md
+13:59:20.688 | TID:126364077318272 | CRITICAL | SEÑAL DE INTERRUPCIÓN RECIBIDA. APAGANDO...
+13:59:20.695 | TID:126364077318272 | CRITICAL | SISTEMA APAGADO.

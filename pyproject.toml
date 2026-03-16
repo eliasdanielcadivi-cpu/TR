@@ -1,7 +1,7 @@
 [project]
 name = "tr"
 version = "0.1.0"
-description = "Add your description here"
+description = "ARES-TRON: Adaptive Reasoning Enterprise Strategist"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -15,6 +15,11 @@ dependencies = [
     "rich>=14.3.3",
     "sqlite-vec>=0.1.6",
     "term-image>=0.7.2",
+    # Textual TUI framework (90% de la interfaz AgenteDeCambio)
+    "textual>=8.1.1",
+    "textual-dev>=1.7.0",
+    # httpx para streaming asíncrono (DeepSeek API)
+    "httpx>=0.25.0",
     # notcurses: Usar paquete del sistema (python3-notcurses)
     # No instalar desde PyPI porque no es compatible con libnotcurses del sistema
 ]
@@ -22,3 +27,7 @@ dependencies = [
 [tool.uv]
 # System package: python3-notcurses (APT)
 # El wrapper Python oficial tiene problemas de compilación con la versión del sistema
+
+# Rust toolchain requerida para componentes Ratatui (10% de la interfaz)
+# Instalar con: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Luego: source ~/.cargo/env (ya está en .zshrc de ARES)

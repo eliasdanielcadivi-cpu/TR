@@ -5,10 +5,11 @@
 
 use ratatui::{
     layout::Rect,
-    style::{Style, Color},
+    style::Style,
     widgets::{Chart, Dataset, GraphType, Axis, Block, Borders},
     buffer::Buffer,
 };
+use ratatui::prelude::Widget;
 use crate::buffer_to_string;
 
 /// Renderiza un gráfico de líneas simple
@@ -72,8 +73,8 @@ pub extern "C" fn render_line_chart(
     if !title.is_null() {
         unsafe {
             let title_str = std::ffi::CStr::from_ptr(title).to_string_lossy();
-            let block = chart.block().unwrap_or(&Block::default());
-            chart = chart.block(block.clone().title(format!(" {} ", title_str)));
+            let block = Block::default().title(format!(" {} ", title_str));
+            chart = chart.block(block);
         }
     }
     

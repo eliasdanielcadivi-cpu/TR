@@ -1,0 +1,417 @@
+#!/usr/bin/env python3
+"""
+TRON v5.0 - Cliente Ligero de Modelos OpenRouter
+Última actualización: 8 de enero de 2026
+
+Sistema simplificado para explorar y seleccionar modelos de OpenRouter
+con información detallada, sin contabilidad de tokens ni costos.
+"""
+
+import os
+import sys
+import json
+import time
+import asyncio
+import argparse
+import subprocess
+import urllib.request
+from pathlib import Path
+
+# --- CONSTANTES Y COLORES ---
+C_RESET = "\\033[0m"
+C_CYAN = "\\033[96m"
+C_GREEN = "\\033[92m"
+C_YELLOW = "\\033[93m"
+C_RED = "\\033[91m"
+C_MAGENTA = "\\033[95m"
+C_BOLD = "\\033[1m"
+
+# Directorio para almacenar modelos descargados
+MODELS_DIR = Path.home() / ".cache" / "tron_models"
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
+CACHE_FILE = MODELS_DIR / "openrouter_models.json"
+CACHE_DURATION = 86400  # 24 horas en segundos
+
+def get_cached_models():
+    """Obtiene los modelos desde el cache local si es reciente"""
+    if CACHE_FILE.exists():
+        cache_time = CACHE_FILE.stat().st_mtime
+        if time.time() - cache_time < CACHE_DURATION:
+            try:
+                with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, IOError):
+                pass
+    return None
+
+def save_models_cache(models_data):
+    """Guarda los modelos en el cache local"""
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(models_data, f, ensure_ascii=False, indent=2)
+    except IOError as e:
+        print(f"{C_RED}Error al guardar cache: {e}{C_RESET}")
+
+def download_models_data(api_key):
+    """Descarga la información de modelos desde OpenRouter"""
+    print(f"{C_CYAN}📥 Descargando información de modelos...{C_RESET}")
+    
+    request = urllib.request.Request(
+        url="https://openrouter.ai/api/v1/models",
+        headers={"Authorization": f"Bearer {api_key}"}
+    )
+    
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            data = json.loads(response.read())
+            save_models_cache(data)
+            return data
+    except Exception as e:
+        print(f"{C_RED}❌ Error al descargar modelos: {e}{C_RESET}")
+        return None
+
+def get_models_data(api_key):
+    """Obtiene la información de modelos, desde cache o descargando"""
+    cached_data = get_cached_models()
+    if cached_data:
+        print(f"{C_GREEN}📚 Modelos cargados desde cache{C_RESET}")
+        return cached_data
+    
+    return download_models_data(api_key)
+
+def format_price(price_str):
+    """Formatea el precio para mostrarlo legiblemente"""
+    try:
+        price = float(price_str)
+        if price == 0:
+            return f"{C_GREEN}GRATIS{C_RESET}"
+        elif price < 0.001:
+            return f"{C_YELLOW}${price:.6f}/M{C_RESET}"
+        else:
+            return f"${price:.6f}/M"
+    except:
+        return f"{C_RED}N/A{C_RESET}"
+
+def format_context_length(length):
+    """Formatea la longitud de contexto"""
+    if length >= 100000:
+        return f"{length//1000}K"
+    elif length >= 1000:
+        return f"{length//1000}K"
+    else:
+        return str(length)
+
+def get_model_features(model):
+    """Extrae características especiales del modelo"""
+    features = []
+    
+    # Verificar si usa herramientas
+    supports_tools = model.get('supports_tools', False) or 'tool' in model.get('capabilities', {}).get('tools', [])
+    if supports_tools:
+        features.append("🛠️  Herramientas")
+    
+    # Verificar si soporta imágenes
+    supports_images = model.get('supports_image_input', False) or 'image' in model.get('capabilities', {}).get('input_modalities', [])
+    if supports_images:
+        features.append("🖼️  Imágenes")
+    
+    # Verificar si soporta audio
+    supports_audio = 'audio' in model.get('capabilities', {}).get('input_modalities', [])
+    if supports_audio:
+        features.append("🔊 Audio")
+    
+    # Verificar si soporta video
+    supports_video = 'video' in model.get('capabilities', {}).get('input_modalities', [])
+    if supports_video:
+        features.append("🎥 Video")
+    
+    # Verificar si soporta reasoning
+    supports_reasoning = 'reasoning' in model.get('capabilities', {}).get('internal_reasoning', [])
+    if supports_reasoning:
+        features.append("🧠 Razonamiento")
+    
+    return features
+
+def display_model_info(model):
+    """Muestra información detallada de un modelo"""
+    print(f"\\n{C_BOLD}{C_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}")
+    print(f"{C_BOLD}{C_MAGENTA}🔍 Información del Modelo:{C_RESET}")
+    print(f"{C_BOLD}{C_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}")
+    
+    print(f"🏷️  {C_BOLD}Nombre:{C_RESET} {model.get('id', 'N/A')}")
+    print(f"📝 {C_BOLD}Descripción:{C_RESET}")
+    desc = model.get('description', 'No disponible')
+    # Limitar la descripción a unas pocas líneas para no abarrotar
+    lines = desc.split('\\n')
+    for i, line in enumerate(lines[:5]):  # Mostrar solo las primeras 5 líneas
+        if i == 0:
+            print(f"   {line}")
+        else:
+            print(f"   {line}")
+    if len(lines) > 5:
+        print(f"   ... (y {len(lines)-5} líneas más)")
+    
+    pricing = model.get('pricing', {})
+    print(f"\\n💰 {C_BOLD}Precios:{C_RESET}")
+    print(f"   Prompt: {format_price(pricing.get('prompt', 'N/A'))}")
+    print(f"   Completion: {format_price(pricing.get('completion', 'N/A'))}")
+    
+    context_length = model.get('context_length', 0)
+    print(f"📏 {C_BOLD}Contexto:{C_RESET} {format_context_length(context_length)} tokens")
+    
+    # Características especiales
+    features = get_model_features(model)
+    if features:
+        print(f"\\n⚙️  {C_BOLD}Características:{C_RESET}")
+        for feature in features:
+            print(f"   • {feature}")
+    
+    # Arquitectura
+    arch = model.get('architecture', {})
+    if arch:
+        print(f"\\n🏗️  {C_BOLD}Arquitectura:{C_RESET}")
+        modality = arch.get('modality', 'N/A')
+        print(f"   Modalidad: {modality}")
+        
+        input_modalities = arch.get('input_modalities', [])
+        if input_modalities:
+            print(f"   Entradas: {', '.join(input_modalities)}")
+    
+    print(f"{C_BOLD}{C_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}")
+
+def show_router_menu(models_data, api_key):
+    """Muestra el menú interactivo de selección de modelos"""
+    models = models_data.get('data', [])
+    
+    # Filtrar por categorías
+    all_models = models
+    free_models = [m for m in models if float(m.get('pricing', {}).get('prompt', 999)) == 0]
+    tool_models = [m for m in models if m.get('supports_tools', False)]
+    image_models = [m for m in models if m.get('supports_image_input', False)]
+    
+    print(f"\\n{C_BOLD}{C_CYAN}🤖 TRON v5.0 - Selector de Modelos OpenRouter{C_RESET}")
+    print(f"{C_CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}")
+    
+    while True:
+        print(f"\\n{C_BOLD}Selecciona una categoría:{C_RESET}")
+        print(f"1. 🆓 Modelos Gratuitos ({len(free_models)})")
+        print(f"2. 🛠️  Modelos con Herramientas ({len(tool_models)})")
+        print(f"3. 🖼️  Modelos con Visión ({len(image_models)})")
+        print(f"4. 📚 Todos los Modelos ({len(all_models)})")
+        print(f"5. 🔍 Buscar por nombre")
+        print(f"6. 🚪 Salir")
+        
+        try:
+            choice = input(f"\\n{C_YELLOW}Selecciona una opción (1-6): {C_RESET}").strip()
+            
+            if choice == '6':
+                print(f"{C_GREEN}👋 ¡Hasta luego!{C_RESET}")
+                break
+            elif choice in ['1', '2', '3', '4']:
+                if choice == '1':
+                    selected_models = free_models
+                    title = "Modelos Gratuitos"
+                elif choice == '2':
+                    selected_models = tool_models
+                    title = "Modelos con Herramientas"
+                elif choice == '3':
+                    selected_models = image_models
+                    title = "Modelos con Visión"
+                else:
+                    selected_models = all_models
+                    title = "Todos los Modelos"
+                
+                print(f"\\n{C_BOLD}{C_MAGENTA}━━━ {title} ━━━{C_RESET}")
+                
+                for i, model in enumerate(selected_models[:50], 1):  # Mostrar máximo 50
+                    model_id = model.get('id', 'N/A')
+                    name = model.get('name', 'Sin nombre')
+                    pricing = model.get('pricing', {})
+                    
+                    price_prompt = format_price(pricing.get('prompt', 'N/A'))
+                    context_length = format_context_length(model.get('context_length', 0))
+                    
+                    # Iconos de características
+                    features = []
+                    if model.get('supports_tools', False):
+                        features.append("🛠️")
+                    if model.get('supports_image_input', False):
+                        features.append("🖼️")
+                    feature_icons = " ".join(features)
+                    
+                    print(f"{i:2d}. {model_id}")
+                    print(f"    {name}")
+                    print(f"    💰 {price_prompt} | 📏 {context_length}K tokens | {feature_icons}")
+                
+                if len(selected_models) > 50:
+                    print(f"... y {len(selected_models) - 50} más")
+                
+                print(f"\\n{C_BOLD}Opciones:{C_RESET}")
+                print("• Selecciona número para ver detalles")
+                print("• 'b' para volver al menú principal")
+                print("• 's' para salir")
+                
+                sub_choice = input(f"\\n{C_YELLOW}Selecciona modelo, 'b' o 's': {C_RESET}").strip().lower()
+                
+                if sub_choice == 'b':
+                    continue
+                elif sub_choice == 's':
+                    break
+                elif sub_choice.isdigit():
+                    idx = int(sub_choice) - 1
+                    if 0 <= idx < len(selected_models):
+                        selected_model = selected_models[idx]
+                        display_model_info(selected_model)
+                        
+                        print(f"\\n{C_BOLD}¿Qué deseas hacer?{C_RESET}")
+                        print("1. Seleccionar este modelo")
+                        print("2. Ver otro modelo")
+                        print("3. Volver al menú")
+                        
+                        action = input(f"\\n{C_YELLOW}Selecciona (1-3): {C_RESET}").strip()
+                        
+                        if action == '1':
+                            return selected_model.get('id', '')
+                        elif action == '2':
+                            continue
+                        else:
+                            continue
+                    else:
+                        print(f"{C_RED}Número inválido{C_RESET}")
+                else:
+                    continue
+            elif choice == '5':
+                search_term = input(f"\\n{C_YELLOW}Buscar modelo (nombre o proveedor): {C_RESET}").strip().lower()
+                if search_term:
+                    search_results = [m for m in all_models if search_term in m.get('id', '').lower() or search_term in m.get('name', '').lower()]
+                    print(f"\\n{C_BOLD}{C_MAGENTA}Resultados de búsqueda para '{search_term}':{C_RESET}")
+                    
+                    for i, model in enumerate(search_results[:20], 1):  # Máximo 20 resultados
+                        model_id = model.get('id', 'N/A')
+                        name = model.get('name', 'Sin nombre')
+                        pricing = model.get('pricing', {})
+                        price_prompt = format_price(pricing.get('prompt', 'N/A'))
+                        print(f"{i:2d}. {model_id} - {name} [{price_prompt}]")
+                    
+                    if search_results:
+                        sub_choice = input(f"\\n{C_YELLOW}Selecciona número para ver detalles (o 'b' para volver): {C_RESET}").strip().lower()
+                        if sub_choice.isdigit():
+                            idx = int(sub_choice) - 1
+                            if 0 <= idx < len(search_results):
+                                selected_model = search_results[idx]
+                                display_model_info(selected_model)
+                                
+                                print(f"\\n{C_BOLD}¿Seleccionar este modelo? (s/n): {C_RESET}")
+                                if input().strip().lower() == 's':
+                                    return selected_model.get('id', '')
+            else:
+                print(f"{C_RED}Opción inválida{C_RESET}")
+                
+        except (KeyboardInterrupt, EOFError):
+            print(f"\\n{C_YELLOW}Operación cancelada{C_RESET}")
+            break
+    
+    return None
+
+def main():
+    parser = argparse.ArgumentParser(description="TRON v5.0 - Cliente Ligero de Modelos OpenRouter")
+    parser.add_argument('profile', nargs='?', default=None, help="Perfil de ejecución (ej. 'openrouter')")
+    parser.add_argument('model', nargs='?', default=None, help="Modelo a usar")
+    parser.add_argument('command', nargs=argparse.REMAINDER, help="Comando a ejecutar")
+    parser.add_argument('--router', action='store_true', help="Mostrar menú interactivo de modelos")
+    parser.add_argument('--see', action='store_true', help="Ver características detalladas del modelo especificado")
+    parser.add_argument('--debug', action='store_true', help="Modo de depuración")
+    
+    args = parser.parse_args()
+    
+    # Cargar configuración
+    config_path = Path(__file__).resolve().parent / "tron_config.yaml"
+    if not config_path.exists():
+        print(f"{C_RED}❌ Error: No se encuentra tron_config.yaml{C_RESET}")
+        sys.exit(1)
+    
+    import yaml
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    api_key = config['keys'].get('openrouter_live')
+    if not api_key:
+        print(f"{C_RED}❌ Error: No se encontró la clave de API de OpenRouter{C_RESET}")
+        sys.exit(1)
+    
+    # Modo --see: Ver características detalladas de un modelo
+    if args.see and args.model:
+        print(f"{C_CYAN}🔍 Obteniendo información detallada para: {args.model}{C_RESET}")
+        
+        models_data = get_models_data(api_key)
+        if not models_data:
+            print(f"{C_RED}❌ No se pudieron obtener los datos de modelos{C_RESET}")
+            sys.exit(1)
+        
+        models = models_data.get('data', [])
+        target_model = None
+        
+        for model in models:
+            if model.get('id') == args.model:
+                target_model = model
+                break
+        
+        if target_model:
+            display_model_info(target_model)
+        else:
+            print(f"{C_RED}❌ Modelo no encontrado: {args.model}{C_RESET}")
+        
+        return
+    
+    # Modo --router: Menú interactivo de selección
+    if args.router or (args.profile == 'openrouter' and not args.model):
+        models_data = get_models_data(api_key)
+        if not models_data:
+            print(f"{C_RED}❌ No se pudieron obtener los datos de modelos{C_RESET}")
+            sys.exit(1)
+        
+        selected_model = show_router_menu(models_data, api_key)
+        if selected_model:
+            print(f"{C_GREEN}✅ Modelo seleccionado: {selected_model}{C_RESET}")
+            
+            # Si hay un comando para ejecutar con este modelo
+            if args.command:
+                # Construir ambiente para Claude con el modelo seleccionado
+                env = os.environ.copy()
+                env['ANTHROPIC_DEFAULT_MODEL'] = selected_model
+                env['ANTHROPIC_MODEL'] = selected_model
+                env['OPENROUTER_API_KEY'] = api_key
+                
+                print(f"{C_CYAN}🚀 Ejecutando comando con modelo {selected_model}:{C_RESET}")
+                print(f"   {' '.join(args.command)}")
+                
+                try:
+                    result = subprocess.run(args.command, env=env, check=True)
+                    sys.exit(result.returncode)
+                except subprocess.CalledProcessError as e:
+                    sys.exit(e.returncode)
+        else:
+            print(f"{C_YELLOW}❌ No se seleccionó ningún modelo{C_RESET}")
+            sys.exit(1)
+    
+    # Ejecución normal con modelo especificado
+    if args.profile and args.model and args.command:
+        env = os.environ.copy()
+        env['ANTHROPIC_DEFAULT_MODEL'] = args.model
+        env['ANTHROPIC_MODEL'] = args.model
+        env['OPENROUTER_API_KEY'] = api_key
+        
+        print(f"{C_CYAN}🚀 Ejecutando con modelo {args.model}:{C_RESET}")
+        print(f"   {' '.join(args.command)}")
+        
+        try:
+            result = subprocess.run(args.command, env=env, check=True)
+            sys.exit(result.returncode)
+        except subprocess.CalledProcessError as e:
+            sys.exit(e.returncode)
+    
+    # Si no hay argumentos suficientes, mostrar ayuda
+    parser.print_help()
+
+if __name__ == "__main__":
+    main()

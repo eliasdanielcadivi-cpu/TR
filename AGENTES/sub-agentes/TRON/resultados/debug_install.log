@@ -1,0 +1,9 @@
+2026-02-17 12:50:07,181 - root - DEBUG - MODO DEBUG ACTIVADO. Logging verboso en: /home/daniel/tron/programas/ProyectoPizza/TRON/resultados/debug_install.log
+2026-02-17 12:50:07,183 - root - DEBUG - Configuración cargada desde /home/daniel/tron/programas/ProyectoPizza/TRON/bin/tron_config.yaml
+2026-02-17 12:50:07,183 - tron_lib - DEBUG - TronDBManager inicializado con almacenamiento en archivos JSON
+2026-02-17 12:50:07,183 - tron_lib - INFO - Conexión con sistema de almacenamiento local exitosa.
+2026-02-17 12:50:07,183 - tron_lib - DEBUG - Inicializando archivos de datos...
+2026-02-17 12:50:07,183 - root - INFO - Perfil final: deepseek | Modelo final: deepseek-chat | Comando: claude
+2026-02-17 12:50:07,183 - root - DEBUG - Entorno construido para el perfil 'deepseek' con el modelo 'deepseek-chat'
+2026-02-17 12:50:08,708 - root - ERROR - El comando finalizó con código de error: 1
+2026-02-17 12:50:08,708 - tron_lib - INFO - Iniciando sincronización del mercado de modelos desde OpenRouter...

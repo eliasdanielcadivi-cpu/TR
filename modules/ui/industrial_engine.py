@@ -1,59 +1,72 @@
-"""Industrial Engine V31: Orquestador con Soporte de Transparencia Alpha.
+"""Industrial Engine V47: Orquestador de Fábricas Duales.
 
-Gestiona la maquetación industrial delegando a componentes atómicos.
-V31: Integración con Kitty Alpha Engine para renderizado de alta fidelidad.
+GESTIÓN:
+- Renderiza secuencialmente ARES y USER.
+- Cada bloque es independiente y encapsulado en su fábrica.
+- Sincronización de cursor post-renderizado.
 """
 
 import sys
 import yaml
 import shutil
 import subprocess
+import os
 from pathlib import Path
 
-# Fix para importaciones locales
+# Asegurar importaciones locales
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
+CACHE_DIR = PROJECT_ROOT / "papelera" / ".cache_gifs"
 
-class KittyOrchestrator:
+class DragonScaler:
     @staticmethod
-    def _place_asset(path: str, w: int, h: int, x: int, y: int, z: int, img_id: int):
-        """
-        Inyecta activos usando el nuevo Kitty Alpha Engine (V31).
-        Soporta transparencia real y animaciones fluidas.
-        """
-        from .kitty_alpha_engine import process_and_inject_image
-        
-        # Delegación al motor de alta fidelidad
-        process_and_inject_image(path, x, y, w, h, z=z, img_id=img_id)
+    def prepare_gif(input_path: str, target_w: int, target_h: int) -> str:
+        if not CACHE_DIR.exists(): CACHE_DIR.mkdir(parents=True)
+        cache_name = f"{Path(input_path).stem}_{target_w}_{target_h}.gif"
+        cache_path = CACHE_DIR / cache_name
+        if cache_path.exists(): return str(cache_path)
+        px_w, px_h = target_w * 10, target_h * 20
+        cmd = ["convert", input_path, "-coalesce", "-resize", f"{px_w}x{px_h}!", "-layers", "Optimize", str(cache_path)]
+        try:
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return str(cache_path)
+        except: return input_path
 
+class KittyDragon:
     @staticmethod
-    def reset():
-        """Limpia el buffer gráfico de la terminal."""
-        sys.stdout.buffer.write(b"\033[2J\033[H\033_Ga=d,d=A\033\\")
-        sys.stdout.buffer.flush()
+    def summon(path: str, w: int, h: int, x: int, y: int, z: int = 1, loop: int = -1, async_mode: bool = False):
+        if not Path(path).exists(): return
+        is_gif = path.lower().endswith(".gif")
+        final_path = DragonScaler.prepare_gif(path, w, h) if (is_gif and w > 40) else path
+        place = f"{w}x{h}@{x}x{y}"
+        cmd = ["kitten", "icat", "--place", place, "--scale-up", "--background=none", "--loop", str(loop), f"--z-index={z}", final_path]
+        if async_mode: subprocess.Popen(cmd, stdout=sys.stdout, stderr=sys.stderr)
+        else: subprocess.run(cmd, stdout=sys.stdout, stderr=sys.stderr)
 
 def render_industrial_maq():
-    """Ejecución V31: El lienzo industrial con transparencia perfecta."""
-    from .ares_render import render_ares_block
-    from .user_render import render_user_block
+    """Ejecución V47: El gran test de Identidades Duales."""
+    from .ares_factory import AresFactory
+    from .user_factory import UserFactory
     
     config_path = PROJECT_ROOT / "config" / "layout_config.yaml"
     with open(config_path, "r") as f:
         cfg = yaml.safe_load(f)
     
-    # 1. Reset Total
-    KittyOrchestrator.reset()
+    # 1. Reset Sincronizado
+    sys.stdout.buffer.write(b"\033[2J\033[H\033_Ga=d,d=A\033\\")
+    sys.stdout.buffer.flush()
     
-    # 2. Renderizar Bloque IA
-    # Ares_render ya usa KittyOrchestrator._place_asset internamente
-    y_next = render_ares_block(cfg, y_base=2)
+    # 2. BLOQUE ARES (Fase A)
+    # y_base = 2 (Aire superior)
+    y_ares_end = AresFactory.render_block(cfg, y_base=2, dragon_engine=KittyDragon)
     
-    # 3. Renderizar Bloque Usuario
-    y_final = render_user_block(cfg, y_base=y_next + 4)
+    # 3. BLOQUE USUARIO (Fase B - Activado)
+    # y_base = final del anterior + margen
+    y_user_end = UserFactory.render_block(cfg, y_base=y_ares_end + 2, dragon_engine=KittyDragon)
 
-    # El cursor se posiciona al final
-    sys.stdout.write(f"\033[{y_final + 2};1H")
+    # 4. LIBERACIÓN DE CURSOR
+    sys.stdout.write(f"\033[{y_user_end + 3};1H")
     sys.stdout.flush()
 
 if __name__ == "__main__":

@@ -49,6 +49,20 @@ ARES es el **cerebro** que controla la terminal ares para crear flujos de trabaj
 | `ares model-creator delete <name>` | Eliminar modelo de Ollama |
 | `ares modelfile-creator create <name>` | Crear Modelfile YAML |
 | `ares modelfile-creator list` | Listar Modelfiles guardados |
+| **`ares agente [nombre]`** | **🤖 Despachador de Sub-Agentes Standalone** |
+
+### Sub-Agentes Disponibles
+
+| Sub-Agente | Comando | Descripción |
+|------------|---------|-------------|
+| **AgenteDeCambio** | `ares agente AgenteDeCambio [accion]` | 🤖 Interfaz TUI híbrida (90% Textual + 10% Ratatui) para extracción cognitiva con prompts vivos y métricas de deriva |
+| **sherlok** | `ares agente sherlok` | 🔍 Auditor de código con ADN Técnico Industrial usando LLM local |
+
+**Acciones de AgenteDeCambio:**
+- `run` (default) - Ejecutar interfaz TUI completa
+- `test` - Test de componentes Rust/Textual
+- `install` - Instalar componentes Rust (Ratatui)
+- `status` - Verificar estado de instalación
 
 ### Herramientas Especializadas
 
@@ -394,14 +408,15 @@ sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
 ---
 
 ### 📜 Registro de Cambios Funcionales
+- **2026-03-15**: AgenteDeCambio CLI añadido - Interfaz híbrida 90% Textual + 10% Ratatui.
+- **2026-03-15**: Comando `agente-de-cambio` disponible en `bin/` (run, test, install, status).
+- **2026-03-15**: Dependencias Textual + httpx agregadas a `pyproject.toml` (uv sync).
+- **2026-03-15**: Componentes Rust Ratatui en `AGENTES/sub-agentes/AgenteDeCambio/modules/ui/ratatui_components/`.
+- **2026-03-15**: Documentación completa: 9 docs, ~8,000 líneas en `docs/AgenteDeCambio/`, `docs/Ratatui/`, `docs/Textual/`.
 - **2026-03-12**: Streaming en tiempo real implementado en `ares i` con filtro think automático.
 - **2026-03-12**: Comando `ares model` mejorado para gestionar todos los modelos Ollama (listar, establecer predeterminado).
 - **2026-03-12**: Comandos interactivos añadidos: `/model`, `/think`, `/rag`, `/clear`, `/help`.
 - **2026-03-12**: Filtro think elimina etiquetas `<think></think>` en modelos no pensantes (ares:latest).
 - **2026-03-12**: Documentación técnica: `docs/STREAMING.md` con informe forense detallado.
-- 2026-03-11: Implementación de Interfaz Minimalista-Cyberpunk en `ares i` (Kitty Protocol).
-- 2026-03-11: Modularidad Atómica aplicada a `emoji_manager.py` (Regla de Oro: 3 funciones).
-- 2026-03-11: Configuración UI centralizada en `config.yaml`.
-- 2026-03-11: Inicialización estructura ARES completa.
 
 *Ares: El orquestador IA definitivo por Daniel Hung.*

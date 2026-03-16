@@ -22,19 +22,18 @@ class RatatuiRenderer:
         
         Args:
             lib_path: Ruta a la biblioteca compartida (.so). 
-                     Si es None, busca en ruta por defecto.
+                     Si es None, usa ruta por defecto.
         """
         if lib_path is None:
-            # Ruta por defecto
-            base_path = Path(__file__).parent.parent
-            lib_path = base_path / "ratatui_components" / "target" / "release" / "libratui_components.so"
+            # Ruta absoluta por defecto
+            lib_path = "/home/daniel/tron/programas/TR/AGENTES/sub-agentes/AgenteDeCambio/modules/ui/ratatui_components/target/release/libratatui_components.so"
         
         self.lib_path = Path(lib_path)
         
         if not self.lib_path.exists():
             raise FileNotFoundError(
                 f"Biblioteca Ratatui no encontrada en: {self.lib_path}\n"
-                f"Compila con: cd modules/ui/ratatui_components && cargo build --release"
+                f"Compila con: ares agente AgenteDeCambio install"
             )
         
         # Cargar biblioteca

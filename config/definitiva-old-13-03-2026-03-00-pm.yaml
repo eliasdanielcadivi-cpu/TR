@@ -1,0 +1,35 @@
+# ARES Layout Configuration - TACTICAL MAPPING (V38)
+# Soberanía de diseño recuperada.
+
+ares_ui:
+  avatar:
+    path: "/home/daniel/tron/programas/TR/assets/ares/ares-neon.png"
+    size: 10
+    margin_left: 3
+    z_index: 3
+  
+  footer:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separador.gif"
+    width: 120
+    height: 1
+    y_offset: 2
+    margin_left: 3
+    z_index: 1
+
+  thinking:
+    size: 7        # <--- AUMENTADO: Un poco más de la mitad del avatar
+    z_index: 4
+    spinners:
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spiner1.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner2.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner3.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner4.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner 6.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif"
+
+content:
+  color: cyan
+  margin_left: 3
+  margin_top: -1   # <--- NEGATIVO: Esto subirá la frase por ENCIMA del avatar
+  thinking_index: 0

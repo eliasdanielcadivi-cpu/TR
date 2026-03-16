@@ -1,0 +1,376 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "json_command"
+            }
+          ]
+        }
+      },
+      "id": "c64d2104-4e43-4735-b18d-0c6d5ecd5618",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        -432,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Leemos el comando que nos envía la IA.\nconst contratoString = $json.json_command;\n\nif (typeof contratoString !== 'string' || contratoString.trim() === '') {\n    throw new Error(\"Error de Inyección: El parámetro 'json_command' está vacío o no es un string válido.\");\n}\n\nlet contratoObjeto;\ntry {\n    let tempString = contratoString;\n    let filterValue = null;\n\n    // --- CIRUGÍA DE PRECISIÓN ---\n    const filterRegex = /'filter'\\s*:\\s*'((?:\\\\'|[^'])*)'/;\n    const match = tempString.match(filterRegex);\n\n    if (match) {\n        filterValue = match[1]; \n        tempString = tempString.replace(filterRegex, \"'filter':'__FILTER_PLACEHOLDER__'\");\n    }\n\n    let correctedString = tempString.replace(/'/g, '\"');\n\n    if (filterValue !== null) {\n        correctedString = correctedString.replace('\"__FILTER_PLACEHOLDER__\"', JSON.stringify(filterValue));\n    }\n    \n    contratoObjeto = JSON.parse(correctedString);\n\n    // --- VALIDACIONES UNIVERSALES Y ESPECÍFICAS (ESTANDARIZADAS) ---\n    if (typeof contratoObjeto.action !== 'string' || contratoObjeto.action.trim() === '') {\n        throw new Error(\"Error de Contrato: La clave 'action' es obligatoria y debe ser un string no vacío.\");\n    }\n    \n    const actionsWithoutCollection = ['list_collections_with_schema'];\n    if (!actionsWithoutCollection.includes(contratoObjeto.action)) {\n        if (typeof contratoObjeto.collection !== 'string' || contratoObjeto.collection.trim() === '') {\n            throw new Error(`Error de Contrato: La clave 'collection' es obligatoria para la acción '${contratoObjeto.action}'.`);\n        }\n    }\n    \n    // Estandarización a 'id' para operaciones únicas\n    if (contratoObjeto.action === 'delete_record' || contratoObjeto.action === 'update_record') {\n        if (typeof contratoObjeto.id !== 'string' || contratoObjeto.id.trim() === '') {\n            throw new Error(`Error de Contrato: La clave 'id' es obligatoria para la acción '${contratoObjeto.action}'.`);\n        }\n    }\n    \n    if (contratoObjeto.action === 'update_record') {\n        if (typeof contratoObjeto.data !== 'object' || contratoObjeto.data === null) {\n            throw new Error(\"Error de Contrato: La clave 'data' (un objeto) es obligatoria para 'update_record'.\");\n        }\n    }\n\n    if (contratoObjeto.action === 'batch_delete') {\n        if (!Array.isArray(contratoObjeto.record_ids)) {\n            throw new Error(\"Error de Contrato: La clave 'record_ids' (un array) es obligatoria para 'batch_delete'.\");\n        }\n    }\n\n    if (contratoObjeto.action === 'batch_update') {\n        if (!Array.isArray(contratoObjeto.records)) {\n            throw new Error(\"Error de Contrato: La clave 'records' (un array) es obligatoria para 'batch_update'.\");\n        }\n    }\n\n} catch (error) {\n    // El 'contratoString' ahora está definido y accesible en este scope.\n    throw new Error(`Error de Sintaxis en el JSON: ${error.message}. JSON original recibido: '${contratoString}'`);\n}\n\n// Devolvemos el objeto JSON limpio y validado.\nreturn [{ json: contratoObjeto }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -288,
+        -48
+      ],
+      "id": "4aa3a030-e54f-4781-8955-3446de60e71e",
+      "name": "Parse & Validate Universal Contrac"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fetch = require('node-fetch');\n\n// --- CONFIGURACIÓN ---\nconst POCKETBASE_BASE_URL = 'http://127.0.0.1:8090';\nconst ADMIN_EMAIL = 'elprofesorverdad@gmail.com';\nconst ADMIN_PASSWORD = 'Copa007copa.';\n// -------------------\n\nconst contract = $json;\nlet adminToken = null;\n\n// --- FUNCIONES AUXILIARES ---\nasync function getAdminToken() {\n    if (adminToken) return adminToken;\n    const response = await fetch(`${POCKETBASE_BASE_URL}/api/admins/auth-with-password`, {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ identity: ADMIN_EMAIL, password: ADMIN_PASSWORD }),\n    });\n    if (!response.ok) throw new Error(`Fallo en la autenticación de admin: ${await response.text()}`);\n    const data = await response.json();\n    adminToken = data.token;\n    return adminToken;\n}\n\nasync function translateError(response, context = {}) {\n    const errorBody = await response.json().catch(() => ({ message: response.statusText }));\n    const details = errorBody.data || {};\n    if (response.status === 404) return `Error 404: La colección \"${context.collection || 'desconocida'}\" o un registro no fue encontrado.`;\n    if (response.status === 400) {\n        if (JSON.stringify(details).toLowerCase().includes(\"failed to parse filter\")) {\n             return `Error 400: La sintaxis del filtro es inválida. Revisa los operadores, comillas y nombres de campos.`;\n        }\n        let errorMessages = Object.entries(details).map(([key, val]) => `Campo '${key}': ${val.message || JSON.stringify(val)}`);\n        return `Error 400: Petición incorrecta. Detalles: ${errorMessages.join(', ')}`;\n    }\n    return `Error ${response.status}: ${response.statusText} - ${JSON.stringify(errorBody)}`;\n}\n\n// --- ORQUESTADOR PRINCIPAL ---\nasync function executePocketBaseOrchestrator() {\n    const token = await getAdminToken();\n    const headers = { 'Authorization': `Bearer ${token}` };\n\n    switch (contract.action) {\n        \n        case 'query_records': {\n            let queryString = '';\n            const params = contract.params || {};\n            if (params.limit) {\n                params.perPage = params.limit;\n                delete params.limit;\n            }\n            const queryParts = [];\n            for (const key in params) {\n                if (params[key] !== undefined && params[key] !== null && params[key] !== '') {\n                    queryParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`);\n                }\n            }\n            if (queryParts.length > 0) queryString = '?' + queryParts.join('&');\n            const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${contract.collection}/records${queryString}`;\n            const response = await fetch(finalUrl, { method: 'GET', headers: headers });\n            if (!response.ok) throw new Error(await translateError(response, contract));\n            const data = await response.json();\n            return data.items;\n        }\n\n        case 'list_collections_with_schema': {\n            const response = await fetch(`${POCKETBASE_BASE_URL}/api/collections?perPage=500&schema=1`, { headers: headers });\n            if (!response.ok) throw new Error(`Fallo al listar colecciones: ${await translateError(response)}`);\n            const data = await response.json();\n            return data.items.filter(c => !c.system);\n        }\n\n        case 'batch_create': {\n            headers['Content-Type'] = 'application/json';\n            const creationTasks = [];\n            const collectionsToCreate = {};\n            const dataToCreate = contract.data || contract.records; \n            if (Array.isArray(dataToCreate)) {\n                if (!contract.collection) throw new Error(\"Error de Contrato: 'collection' es obligatorio para batch_create con un array de datos.\");\n                collectionsToCreate[contract.collection] = dataToCreate;\n            } else if (typeof dataToCreate === 'object' && dataToCreate !== null) {\n                Object.assign(collectionsToCreate, dataToCreate);\n            } else {\n                throw new Error(\"Error de Contrato: El campo 'data' o 'records' para batch_create debe ser un array o un objeto.\");\n            }\n            for (const collectionName in collectionsToCreate) {\n                const records = collectionsToCreate[collectionName];\n                const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${collectionName}/records`;\n                const body = JSON.stringify({ records: records });\n                const task = fetch(finalUrl, { method: 'POST', headers, body })\n                    .then(async response => {\n                        if (!response.ok) throw new Error(`Fallo en 'batch_create' para la colección '${collectionName}': ${await translateError(response, { collection: collectionName })}`);\n                        return response.json();\n                    });\n                creationTasks.push(task);\n            }\n            const results = await Promise.all(creationTasks);\n            return results.reduce((acc, result, index) => {\n              const collectionName = Object.keys(collectionsToCreate)[index];\n              acc[collectionName] = result;\n              return acc;\n            }, {});\n        }\n\n        case 'delete_record': {\n            if (!contract.id) throw new Error(\"Error de Contrato: 'id' es obligatorio para la acción 'delete_record'.\");\n            const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${contract.collection}/records/${contract.id}`;\n            const response = await fetch(finalUrl, { method: 'DELETE', headers: headers });\n            if (!response.ok) throw new Error(`Fallo en 'delete_record': ${await translateError(response, contract)}`);\n            return { deleted: true, id: contract.id };\n        }\n\n        case 'batch_delete': {\n            const idsToDelete = contract.record_ids || [];\n            if (idsToDelete.length === 0) {\n                return { deleted_count: 0, message: \"No record IDs provided to delete.\" };\n            }\n            const deletePromises = idsToDelete.map(id => {\n                const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${contract.collection}/records/${id}`;\n                return fetch(finalUrl, { method: 'DELETE', headers: headers })\n                    .then(response => {\n                        if (!response.ok) throw new Error(`Failed to delete record with ID: ${id}. Status: ${response.status}`);\n                        return id;\n                    });\n            });\n            const deletedIds = await Promise.all(deletePromises);\n            return { deleted_count: deletedIds.length, record_ids: deletedIds };\n        }\n        \n        case 'update_record': {\n            headers['Content-Type'] = 'application/json';\n            if (!contract.id) throw new Error(\"Error de Contrato: 'id' es obligatorio para la acción 'update_record'.\");\n            const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${contract.collection}/records/${contract.id}`;\n            const body = JSON.stringify(contract.data);\n            const response = await fetch(finalUrl, { method: 'PATCH', headers, body });\n            if (!response.ok) throw new Error(`Fallo en 'update_record': ${await translateError(response, contract)}`);\n            return await response.json();\n        }\n        \n        case 'batch_update': {\n            headers['Content-Type'] = 'application/json';\n            const recordsToUpdate = contract.records || [];\n            if (recordsToUpdate.length === 0) {\n                return { successful_records: [], failed_records: [], message: \"No records provided to update.\" };\n            }\n            const updatePromises = recordsToUpdate.map(record => {\n                const recordId = record.id;\n                if (!recordId) {\n                    return Promise.reject({ record_id: 'unknown', error: \"Registro sin 'id'.\" });\n                }\n                const dataToUpdate = { ...record };\n                delete dataToUpdate.id;\n                const finalUrl = `${POCKETBASE_BASE_URL}/api/collections/${contract.collection}/records/${recordId}`;\n                const body = JSON.stringify(dataToUpdate);\n                return fetch(finalUrl, { method: 'PATCH', headers, body })\n                    .then(async response => {\n                        if (!response.ok) {\n                            const errorMsg = await translateError(response, contract);\n                            return Promise.reject({ record_id: recordId, error: errorMsg });\n                        }\n                        return response.json();\n                    });\n            });\n            const results = await Promise.allSettled(updatePromises);\n            const successfulUpdates = [];\n            const failedUpdates = [];\n            results.forEach(result => {\n                if (result.status === 'fulfilled') {\n                    successfulUpdates.push(result.value);\n                } else {\n                    failedUpdates.push(result.reason);\n                }\n            });\n            return {\n                successful_records: successfulUpdates,\n                failed_records: failedUpdates\n            };\n        }\n\n        default:\n            throw new Error(`Acción no soportada o desconocida: '${contract.action}'.`);\n    }\n}\n\n// --- PUNTO DE ENTRADA CON MANEJO DE ERRORES ROBUSTO ---\ntry {\n    const result = await executePocketBaseOrchestrator();\n    return [{ json: { status: 'success', operation: contract.action, result: result } }];\n} catch (error) {\n    let errorMessage = 'An unknown error occurred inside the orchestrator.';\n    if (error instanceof Error) {\n        errorMessage = error.message;\n    } else if (typeof error === 'string') {\n        errorMessage = error;\n    } else {\n        try {\n            errorMessage = JSON.stringify(error);\n        } catch (stringifyError) {\n            errorMessage = 'Could not stringify the error object.';\n        }\n    }\n    return [{ json: { status: 'error', operation: contract.action, message: errorMessage } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "89b04307-c6af-486a-8fe7-79671527783b",
+      "name": "Execute Universal Orchestrator"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "926ad571-c517-44a1-a827-17601d4651e9",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "list_collections_with_schema",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "3896e691-f616-4d2b-b3d9-b2cbdcfc0fe7",
+      "name": "Is Schema Request?"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "pocketbase_schema_summary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -240
+      ],
+      "id": "f3c798e8-bbab-4579-a043-7c8bee5d9862",
+      "name": "Get Schema from Cache",
+      "credentials": {
+        "redis": {
+          "id": "vAwt5uGYyUegW6RU",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bf734f81-0567-4820-bcce-02eec59098c9",
+              "leftValue": "={{ $json.propertyName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -128
+      ],
+      "id": "cfe6df90-e9c1-496c-880d-68cb5f87f848",
+      "name": "Schema in Cache?",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "610f983f-151d-4a22-b53e-3cf5993c743d",
+              "name": "status",
+              "value": "success",
+              "type": "string"
+            },
+            {
+              "id": "4358ef89-815b-450d-9e29-f1a11d8eb806",
+              "name": "operation",
+              "value": "list_collections_with_schema",
+              "type": "string"
+            },
+            {
+              "id": "16a62d04-3513-4f15-8252-5e5bfc0ef0ed",
+              "name": "result",
+              "value": "={{ JSON.parse($node[\"Get Schema from Cache\"].json.propertyName) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        -240
+      ],
+      "id": "e76bc913-43ab-4bac-b76b-219bdb8b2ff7",
+      "name": "Return Cached Schema"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "pocketbase_schema_summary",
+        "value": "={{ JSON.stringify($json.result) }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        752,
+        -112
+      ],
+      "id": "0192439a-ca39-4070-98ad-3ffebd6d6ffa",
+      "name": "Save Schema to Cache",
+      "credentials": {
+        "redis": {
+          "id": "vAwt5uGYyUegW6RU",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        128,
+        -128
+      ],
+      "id": "063a4d4e-866c-49e4-8a4a-f7db2e7ecb2f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cb3691ad-0c78-4fb0-9c58-d56ff5a133ac",
+              "leftValue": "={{ $json.operation }}",
+              "rightValue": "list_collections_with_schema",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        0
+      ],
+      "id": "2feecf8e-bb42-4b44-aa60-63a5be442e15",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        752,
+        48
+      ],
+      "id": "6d8cedbd-4798-4ef7-bdb2-cc5491090618",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Parse & Validate Universal Contrac",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Validate Universal Contrac": {
+      "main": [
+        [
+          {
+            "node": "Is Schema Request?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Universal Orchestrator": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Schema Request?": {
+      "main": [
+        [
+          {
+            "node": "Get Schema from Cache",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Execute Universal Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Schema from Cache": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schema in Cache?": {
+      "main": [
+        [
+          {
+            "node": "Return Cached Schema",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute Universal Orchestrator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Schema in Cache?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Save Schema to Cache",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ac59abd954d7d8cbdb448793db39890a893ff163f73abb29b1a2e41482e63b1e"
+  }
+}
