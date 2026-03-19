@@ -114,3 +114,42 @@ body {
 .message-enter {
   animation: message-in 0.3s ease-out forwards;
 }
+
+/* Question Container - Containment styles */
+.question-container-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Demo mode panel */
+.demo-mode-panel {
+  overflow-x: auto;
+}
+
+/* Viewer containment - ensures all viewers stay within bounds */
+.viewer-root {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ranking viewer controls */
+.ranking-controls {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* Textarea responsive */
+.responsive-textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* Input responsive */
+.responsive-input {
+  width: 100%;
+  box-sizing: border-box;
+}

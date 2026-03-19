@@ -31,13 +31,13 @@ export function MultilineViewer({ question, value, onChange }: MultilineViewerPr
   }, [localValue]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <textarea
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={question.placeholder || 'Escribe tu respuesta...'}
         rows={4}
-        className="w-full glass-input rounded-xl px-4 py-3 text-white placeholder-white/30 resize-y focus:outline-none focus:ring-2 focus:ring-cognitive-500/50"
+        className="w-full glass-input rounded-xl px-4 py-3 text-white placeholder-white/30 resize-y focus:outline-none focus:ring-2 focus:ring-cognitive-500/50 responsive-textarea"
       />
       <div className="flex justify-between text-sm text-white/50">
         <span>

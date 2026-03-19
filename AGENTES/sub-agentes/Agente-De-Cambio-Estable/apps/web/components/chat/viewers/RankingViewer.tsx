@@ -42,7 +42,7 @@ export function RankingViewer({ question, value, onChange }: RankingViewerProps)
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full max-w-full">
       {order.map((optionIndex, position) => {
         const option = question.options![optionIndex];
         return (
@@ -50,18 +50,18 @@ export function RankingViewer({ question, value, onChange }: RankingViewerProps)
             key={option.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 bg-white/5 rounded-xl p-3"
+            className="flex items-center gap-3 bg-white/5 rounded-xl p-3 ranking-item w-full max-w-full"
           >
             {/* Posición */}
-            <div className="w-8 h-8 rounded-full bg-cognitive-500/30 border border-cognitive-500/50 flex items-center justify-center text-white font-semibold">
+            <div className="w-8 h-8 rounded-full bg-cognitive-500/30 border border-cognitive-500/50 flex items-center justify-center text-white font-semibold flex-shrink-0">
               {position + 1}
             </div>
 
-            {/* Label */}
-            <span className="flex-1 text-white">{option.label}</span>
+            {/* Label - con truncamiento si es muy largo */}
+            <span className="flex-1 text-white min-w-0 truncate">{option.label}</span>
 
             {/* Controles de orden */}
-            <div className="flex gap-1">
+            <div className="ranking-controls">
               <button
                 type="button"
                 onClick={() => moveUp(position)}

@@ -187,22 +187,22 @@ export function QuestionContainer() {
   const ViewerComponent = VIEWERS[questionToRender.type] || OpenExplorationViewer;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full">
       {/* Panel de control para MODO DEMO */}
       {DEMO_MODE && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-panel rounded-xl p-4 border-2 border-yellow-500/30"
+          className="glass-panel rounded-xl p-4 border-2 border-yellow-500/30 demo-mode-panel"
         >
           <div className="flex items-center gap-2 mb-3">
-            <Bug className="w-5 h-5 text-yellow-500" />
-            <h4 className="text-yellow-500 font-semibold">MODO DEMO - Prueba Visual</h4>
+            <Bug className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+            <h4 className="text-yellow-500 font-semibold whitespace-nowrap">MODO DEMO - Prueba Visual</h4>
           </div>
           <p className="text-sm text-white/70 mb-3">
             Selecciona un tipo de pregunta para probar la capacidad:
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 min-w-max">
             {Object.entries(DEMO_QUESTIONS).map(([type, q]: [string, any]) => (
               <button
                 key={type}
@@ -212,7 +212,7 @@ export function QuestionContainer() {
                   setAnswer(null);
                   setComment('');
                 }}
-                className={`p-2 rounded-lg text-sm transition-all ${
+                className={`p-2 rounded-lg text-sm transition-all whitespace-nowrap ${
                   selectedDemoType === type
                     ? 'bg-yellow-500/30 border border-yellow-500 text-white'
                     : 'bg-white/5 border border-transparent text-white/70 hover:bg-white/10'
@@ -229,7 +229,7 @@ export function QuestionContainer() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-panel rounded-2xl p-6"
+        className="glass-panel rounded-2xl p-6 viewer-root"
       >
         {/* Título de la pregunta */}
         <h3 className="text-lg font-semibold text-white mb-4">
@@ -237,21 +237,23 @@ export function QuestionContainer() {
         </h3>
 
         {/* Renderizar la capacidad (Viewer) específica */}
-        <ViewerComponent
-          question={questionToRender}
-          value={answer}
-          onChange={setAnswer}
-        />
+        <div className="viewer-root">
+          <ViewerComponent
+            question={questionToRender}
+            value={answer}
+            onChange={setAnswer}
+          />
+        </div>
       </motion.div>
 
       {/* Comentario adicional */}
-      <div className="flex gap-2">
-        <div className="flex-1">
+      <div className="flex gap-2 w-full">
+        <div className="flex-1 min-w-0">
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Comentario adicional (opcional)..."
-            className="w-full glass-input rounded-2xl px-4 py-3 text-white placeholder-white/30 resize-none focus:outline-none focus:ring-2 focus:ring-cognitive-500/50"
+            className="w-full glass-input rounded-2xl px-4 py-3 text-white placeholder-white/30 resize-none focus:outline-none focus:ring-2 focus:ring-cognitive-500/50 responsive-textarea"
             rows={2}
           />
         </div>
@@ -261,7 +263,7 @@ export function QuestionContainer() {
           whileTap={{ scale: 0.95 }}
           onClick={() => handleSubmit()}
           disabled={!answer}
-          className="self-end px-6 py-3 rounded-2xl bg-gradient-to-r from-cognitive-500 to-cognitive-600 text-white font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 px-6 py-3 rounded-2xl bg-gradient-to-r from-cognitive-500 to-cognitive-600 text-white font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" />
           Continuar
@@ -273,13 +275,13 @@ export function QuestionContainer() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="p-4 rounded-xl bg-green-500/20 border border-green-500/50"
+          className="p-4 rounded-xl bg-green-500/20 border border-green-500/50 w-full"
         >
-          <p className="text-green-400 text-sm">
+          <p className="text-green-400 text-sm break-all">
             ✅ Respuesta lista: <span className="text-white font-mono">{JSON.stringify(answer)}</span>
           </p>
           {comment && (
-            <p className="text-green-400/70 text-sm mt-2">
+            <p className="text-green-400/70 text-sm mt-2 break-words">
               💬 Comentario: <span className="text-white/90">{comment}</span>
             </p>
           )}
