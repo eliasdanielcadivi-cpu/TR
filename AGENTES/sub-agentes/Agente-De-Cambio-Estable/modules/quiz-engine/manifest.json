@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/quiz-engine",
+  "version": "0.1.0",
+  "name": "Quiz Engine",
+  "description": "Banco de cuestionarios por dominio con plantillas estructuradas",
+  "lastUpdated": "2026-03-19T00:00:00.000Z",
+  "status": "in-development",
+  "type": "backend",
+  "actions": [
+    {
+      "name": "getQuizByDomain",
+      "description": "Obtiene cuestionario por dominio (cura, constructor, etc.)",
+      "parameters": {
+        "domain": "ObjectiveDomain"
+      },
+      "returns": "Quiz"
+    },
+    {
+      "name": "getNextQuestion",
+      "description": "Retorna siguiente pregunta según estado",
+      "parameters": {
+        "quiz": "Quiz",
+        "state": "{ answeredQuestions: string[], currentStage: string }"
+      },
+      "returns": "Question"
+    },
+    {
+      "name": "scoreAnswers",
+      "description": "Evalúa respuestas y calcula score",
+      "parameters": {
+        "answers": "Answer[]",
+        "scoringRubric": "ScoringRubric"
+      },
+      "returns": "Score"
+    }
+  ],
+  "events": {
+    "emits": ["quiz:started", "question:next", "quiz:completed"],
+    "subscribes": ["objective:defined", "answer:submitted"]
+  },
+  "dependencies": [
+    "@agentedecambio2/shared-types",
+    "@agentedecambio2/questionnaire-engine",
+    "@agentedecambio2/question-types"
+  ],
+  "aiReady": false,
+  "docs": "./INDEX.md",
+  "diagramReference": "02-inferencia-tipo-pregunta.md",
+  "conventions": {
+    "maxActionsPerModule": 3,
+    "requireIndexMd": true,
+    "requireManifestJson": true,
+    "requireJsdoc": true,
+    "maxIndexMdLines": 50
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/question-types",
+  "version": "0.1.0",
+  "name": "Question Types",
+  "description": "Validadores y parseadores para 8 tipos de preguntas",
+  "lastUpdated": "2026-03-19T00:00:00.000Z",
+  "status": "in-development",
+  "type": "shared",
+  "actions": [
+    {
+      "name": "validateByType",
+      "description": "Valida respuesta según tipo de pregunta",
+      "parameters": {
+        "type": "QuestionType",
+        "rawResponse": "object"
+      },
+      "returns": "{ valid: boolean, value: any }"
+    },
+    {
+      "name": "getValidators",
+      "description": "Obtiene validadores disponibles",
+      "parameters": {},
+      "returns": "QuestionType[]"
+    },
+    {
+      "name": "parseValue",
+      "description": "Convierte respuesta raw a valor tipado",
+      "parameters": {
+        "type": "QuestionType",
+        "rawResponse": "object"
+      },
+      "returns": "any"
+    }
+  ],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [
+    "@agentedecambio2/shared-types"
+  ],
+  "aiReady": true,
+  "docs": "./INDEX.md",
+  "diagramReference": "02-inferencia-tipo-pregunta.md",
+  "conventions": {
+    "maxActionsPerModule": 3,
+    "requireIndexMd": true,
+    "requireManifestJson": true,
+    "requireJsdoc": true,
+    "maxIndexMdLines": 50
+  }
+}

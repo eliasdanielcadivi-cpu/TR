@@ -120212,3 +120212,514 @@
 2026-03-19 12:49:46,507 [INFO] aviso.db: DB inicializada correctamente
 2026-03-19 12:49:46,508 [INFO] aviso.db: Listados 0 avisos
 2026-03-19 12:49:46,508 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:50:16,508 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:50:16,508 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:50:16,508 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:50:16,508 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:50:16,509 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:50:16,509 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:50:16,509 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:50:46,509 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:50:46,509 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:50:46,509 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:50:46,510 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:50:46,510 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:50:46,510 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:50:46,510 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:51:16,511 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:51:16,511 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:51:16,511 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:51:16,511 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:51:16,511 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:51:16,512 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:51:16,512 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:51:46,512 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:51:46,512 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:51:46,512 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:51:46,512 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:51:46,512 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:51:46,512 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:51:46,512 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:52:16,513 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:52:16,513 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:52:16,513 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:52:16,513 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:52:16,513 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:52:16,513 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:52:16,513 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:52:46,513 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:52:46,514 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:52:46,514 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:52:46,514 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:52:46,514 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:52:46,514 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:52:46,514 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:53:16,514 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:53:16,515 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:53:16,515 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:53:16,515 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:53:16,515 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:53:16,516 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:53:16,516 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:53:46,516 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:53:46,516 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:53:46,516 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:53:46,516 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:53:46,517 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:53:46,517 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:53:46,517 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:54:16,518 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:54:16,518 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:54:16,518 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:54:16,518 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:54:16,519 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:54:16,519 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:54:16,519 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:54:46,519 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:54:46,519 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:54:46,519 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:54:46,520 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:54:46,520 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:54:46,521 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:54:46,521 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:55:16,521 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:55:16,521 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:55:16,521 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:55:16,521 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:55:16,522 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:55:16,522 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:55:16,522 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:55:46,523 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:55:46,523 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:55:46,523 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:55:46,523 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:55:46,524 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:55:46,524 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:55:46,524 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:56:16,524 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:56:16,525 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:56:16,525 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:56:16,525 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:56:16,525 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:56:16,526 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:56:16,526 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:56:46,526 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:56:46,526 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:56:46,526 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:56:46,526 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:56:46,527 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:56:46,527 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:56:46,527 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:57:16,527 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:57:16,528 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:57:16,528 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:57:16,528 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:57:16,529 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:57:16,529 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:57:16,529 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:57:46,529 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:57:46,529 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:57:46,529 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:57:46,530 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:57:46,530 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:57:46,530 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:57:46,530 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:58:16,531 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:58:16,531 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:58:16,531 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:58:16,531 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:58:16,531 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:58:16,532 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:58:16,532 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:58:46,532 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:58:46,532 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:58:46,533 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:58:46,533 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:58:46,534 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:58:46,534 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:58:46,534 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:59:16,535 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:59:16,535 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:59:16,539 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:59:16,539 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:59:16,540 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:59:16,540 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:59:16,541 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 12:59:46,541 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 12:59:46,541 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 12:59:46,541 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 12:59:46,541 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 12:59:46,542 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 12:59:46,542 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 12:59:46,542 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:00:16,542 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:00:16,542 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:00:16,543 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:00:16,543 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:00:16,543 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:00:16,544 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:00:16,544 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:00:46,544 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:00:46,544 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:00:46,544 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:00:46,544 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:00:46,545 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:00:46,545 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:00:46,546 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:01:16,546 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:01:16,546 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:01:16,546 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:01:16,546 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:01:16,547 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:01:16,547 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:01:16,547 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:01:46,548 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:01:46,548 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:01:46,548 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:01:46,548 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:01:46,549 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:01:46,549 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:01:46,549 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:02:16,550 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:02:16,550 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:02:16,550 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:02:16,550 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:02:16,551 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:02:16,551 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:02:16,551 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:02:46,551 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:02:46,552 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:02:46,552 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:02:46,552 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:02:46,552 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:02:46,553 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:02:46,553 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:03:16,553 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:03:16,553 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:03:16,553 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:03:16,553 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:03:16,554 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:03:16,554 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:03:16,555 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:03:46,555 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:03:46,555 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:03:46,555 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:03:46,555 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:03:46,556 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:03:46,556 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:03:46,556 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:04:16,556 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:04:16,556 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:04:16,556 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:04:16,556 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:04:16,557 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:04:16,557 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:04:16,557 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:04:46,557 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:04:46,558 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:04:46,558 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:04:46,558 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:04:46,559 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:04:46,559 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:04:46,559 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:05:16,560 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:05:16,560 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:05:16,560 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:05:16,560 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:05:16,560 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:05:16,560 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:05:16,560 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:05:46,561 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:05:46,561 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:05:46,561 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:05:46,561 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:05:46,562 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:05:46,562 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:05:46,562 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:06:16,562 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:06:16,562 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:06:16,567 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:06:16,567 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:06:16,567 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:06:16,568 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:06:16,568 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:06:46,568 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:06:46,568 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:06:46,569 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:06:46,569 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:06:46,569 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:06:46,570 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:06:46,570 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:07:16,570 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:07:16,570 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:07:16,570 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:07:16,570 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:07:16,571 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:07:16,571 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:07:16,571 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:07:46,571 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:07:46,572 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:07:46,572 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:07:46,572 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:07:46,572 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:07:46,572 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:07:46,573 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:08:16,573 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:08:16,573 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:08:16,573 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:08:16,573 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:08:16,574 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:08:16,574 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:08:16,574 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:08:46,574 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:08:46,574 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:08:46,574 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:08:46,574 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:08:46,575 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:08:46,575 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:08:46,575 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:09:16,576 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:09:16,576 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:09:16,576 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:09:16,576 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:09:16,577 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:09:16,577 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:09:16,577 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:09:46,578 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:09:46,578 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:09:46,578 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:09:46,578 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:09:46,579 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:09:46,579 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:09:46,579 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:10:16,579 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:10:16,580 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:10:16,580 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:10:16,580 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:10:16,580 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:10:16,581 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:10:16,581 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:10:46,581 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:10:46,581 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:10:46,582 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:10:46,582 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:10:46,582 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:10:46,582 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:10:46,582 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:11:16,583 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:11:16,583 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:11:16,583 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:11:16,583 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:11:16,583 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:11:16,584 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:11:16,584 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:11:46,584 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:11:46,584 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:11:46,584 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:11:46,584 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:11:46,585 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:11:46,585 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:11:46,585 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:12:16,585 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:12:16,585 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:12:16,585 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:12:16,586 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:12:16,586 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:12:16,587 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:12:16,587 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:12:46,587 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:12:46,587 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:12:46,587 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:12:46,587 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:12:46,588 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:12:46,588 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:12:46,588 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:13:16,588 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:13:16,588 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:13:16,588 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:13:16,588 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:13:16,589 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:13:16,589 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:13:16,589 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:13:46,589 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:13:46,590 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:13:46,590 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:13:46,590 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:13:46,590 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:13:46,591 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:13:46,591 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:14:16,591 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:14:16,591 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:14:16,591 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:14:16,591 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:14:16,592 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:14:16,592 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:14:16,593 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:14:46,593 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:14:46,593 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:14:46,593 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:14:46,593 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:14:46,593 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:14:46,594 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:14:46,594 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:15:16,594 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:15:16,594 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:15:16,594 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:15:16,594 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:15:16,594 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:15:16,595 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:15:16,595 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:15:46,595 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:15:46,595 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:15:46,595 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:15:46,595 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:15:46,596 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:15:46,596 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:15:46,596 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:16:16,596 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:16:16,597 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:16:16,597 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:16:16,597 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:16:16,598 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:16:16,598 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:16:16,598 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:16:46,599 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:16:46,599 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:16:46,599 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:16:46,599 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:16:46,600 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:16:46,600 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:16:46,600 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:17:16,600 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:17:16,600 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:17:16,600 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:17:16,600 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:17:16,601 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:17:16,601 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:17:16,601 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:17:46,602 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:17:46,602 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:17:46,602 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:17:46,602 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:17:46,602 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:17:46,602 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:17:46,602 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:18:16,603 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:18:16,603 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:18:16,603 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:18:16,603 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:18:16,604 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:18:16,604 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:18:16,604 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:18:46,604 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:18:46,604 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:18:46,604 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:18:46,604 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:18:46,605 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:18:46,605 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:18:46,605 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:19:16,605 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:19:16,606 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:19:16,606 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:19:16,606 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:19:16,606 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:19:16,607 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:19:16,607 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:19:46,607 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:19:46,607 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:19:46,607 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:19:46,607 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:19:46,608 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:19:46,608 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:19:46,608 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:20:16,608 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:20:16,608 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:20:16,608 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:20:16,608 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:20:16,609 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:20:16,610 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:20:16,610 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:20:46,610 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:20:46,610 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:20:46,610 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:20:46,610 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:20:46,611 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:20:46,611 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:20:46,611 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:21:16,611 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:21:16,611 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:21:16,616 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:21:16,616 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:21:16,616 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:21:16,617 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:21:16,617 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:21:46,617 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:21:46,617 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:21:46,617 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:21:46,617 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:21:46,618 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:21:46,618 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:21:46,618 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:22:16,618 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:22:16,619 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:22:16,619 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:22:16,619 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:22:16,619 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:22:16,619 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:22:16,619 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:22:46,620 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:22:46,620 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:22:46,620 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:22:46,620 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:22:46,621 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:22:46,621 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:22:46,621 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:23:16,622 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:23:16,622 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:23:16,622 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:23:16,622 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:23:16,622 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:23:16,623 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:23:16,623 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:23:46,623 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:23:46,623 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:23:46,623 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:23:46,623 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:23:46,624 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:23:46,624 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:23:46,624 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:24:16,624 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:24:16,625 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:24:16,625 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:24:16,625 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:24:16,625 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:24:16,626 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:24:16,626 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:24:46,626 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:24:46,626 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:24:46,626 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:24:46,626 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:24:46,627 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:24:46,627 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:24:46,627 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:25:16,627 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:25:16,627 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:25:16,628 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:25:16,628 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:25:16,628 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:25:16,628 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:25:16,629 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:25:46,629 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:25:46,629 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:25:46,629 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:25:46,629 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:25:46,630 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:25:46,630 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:25:46,630 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores
+2026-03-19 13:26:16,630 [DEBUG] aviso.engine: === Iniciando verificación de avisos ===
+2026-03-19 13:26:16,631 [DEBUG] aviso.db: Obteniendo avisos pendientes
+2026-03-19 13:26:16,631 [DEBUG] aviso.db: Listando avisos con estado='pendiente'
+2026-03-19 13:26:16,631 [DEBUG] aviso.db: Inicializando DB en /home/daniel/tron/programas/TR/db/avisos.db
+2026-03-19 13:26:16,632 [INFO] aviso.db: DB inicializada correctamente
+2026-03-19 13:26:16,632 [INFO] aviso.db: Listados 0 avisos
+2026-03-19 13:26:16,632 [INFO] aviso.engine: Verificación completada: 0 ejecutados, 0 errores

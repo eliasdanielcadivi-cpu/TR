@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/questionnaire-engine",
+  "version": "0.1.0",
+  "name": "Questionnaire Engine",
+  "description": "Motor de preguntas dinámicas que infiere tipo según dato faltante (Diagrama 02)",
+  "lastUpdated": "2026-03-19T00:00:00.000Z",
+  "status": "in-development",
+  "type": "backend",
+  "actions": [
+    {
+      "name": "generateQuestion",
+      "description": "Genera pregunta dinámica según dato faltante",
+      "parameters": {
+        "missingField": "string",
+        "context": "{ objective: string, domain: ObjectiveDomain, stage?: string }"
+      },
+      "returns": "Question"
+    },
+    {
+      "name": "parseAnswer",
+      "description": "Procesa y valida respuesta del usuario",
+      "parameters": {
+        "question": "Question",
+        "rawResponse": "{ selected?: string|string[], text?: string, comment?: string }"
+      },
+      "returns": "Answer"
+    },
+    {
+      "name": "validateSchema",
+      "description": "Verifica campos críticos completados",
+      "parameters": {
+        "answers": "Answer[]",
+        "requiredFields": "string[]"
+      },
+      "returns": "boolean"
+    }
+  ],
+  "events": {
+    "emits": ["question:generated", "question:answered"],
+    "subscribes": ["objective:updated", "context:changed"]
+  },
+  "dependencies": [
+    "@agentedecambio2/shared-types",
+    "@agentedecambio2/quiz-engine",
+    "@agentedecambio2/question-types"
+  ],
+  "aiReady": false,
+  "docs": "./INDEX.md",
+  "diagramReference": "02-inferencia-tipo-pregunta.md",
+  "conventions": {
+    "maxActionsPerModule": 3,
+    "requireIndexMd": true,
+    "requireManifestJson": true,
+    "requireJsdoc": true,
+    "maxIndexMdLines": 50
+  }
+}

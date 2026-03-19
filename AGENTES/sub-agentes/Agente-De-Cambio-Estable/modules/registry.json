@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "name": "AgenteDeCambio2 Modules Registry",
   "description": "Registro central de todos los módulos del sistema AgenteDeCambio2",
-  "lastUpdated": "2026-02-24T22:40:00.000Z",
+  "lastUpdated": "2026-03-19T00:00:00.000Z",
   "modules": [
     {
       "id": "@agentedecambio2/deepseek-connector",
@@ -131,16 +131,78 @@
       "dependencies": [],
       "aiReady": true,
       "docs": "./shared-types/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/questionnaire-engine",
+      "name": "Questionnaire Engine",
+      "version": "0.1.0",
+      "path": "./questionnaire-engine",
+      "status": "in-development",
+      "type": "backend",
+      "description": "Motor de preguntas dinámicas que infiere tipo según dato faltante (Diagrama 02)",
+      "actions": ["generateQuestion", "parseAnswer", "validateSchema"],
+      "events": {
+        "emits": ["question:generated", "question:answered"],
+        "subscribes": ["objective:updated", "context:changed"]
+      },
+      "dependencies": [
+        "@agentedecambio2/shared-types",
+        "@agentedecambio2/quiz-engine",
+        "@agentedecambio2/question-types"
+      ],
+      "aiReady": false,
+      "docs": "./questionnaire-engine/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/quiz-engine",
+      "name": "Quiz Engine",
+      "version": "0.1.0",
+      "path": "./quiz-engine",
+      "status": "in-development",
+      "type": "backend",
+      "description": "Banco de cuestionarios por dominio con plantillas estructuradas",
+      "actions": ["getQuizByDomain", "getNextQuestion", "scoreAnswers"],
+      "events": {
+        "emits": ["quiz:started", "question:next", "quiz:completed"],
+        "subscribes": ["objective:defined", "answer:submitted"]
+      },
+      "dependencies": [
+        "@agentedecambio2/shared-types",
+        "@agentedecambio2/questionnaire-engine",
+        "@agentedecambio2/question-types"
+      ],
+      "aiReady": false,
+      "docs": "./quiz-engine/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/question-types",
+      "name": "Question Types",
+      "version": "0.1.0",
+      "path": "./question-types",
+      "status": "in-development",
+      "type": "shared",
+      "description": "Validadores y parseadores para 8 tipos de preguntas",
+      "actions": ["validateByType", "getValidators", "parseValue"],
+      "events": {
+        "emits": [],
+        "subscribes": []
+      },
+      "dependencies": [
+        "@agentedecambio2/shared-types"
+      ],
+      "aiReady": true,
+      "docs": "./question-types/INDEX.md"
     }
   ],
   "statistics": {
-    "total": 7,
+    "total": 10,
     "active": 5,
     "pending": 2,
-    "backend": 5,
+    "in-development": 3,
+    "backend": 6,
     "frontend": 1,
-    "shared": 1,
-    "aiReady": 2
+    "shared": 3,
+    "aiReady": 3
   },
   "conventions": {
     "maxActionsPerModule": 3,
