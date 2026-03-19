@@ -30,13 +30,13 @@ export function OpenExplorationViewer({ question, value, onChange }: OpenExplora
   }, [localValue]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 w-full">
       <textarea
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={question.placeholder || 'Escribe libremente...'}
-        rows={5}
-        className="w-full glass-input rounded-xl px-4 py-3 text-white placeholder-white/30 resize-y focus:outline-none focus:ring-2 focus:ring-cognitive-500/50"
+        rows={3}
+        className="w-full glass-input rounded-xl px-4 py-3 text-white placeholder-white/30 resize-y focus:outline-none focus:ring-2 focus:ring-cognitive-500/50 responsive-textarea"
       />
       <p className="text-sm text-white/50">
         Escribe sin restricciones. No hay respuestas incorrectas.

@@ -42,7 +42,7 @@ export function RankingViewer({ question, value, onChange }: RankingViewerProps)
   };
 
   return (
-    <div className="space-y-2 w-full max-w-full">
+    <div className="space-y-3 w-full max-w-full">
       {order.map((optionIndex, position) => {
         const option = question.options![optionIndex];
         return (
@@ -61,12 +61,12 @@ export function RankingViewer({ question, value, onChange }: RankingViewerProps)
             <span className="flex-1 text-white min-w-0 truncate">{option.label}</span>
 
             {/* Controles de orden */}
-            <div className="ranking-controls">
+            <div className="ranking-controls flex gap-1 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => moveUp(position)}
                 disabled={position === 0}
-                className="p-2 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors w-8 h-8 flex items-center justify-center"
                 title="Mover arriba"
               >
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,7 +77,7 @@ export function RankingViewer({ question, value, onChange }: RankingViewerProps)
                 type="button"
                 onClick={() => moveDown(position)}
                 disabled={position === order.length - 1}
-                className="p-2 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors w-8 h-8 flex items-center justify-center"
                 title="Mover abajo"
               >
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

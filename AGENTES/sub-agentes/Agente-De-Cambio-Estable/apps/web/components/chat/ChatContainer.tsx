@@ -10,15 +10,16 @@ import { useEffect, useRef } from 'react';
 export function ChatContainer() {
   const { mode, messages, isStreaming } = useChatStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll al final cuando hay nuevos mensajes
+  // Auto-scroll al final cuando hay nuevos mensajes o cambia el modo
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, mode]);
 
   return (
-    <div className="flex flex-col h-[700px] glass-panel rounded-2xl p-4 overflow-hidden">
-      {/* Chat header */}
+    <div ref={containerRef} className="flex flex-col h-[700px] glass-panel rounded-2xl p-4 overflow-hidden">
+      {/* Chat header - FIXED */}
       <div className="flex-shrink-0 flex items-center justify-between mb-4 pb-3 border-b border-white/10">
         <h2 className="text-xl font-bold text-white">
           {mode === 'chat' ? 'Conversación Cognitiva' : 'Cuestionario Guiado'}
@@ -28,8 +29,9 @@ export function ChatContainer() {
         </div>
       </div>
 
-      {/* Messages area - Scrollable */}
+      {/* SCROLL AREA - Incluye mensajes Y cuestionario */}
       <div className="flex-1 overflow-y-auto min-h-0 p-2 space-y-4 pr-2 custom-scrollbar">
+        {/* Mensajes */}
         {messages.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -64,31 +66,31 @@ export function ChatContainer() {
             <span className="text-white/50 text-sm">El sistema está escribiendo...</span>
           </motion.div>
         )}
-      </div>
 
-      {/* Input area - Fixed at bottom */}
-      <div className="flex-shrink-0 mt-4 pt-4 border-t border-white/10">
-        <AnimatePresence mode="wait">
-          {mode === 'questionnaire' ? (
-            <motion.div
-              key="questionnaire"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              <QuestionContainer />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="chat"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              <ChatInput />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* QUESTION CONTAINER - AHORA DENTRO DEL SCROLL */}
+        <div className="pt-4 mt-4 border-t border-white/10">
+          <AnimatePresence mode="wait">
+            {mode === 'questionnaire' ? (
+              <motion.div
+                key="questionnaire"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <QuestionContainer />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat-input"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                <ChatInput />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
