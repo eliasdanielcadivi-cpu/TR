@@ -21,13 +21,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// --- CONSTANTES CRÍTICAS ---
 const (
 	IDAvatarAres  = 100
 	IDSpinner     = 200
 	IDAvatarUser  = 300
 	IDSeparator   = 400
-	// EL PREFIJO DEBE CONTENER 'tty-graphics-protocol' O KITTY LO RECHAZA
 	TempPrefix    = "tty-graphics-protocol-ares-"
 )
 
@@ -73,29 +71,23 @@ var dLog *log.Logger
 func initLogger(dir string) {
 	logPath := filepath.Join(dir, "debug.log")
 	f, _ := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	dLog = log.New(f, "[MAX_DEBUG] ", log.LstdFlags|log.Lshortfile)
-	dLog.Println("\n>>> ANALIZANDO FISICA DE TERMINAL Y CARGA <<<")
+	dLog = log.New(f, "[FÍSICA_ARES] ", log.LstdFlags|log.Lshortfile)
 }
 
-func logV(tag string, msg string, v ...interface{}) {
-	if dLog != nil { dLog.Printf("[%s] "+msg, append([]interface{}{tag}, v...)...) }
+func logStep(msg string, v ...interface{}) {
+	if dLog != nil { dLog.Printf(msg, v...) }
 }
 
-func getTermSize() (cW, cH int) {
+func getTermSize() (cellW, cellH int) {
 	ws, err := unix.IoctlGetWinsize(int(os.Stdout.Fd()), unix.TIOCGWINSZ)
-	if err != nil || ws.Col == 0 {
-		logV("TERM", "Error TIOCGWINSZ, usando defaults 10x20")
-		return 10, 20
-	}
-	cW, cH = int(ws.Xpixel/ws.Col), int(ws.Ypixel/ws.Row)
-	logV("TERM", "Celda Detectada: %dx%d (Total Px: %dx%d)", cW, cH, ws.Xpixel, ws.Ypixel)
-	return
+	if err != nil || ws.Col == 0 { return 10, 20 }
+	return int(ws.Xpixel / ws.Col), int(ws.Ypixel / ws.Row)
 }
 
-func resizeBox(src image.Image, w, h int) image.Image {
+func resizeImage(src image.Image, w, h int) image.Image {
 	dst := image.NewRGBA(image.Rect(0, 0, w, h))
-	srcB := src.Bounds()
-	sW, sH := srcB.Dx(), srcB.Dy()
+	sb := src.Bounds()
+	sW, sH := sb.Dx(), sb.Dy()
 	if sW == 0 || sH == 0 { return dst }
 	for y := 0; y < h; y++ {
 		for x := 0; x < w; x++ {
@@ -105,118 +97,82 @@ func resizeBox(src image.Image, w, h int) image.Image {
 	return dst
 }
 
-func transmit(cmd string, data []byte) {
-	tmp, err := os.CreateTemp("", TempPrefix+"*.png")
-	if err != nil {
-		logV("IO", "ERROR CREANDO TMP: %v", err)
-		return
-	}
-	defer tmp.Close()
-	tmp.Write(data)
-	pathB64 := base64.StdEncoding.EncodeToString([]byte(tmp.Name()))
-	
-	logV("KGP", "Enviando Escape: cmd={%s} path={%s}", cmd, tmp.Name())
+func transmitViaFile(cmd string, data []byte) {
+	tmpFile, err := os.CreateTemp("", TempPrefix+"*.png")
+	if err != nil { return }
+	defer tmpFile.Close()
+	tmpFile.Write(data)
+	pathB64 := base64.StdEncoding.EncodeToString([]byte(tmpFile.Name()))
 	fmt.Printf("\033_G%s,t=t,q=2;%s\033\\", cmd, pathB64)
 }
 
-func render(path string, cfg AssetConfig, id uint32, loop int) {
-	logV("RENDER", "Iniciando: %s ID=%d Pos=%d,%d", path, id, cfg.X, cfg.Y)
-	
-	if _, err := os.Stat(path); err != nil {
-		logV("RENDER", "ERROR: Archivo no accesible: %v", err)
-		return
+func processGIF(path string, cfg AssetConfig, id uint32, loop int, cW, cH int) {
+	f, _ := os.Open(path)
+	defer f.Close()
+	g, _ := gif.DecodeAll(f)
+	targetW, targetH := cfg.Width*cW, cfg.Height*cH
+	canvas := image.NewRGBA(g.Image[0].Bounds())
+	for i, frame := range g.Image {
+		draw.Draw(canvas, frame.Bounds(), frame, frame.Bounds().Min, draw.Over)
+		resized := resizeImage(canvas, targetW, targetH)
+		var buf bytes.Buffer
+		png.Encode(&buf, resized)
+		if i == 0 {
+			transmitViaFile(fmt.Sprintf("a=T,i=%d,f=100,c=%d,r=%d,z=%d", id, cfg.Width, cfg.Height, cfg.ZIndex), buf.Bytes())
+		} else {
+			delay := g.Delay[i] * 10
+			if delay == 0 { delay = 100 }
+			transmitViaFile(fmt.Sprintf("a=f,i=%d,f=100,r=%d,z=%d", id, i+1, delay), buf.Bytes())
+		}
 	}
+	lv := loop
+	if lv < 0 { lv = 0 }
+	fmt.Printf("\033_Ga=a,i=%d,s=3,v=%d,q=2\033\\", id, lv)
+}
 
+func renderAsset(path string, cfg AssetConfig, id uint32, loop int) {
+	if _, err := os.Stat(path); err != nil { return }
 	cW, cH := getTermSize()
-	tW, tH := cfg.Width*cW, cfg.Height*cH
-	
-	// Limpieza y posicionamiento
 	fmt.Printf("\033_Ga=d,d=i,i=%d,q=2\033\\", id)
 	fmt.Printf("\033[%d;%dH", cfg.Y+1, cfg.X+1)
-
 	if filepath.Ext(path) == ".gif" {
-		f, _ := os.Open(path)
-		defer f.Close()
-		g, err := gif.DecodeAll(f)
-		if err != nil {
-			logV("GIF", "Error DecodeAll: %v", err)
-			return
-		}
-		
-		logV("GIF", "Decodificados %d frames", len(g.Image))
-		canvas := image.NewRGBA(g.Image[0].Bounds())
-		for i, frame := range g.Image {
-			draw.Draw(canvas, frame.Bounds(), frame, frame.Bounds().Min, draw.Over)
-			resized := resizeBox(canvas, tW, tH)
-			var buf bytes.Buffer
-			png.Encode(&buf, resized)
-			
-			if i == 0 {
-				// Base: a=T con dimensiones y z-index
-				cmd := fmt.Sprintf("a=T,i=%d,f=100,c=%d,r=%d,z=%d", id, cfg.Width, cfg.Height, cfg.ZIndex)
-				transmit(cmd, buf.Bytes())
-			} else {
-				// Frames: a=f con número de frame y gap (delay)
-				delay := g.Delay[i] * 10
-				if delay == 0 { delay = 100 }
-				cmd := fmt.Sprintf("a=f,i=%d,f=100,r=%d,z=%d", id, i+1, delay)
-				transmit(cmd, buf.Bytes())
-			}
-		}
-		lv := loop
-		if lv < 0 { lv = 0 }
-		fmt.Printf("\033_Ga=a,i=%d,s=3,v=%d,q=2\033\\", id, lv)
-		logV("ANIM", "Animación disparada loop=%d", lv)
+		processGIF(path, cfg, id, loop, cW, cH)
 	} else {
 		f, _ := os.Open(path)
 		defer f.Close()
-		img, _, err := image.Decode(f)
-		if err != nil {
-			logV("IMG", "Error Decode estático (%s): %v", path, err)
-			return
-		}
-		resized := resizeBox(img, tW, tH)
+		img, _, _ := image.Decode(f)
+		resized := resizeImage(img, cfg.Width*cW, cfg.Height*cH)
 		var buf bytes.Buffer
 		png.Encode(&buf, resized)
-		cmd := fmt.Sprintf("a=T,i=%d,f=100,c=%d,r=%d,z=%d", id, cfg.Width, cfg.Height, cfg.ZIndex)
-		transmit(cmd, buf.Bytes())
-		logV("IMG", "Estático enviado.")
+		transmitViaFile(fmt.Sprintf("a=T,i=%d,f=100,c=%d,r=%d,z=%d", id, cfg.Width, cfg.Height, cfg.ZIndex), buf.Bytes())
 	}
 }
 
 func main() {
 	currDir, _ := os.Getwd()
 	initLogger(currDir)
-	
-	mode := flag.String("mode", "ares", "ares, user, separator, space")
-	spinner := flag.Bool("spinner", false, "Mostrar spinner")
-	rotate := flag.Bool("rotate", false, "Rotar lista")
-	stype := flag.String("type", "ares", "Tipo separador")
-	espacios := flag.Int("espacios", 0, "N retornos")
-	config := flag.String("config", "config.yaml", "Ruta YAML")
+	mode := flag.String("mode", "ares", "Modo")
+	spinner := flag.Bool("spinner", false, "Spinner")
+	rotate := flag.Bool("rotate", false, "Rotar")
+	stype := flag.String("type", "ares", "Tipo")
+	espacios := flag.Int("espacios", 0, "Espacios")
+	configPath := flag.String("config", "config.yaml", "Config")
 	flag.Parse()
-
-	logV("MAIN", "MODO=%s SPINNER=%v ROTATE=%v", *mode, *spinner, *rotate)
 
 	if *mode == "space" {
 		for i := 0; i < *espacios; i++ { fmt.Println() }
 		return
 	}
 
-	data, err := os.ReadFile(*config)
-	if err != nil {
-		logV("YAML", "FATAL: No existe config.yaml")
-		return
-	}
+	cData, _ := os.ReadFile(*configPath)
 	var cfg Config
-	yaml.Unmarshal(data, &cfg)
-
-	stateFile := filepath.Join(cfg.Cache.Dir, ".spinner_state.json")
+	yaml.Unmarshal(cData, &cfg)
 	os.MkdirAll(cfg.Cache.Dir, 0755)
+	stateFile := filepath.Join(cfg.Cache.Dir, ".spinner_state.json")
 
 	switch *mode {
 	case "ares":
-		render(cfg.Ares.Avatar.Path, cfg.Ares.Avatar, IDAvatarAres, 0)
+		renderAsset(cfg.Ares.Avatar.Path, cfg.Ares.Avatar, IDAvatarAres, 0)
 		if *spinner && len(cfg.Ares.Spinner.List) > 0 {
 			var st struct{ Idx int }
 			sData, _ := os.ReadFile(stateFile)
@@ -227,23 +183,20 @@ func main() {
 				st.Idx = idx
 				res, _ := json.Marshal(st)
 				os.WriteFile(stateFile, res, 0644)
-				logV("ROTATE", "Nuevo Indice: %d", idx)
 			}
-			render(cfg.Ares.Spinner.List[idx], AssetConfig{
+			sCfg := AssetConfig{
 				Path: cfg.Ares.Spinner.List[idx], Width: cfg.Ares.Spinner.Width,
 				Height: cfg.Ares.Spinner.Height, X: cfg.Ares.Spinner.X, Y: cfg.Ares.Spinner.Y,
 				ZIndex: cfg.Ares.Spinner.ZIndex,
-			}, IDSpinner, cfg.Ares.Anim.Loop)
+			}
+			renderAsset(sCfg.Path, sCfg, IDSpinner, cfg.Ares.Anim.Loop)
 		}
 	case "user":
-		render(cfg.User.Avatar.Path, cfg.User.Avatar, IDAvatarUser, 0)
+		renderAsset(cfg.User.Avatar.Path, cfg.User.Avatar, IDAvatarUser, 0)
 	case "separator":
 		if asset, ok := cfg.Separators[*stype]; ok {
-			render(asset.Path, asset, IDSeparator, cfg.Ares.Anim.Loop)
-		} else {
-			logV("SEP", "ERROR: Tipo %s no hallado en YAML", *stype)
+			renderAsset(asset.Path, asset, IDSeparator, cfg.Ares.Anim.Loop)
 		}
 	}
 	fmt.Print("\n\n\n")
-	logV("MAIN", "Finalizado.")
 }
