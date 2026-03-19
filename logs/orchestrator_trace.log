@@ -118,3 +118,13 @@ STDOUT:
 STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
 
 ----------------------------------------
+[Mon Mar 16 15:47:13 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------
+[Mon Mar 16 18:20:02 2026] CMD: kitten @ --to unix:/tmp/ares_session_diaria ls
+STDOUT: 
+STDERR: Error: Failed to connect to unix:/tmp/ares_session_diaria with error: dial unix /tmp/ares_session_diaria: connect: no such file or directory
+
+----------------------------------------

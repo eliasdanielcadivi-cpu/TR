@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/shared-types",
+  "version": "0.1.0",
+  "name": "Shared Types",
+  "description": "Tipos TypeScript compartidos entre frontend y backend",
+  "author": "AgenteDeCambio2 Team",
+  "license": "MIT",
+  "type": "types-only",
+  "actions": [],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [],
+  "exports": {
+    ".": {
+      "types": "./types.ts",
+      "import": "./types.ts"
+    },
+    "./types": {
+      "types": "./types.ts",
+      "import": "./types.ts"
+    }
+  },
+  "keywords": [
+    "agentedecambio2",
+    "typescript",
+    "types",
+    "shared",
+    "interfaces"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/AgenteDeCambio2.git",
+    "directory": "modules/shared-types"
+  }
+}

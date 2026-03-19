@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+################################################################################
+#                                                                              #
+#                                   maestro                                    #
+#                                                                              #
+#  Script para la consolidación recursiva de archivos de texto en un único     #
+#  documento Markdown. Permite filtrar por extensiones de archivo.             #
+#  Diseñado con un enfoque funcional y recursivo para optimizar la             #
+#  elegancia y eficiencia.                                                     #
+#                                                                              #
+################################################################################
+
+import os
+import sys
+from typing import Iterator, TextIO, Set
+
+# -- PARADIGMA FUNCIONAL Y RECURSIVO --
+# La estructura del script se basa en funciones puras y una función generadora
+# recursiva (`explorar_directorio_recursivo`) que evita cargar todos los datos en
+# memoria de una sola vez, procesando los archivos uno por uno.
+
+def explorar_directorio_recursivo(ruta_raiz: str, extensiones_deseadas: Set[str]) -> Iterator[str]:
+    """
+    Explora un directorio de manera recursiva y produce la ruta absoluta de cada
+    archivo que coincida con las extensiones deseadas.
+    Esta función utiliza un generador (yield) para ser más eficiente en el uso de memoria.
+
+    Args:
+        ruta_raiz (str): La ruta del directorio a explorar.
+        extensiones_deseadas (Set[str]): Un conjunto de extensiones de archivo
+                                         a incluir (ej: {'.txt', '.md'}).
+
+    Yields:
+        Iterator[str]: Un iterador que produce la ruta absoluta de cada archivo encontrado.
+    """
+    try:
+        for entrada in os.scandir(ruta_raiz):
+            if entrada.is_dir():
+                # Llamada recursiva para explorar subdirectorios.
+                yield from explorar_directorio_recursivo(entrada.path, extensiones_deseadas)
+            elif entrada.is_file():
+                # **NUEVO**: Comprobar si la extensión del archivo está en el conjunto de deseadas.
+                _, extension = os.path.splitext(entrada.name)
+                if extension.lower() in extensiones_deseadas:
+                    yield os.path.abspath(entrada.path)
+    except FileNotFoundError:
+        print(f"Error: El directorio '{ruta_raiz}' no fue encontrado.", file=sys.stderr)
+        sys.exit(1)
+    except PermissionError:
+        print(f"Error: Permiso denegado para acceder a '{ruta_raiz}'.", file=sys.stderr)
+        # Se continúa la ejecución por si otros directorios sí son accesibles.
+        pass
+
+def leer_contenido_archivo(ruta_archivo: str) -> str:
+    """
+    Lee y devuelve el contenido de un archivo de texto.
+    Maneja posibles errores de decodificación al intentar leer diferentes codificaciones.
+
+    Args:
+        ruta_archivo (str): La ruta absoluta del archivo a leer.
+
+    Returns:
+        str: El contenido del archivo o un mensaje de error si no se puede leer.
+    """
+    codificaciones_a_intentar = ['utf-8', 'latin-1', 'iso-8859-1']
+    for codificacion in codificaciones_a_intentar:
+        try:
+            with open(ruta_archivo, 'r', encoding=codificacion) as f:
+                return f.read()
+        except UnicodeDecodeError:
+            continue
+        except (IOError, PermissionError) as e:
+            return f"Error al leer el archivo: {e}"
+    return f"Error: No se pudo decodificar el archivo '{ruta_archivo}' con las codificaciones probadas."
+
+def generar_documento_markdown(ruta_raiz: str, archivo_salida: TextIO, extensiones: Set[str]) -> None:
+    """
+    Orquesta la creación del archivo Markdown. Escribe el título principal
+    y luego itera sobre los archivos para agregar sus rutas y contenidos.
+
+    Args:
+        ruta_raiz (str): La ruta del directorio raíz que se está procesando.
+        archivo_salida (TextIO): El objeto de archivo abierto para escribir el Markdown.
+        extensiones (Set[str]): El conjunto de extensiones a procesar.
+    """
+    archivo_salida.write(f"# maestro.md - Contenido de: {os.path.abspath(ruta_raiz)}\n\n")
+    archivo_salida.write(f"**Extensiones procesadas:** `{', '.join(sorted(list(extensiones)))}`\n\n")
+
+    # Utilizar el generador recursivo para procesar cada archivo filtrado.
+    for ruta_archivo in explorar_directorio_recursivo(ruta_raiz, extensiones):
+        contenido = leer_contenido_archivo(ruta_archivo)
+        archivo_salida.write(f"## {ruta_archivo}\n\n")
+        archivo_salida.write("```\n") # Inicia bloque de código para preservar formato
+        archivo_salida.write(f"{contenido}\n")
+        archivo_salida.write("```\n\n") # Cierra bloque de código
+
+def main():
+    """
+    Función principal que actúa como punto de entrada del script.
+    Determina la ruta, solicita las extensiones y gestiona el archivo de salida.
+    """
+    # Determinar la ruta a procesar. Usa el argumento o el directorio actual.
+    try:
+        ruta_directorio = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+    except IndexError:
+        ruta_directorio = os.getcwd()
+
+    # **NUEVO**: Solicitar al usuario las extensiones de archivo a procesar.
+    extensiones_input = input("Introduce las extensiones a incluir (ej: txt md py): ")
+    if not extensiones_input.strip():
+        print("No se especificaron extensiones. El programa ha finalizado.", file=sys.stderr)
+        sys.exit(0)
+
+    # Convertir la entrada en un conjunto de extensiones normalizadas (ej: ".txt").
+    # Se eliminan puntos extra y se añade uno al principio para una comparación segura.
+    extensiones_deseadas = {f".{ext.strip().lstrip('.').lower()}" for ext in extensiones_input.split()}
+    
+    nombre_archivo_salida = "maestro.md"
+    ruta_salida = os.path.join(ruta_directorio, nombre_archivo_salida)
+
+    print("-" * 50)
+    print(f"Directorio a procesar: '{os.path.abspath(ruta_directorio)}'")
+    print(f"Extensiones buscadas: {', '.join(sorted(list(extensiones_deseadas)))}")
+    print(f"El resultado se guardará en: '{ruta_salida}'")
+    print("-" * 50)
+
+    try:
+        with open(ruta_salida, 'w', encoding='utf-8') as f:
+            # Pasar las extensiones deseadas a la función generadora.
+            generar_documento_markdown(ruta_directorio, f, extensiones_deseadas)
+        print("Proceso completado exitosamente.")
+    except (IOError, PermissionError) as e:
+        print(f"Error al escribir en el archivo de salida: {e}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

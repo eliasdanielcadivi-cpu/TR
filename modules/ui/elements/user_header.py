@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+import sys
+import yaml
+import subprocess
+from pathlib import Path
+
+# --- CONFIGURACIÓN ---
+ELEMENTS_DIR = Path(__file__).parent
+CONFIG_PATH = ELEMENTS_DIR / "elements_config.yaml"
+CACHE_DIR = ELEMENTS_DIR.parent.parent.parent / "papelera" / ".cache_elements"
+
+class DragonScaler:
+    @staticmethod
+    def prepare(input_path, target_w, target_h):
+        if not CACHE_DIR.exists(): CACHE_DIR.mkdir(parents=True)
+        cache_name = f"{Path(input_path).stem}_{target_w}_{target_h}.gif"
+        cache_path = CACHE_DIR / cache_name
+        if cache_path.exists(): return str(cache_path)
+        px_w, px_h = target_w * 10, target_h * 20
+        cmd = ["convert", input_path, "-coalesce", "-resize", f"{px_w}x{px_h}!", "-layers", "Optimize", str(cache_path)]
+        try:
+            subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            return str(cache_path)
+        except: return input_path
+
+def main():
+    if not CONFIG_PATH.exists(): return
+    with open(CONFIG_PATH, "r") as f: cfg = yaml.safe_load(f)
+    u_cfg = cfg['user']['avatar']
+    
+    path = DragonScaler.prepare(u_cfg['path'], u_cfg['size'], u_cfg['size'])
+    subprocess.run(["kitten", "icat", "--scale-up", "--background=none", path])
+    
+    # 3 ENTERS de aire
+    sys.stdout.write(f"\r\033[{u_cfg['size'] + 1}B\n\n\n")
+    sys.stdout.flush()
+
+if __name__ == "__main__": main()

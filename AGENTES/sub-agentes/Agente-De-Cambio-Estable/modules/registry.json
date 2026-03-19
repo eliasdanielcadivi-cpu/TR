@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/modules-registry",
+  "version": "0.1.0",
+  "name": "AgenteDeCambio2 Modules Registry",
+  "description": "Registro central de todos los módulos del sistema AgenteDeCambio2",
+  "lastUpdated": "2026-02-24T22:40:00.000Z",
+  "modules": [
+    {
+      "id": "@agentedecambio2/deepseek-connector",
+      "name": "DeepSeek Connector",
+      "version": "0.1.0",
+      "path": "./deepseek-connector",
+      "status": "completed",
+      "type": "backend",
+      "description": "Conexión con DeepSeek API para completaciones y streaming",
+      "actions": ["createCompletion", "createCompletionStream"],
+      "events": {
+        "emits": [],
+        "subscribes": []
+      },
+      "dependencies": [],
+      "aiReady": true,
+      "docs": "./deepseek-connector/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/socket-server",
+      "name": "Socket Server",
+      "version": "0.1.0",
+      "path": "./socket-server",
+      "status": "pending",
+      "type": "backend",
+      "description": "Servidor Socket.IO para comunicación en tiempo real",
+      "actions": ["init", "emit", "on"],
+      "events": {
+        "emits": ["message:stream", "message:complete", "prompt:mutation", "question:next", "mode:switch", "delta:update"],
+        "subscribes": ["message:send", "prompt:update", "option:select", "mode:set", "session:init"]
+      },
+      "dependencies": [
+        "@agentedecambio2/deepseek-connector",
+        "@agentedecambio2/session-manager",
+        "@agentedecambio2/prompt-engine"
+      ],
+      "aiReady": false,
+      "docs": "./socket-server/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/session-manager",
+      "name": "Session Manager",
+      "version": "0.1.0",
+      "path": "./session-manager",
+      "status": "completed",
+      "type": "backend",
+      "description": "Gestión de sesiones en memoria con persistencia",
+      "actions": ["createSession", "getSession", "updateSession"],
+      "events": {
+        "emits": ["session:created", "session:updated"],
+        "subscribes": []
+      },
+      "dependencies": [],
+      "aiReady": false,
+      "docs": "./session-manager/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/prompt-engine",
+      "name": "Prompt Engine",
+      "version": "0.1.0",
+      "path": "./prompt-engine",
+      "status": "completed",
+      "type": "backend",
+      "description": "Construcción y gestión de system prompts dinámicos",
+      "actions": ["buildSystemPrompt", "updatePrompt", "negotiateChange"],
+      "events": {
+        "emits": ["prompt:updated", "prompt:mutation"],
+        "subscribes": ["prompt:update"]
+      },
+      "dependencies": [
+        "@agentedecambio2/session-manager",
+        "@agentedecambio2/delta-calculator"
+      ],
+      "aiReady": false,
+      "docs": "./prompt-engine/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/delta-calculator",
+      "name": "Delta Calculator",
+      "version": "0.1.0",
+      "path": "./delta-calculator",
+      "status": "completed",
+      "type": "backend",
+      "description": "Cálculo de deriva semántica entre prompts",
+      "actions": ["calculate", "compare", "threshold"],
+      "events": {
+        "emits": ["delta:calculated"],
+        "subscribes": []
+      },
+      "dependencies": [],
+      "aiReady": false,
+      "docs": "./delta-calculator/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/state-manager",
+      "name": "State Manager (Zustand)",
+      "version": "0.1.0",
+      "path": "./state-manager",
+      "status": "pending",
+      "type": "frontend",
+      "description": "Gestión de estado global con Zustand y persistencia",
+      "actions": ["createStore", "persist", "subscribe"],
+      "events": {
+        "emits": ["state:changed", "state:persisted"],
+        "subscribes": ["state:update"]
+      },
+      "dependencies": [],
+      "aiReady": false,
+      "docs": "./state-manager/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/shared-types",
+      "name": "Shared Types",
+      "version": "0.1.0",
+      "path": "./shared-types",
+      "status": "completed",
+      "type": "shared",
+      "description": "Tipos TypeScript compartidos entre frontend y backend",
+      "actions": [],
+      "events": {
+        "emits": [],
+        "subscribes": []
+      },
+      "dependencies": [],
+      "aiReady": true,
+      "docs": "./shared-types/INDEX.md"
+    }
+  ],
+  "statistics": {
+    "total": 7,
+    "active": 5,
+    "pending": 2,
+    "backend": 5,
+    "frontend": 1,
+    "shared": 1,
+    "aiReady": 2
+  },
+  "conventions": {
+    "maxActionsPerModule": 3,
+    "requireIndexMd": true,
+    "requireManifestJson": true,
+    "requireJsdoc": true,
+    "maxIndexMdLines": 50
+  }
+}

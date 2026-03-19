@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/prompt-engine",
+  "version": "0.1.0",
+  "name": "Prompt Engine",
+  "description": "Construcción y gestión de system prompts dinámicos",
+  "author": "AgenteDeCambio2 Team",
+  "license": "MIT",
+  "type": "module",
+  "actions": [
+    {
+      "name": "buildSystemPrompt",
+      "description": "Construye un system prompt con contexto adicional",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "basePrompt": {
+            "type": "string",
+            "description": "Prompt base (opcional)"
+          },
+          "objectives": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Lista de objetivos activos"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["chat", "questionnaire"],
+            "description": "Modo de interacción"
+          }
+        }
+      },
+      "returns": {
+        "type": "string",
+        "description": "System prompt completo construido"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "updatePrompt",
+      "description": "Actualiza el system prompt de una sesión con validación",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "type": "object",
+            "description": "Sesión a actualizar"
+          },
+          "newPrompt": {
+            "type": "string",
+            "description": "Nuevo contenido del prompt"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "Si omite validación de aprobación"
+          }
+        },
+        "required": ["session", "newPrompt"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Resultado de la actualización"
+      },
+      "throws": [],
+      "sideEffects": true,
+      "aiSafe": true
+    },
+    {
+      "name": "negotiateChange",
+      "description": "Negocia un cambio de prompt propuesto",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "oldPrompt": {
+            "type": "string",
+            "description": "Prompt actual"
+          },
+          "newPrompt": {
+            "type": "string",
+            "description": "Prompt propuesto"
+          }
+        },
+        "required": ["oldPrompt", "newPrompt"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Resultado de la negociación"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "getDefaultPrompt",
+      "description": "Obtiene el prompt por defecto",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      },
+      "returns": {
+        "type": "string",
+        "description": "El prompt por defecto"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    }
+  ],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [
+    {
+      "moduleId": "@agentedecambio2/shared-types",
+      "version": ">=0.1.0",
+      "reason": "Tipos Session"
+    },
+    {
+      "moduleId": "@agentedecambio2/delta-calculator",
+      "version": ">=0.1.0",
+      "reason": "Calcular deriva de cambios"
+    }
+  ],
+  "exports": {
+    ".": {
+      "types": "./actions.ts",
+      "import": "./actions.ts"
+    }
+  },
+  "keywords": [
+    "agentedecambio2",
+    "prompt",
+    "system-prompt",
+    "gestion"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/AgenteDeCambio2.git",
+    "directory": "modules/prompt-engine"
+  }
+}

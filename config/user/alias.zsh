@@ -250,6 +250,7 @@ alias queinstaleubuntu="micro $programas/Mudanza/quinetaleenubu18sencillo.sh"
 alias quekerneltengo="uname -srm"
 alias quienpuerto="sudo ss -tunelp | grep "
 alias ratonOff='xinput disable 9'
+alias funcioned="micro /home/daniel/tron/programas/TR/config/user/functions.zsh"
 alias ro="ratonOff"
 alias neo="neofetch"
 alias raton="xinput enable 9"

@@ -1,0 +1,35 @@
+{
+  "name": "agente-de-cambio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema cognitivo de extracción con prompts vivos",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:web\" \"npm run dev:server\"",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:server": "npm run dev --workspace=apps/server",
+    "build": "npm run build --workspaces",
+    "start": "concurrently \"npm run start --workspace=apps/server\" \"npm run start --workspace=apps/web\"",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "esbuild": "^0.27.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "cognitive",
+    "deepseek",
+    "chat",
+    "prompt-engineering",
+    "real-time"
+  ],
+  "author": "TRON Team",
+  "license": "MIT"
+}

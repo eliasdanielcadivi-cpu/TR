@@ -22,6 +22,11 @@ from modules.tactico.plan_manager import deploy_plan
 from modules.tactico.zsh_plan_manager import deploy_zsh_plan
 from modules.tactico.mcat_demo import deploy_mcat_demo
 
+# Inicializar bases de datos
+from modules.core.session_manager import init_db as init_session_db
+from modules.core.window_registry import init_db as init_window_db
+init_session_db()
+init_window_db()
 
 from modules.ui.help_manager import HelpManager
 from modules.multimedia.media_manager import MediaManager
@@ -140,10 +145,10 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
 def i_cmd(obj, rag, model, think):
     """💬 Modo Interactivo ARES (Loop REPL).
     
-    Delega la gestión visual y el loop interactivo al módulo especializado.
+    Delega la gestión visual y el loop interactivo al motor de producción industrial.
     """
-    from modules.ui.chat_interface import start_interactive_chat
-    start_interactive_chat(obj, rag=rag, model=model, think=think)
+    from modules.ui.chat_production import start_production_chat
+    start_production_chat(obj, rag=rag, model=model, think=think)
 
 
 @cli.command(name="maq")
@@ -393,20 +398,64 @@ def gs_restore(obj, name):
 @gs_cmd.command(name="deploy")
 @click.argument("name")
 @click.option("--socket", help="Socket UNIX personalizado (ej. /tmp/custom)")
+@click.option("--force", "-f", is_flag=True, help="Forzar limpieza de socket existente")
+@click.option("--no-register", is_flag=True, help="No registrar en window_registry (temporal)")
 @click.pass_obj
-def gs_deploy(obj, name, socket):
-    """🚀 Despliega una sesión en una ventana/socket NUEVO."""
+def gs_deploy(obj, name, socket, force, no_register):
+    """🚀 Despliega una sesión en una ventana/socket NUEVO.
+    
+    Por defecto genera un socket ÚNICO automático para cada deploy.
+    Esto permite múltiples ventanas de Kitty con sesiones del mismo nombre.
+    
+    Con --socket: Usa socket personalizado (fijo, no único).
+    Con --force: Elimina socket existente incluso si está en uso.
+    Con --no-register: No registra en window_registry.
+    """
     from modules.tactico.orchestrator import KittyOrchestrator
+    from modules.core.socket_manager import cleanup_orphan_socket, generate_unique_socket
+    import os
+
     orch = KittyOrchestrator(obj)
-    
-    # Si no se da socket, generamos uno temporal basado en el nombre de la sesión
-    target_socket = socket or f"/tmp/ares_session_{name}"
-    
-    click.echo(f"🛰️  Desplegando sesión '{name}' en socket '{target_socket}'...")
-    success, msg = orch.deploy_session_from_db(name, socket=target_socket, new_window=True)
-    
+
+    # 🔧 NUEVO: Generar socket único automático si no se proporciona socket personalizado
+    if socket:
+        # Socket personalizado - usar tal cual
+        target_socket = socket
+        click.echo(f"📌 Usando socket personalizado: {target_socket}")
+    else:
+        # Socket único automático basado en nombre de sesión + timestamp
+        target_socket = generate_unique_socket(f"ares_session_{name}")
+        click.echo(f"🆔 Socket único generado: {target_socket}")
+
+    # Validación solo si es socket personalizado (los únicos no necesitan cleanup)
+    if socket:
+        clean_path = target_socket.replace('unix:', '')
+        if os.path.exists(clean_path):
+            if not force:
+                click.echo(f"⚠️  Socket ya existe: {clean_path}")
+                click.echo("   Usa --force para limpiar o quita --socket para socket único")
+                click.echo("   Usa 'ares socket-check' para diagnosticar")
+                return
+
+            click.echo(f"🧹 Limpiando socket existente...")
+            success, msg = cleanup_orphan_socket(target_socket, force=True)
+            if not success:
+                click.echo(f"❌ Error al limpiar: {msg}")
+                return
+
+    click.echo(f"🛰️  Desplegando sesión '{name}'...")
+    success, msg, used_socket = orch.deploy_session_from_db(
+        name, 
+        socket=target_socket if socket else None,  # None = usar generado
+        new_window=True,
+        register=not no_register
+    )
+
     if success:
         click.echo(f"✅ {msg}")
+        click.echo(f"🔌 Socket: {used_socket}")
+        if not no_register:
+            click.echo(f"📋 Registrada en window_registry (usa 'ares windows' para ver)")
     else:
         click.echo(f"❌ {msg}")
 
@@ -429,6 +478,184 @@ def gs_com(obj, tab_title, command):
         click.echo(f"✅ {msg}")
     else:
         click.echo(f"❌ {msg}")
+
+
+@cli.command(name="socket-check")
+@click.argument("socket-path", required=False)
+@click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON")
+@click.pass_obj
+def socket_check(obj, socket_path, as_json):
+    """🔍 Verifica estado de sockets activos.
+    
+    Sin argumentos: Usa el socket por defecto de config.yaml.
+    Con --json: Formato JSON para scripting.
+    
+    Ejemplos:
+      ares socket-check
+      ares socket-check unix:/tmp/mykitty
+      ares socket-check --json
+    """
+    from modules.core.socket_manager import get_socket_info, _normalize_socket_path
+    import json as json_module
+    
+    # Usar socket por defecto si no se proporciona
+    if not socket_path:
+        socket_path = obj.config.get('kitty', {}).get('socket', 'unix:/tmp/mykitty')
+    
+    # Normalizar para visualización
+    normalized = _normalize_socket_path(socket_path)
+    
+    # Obtener información detallada
+    info = get_socket_info(socket_path)
+    
+    if as_json:
+        click.echo(json_module.dumps(info, indent=2))
+        return
+    
+    # Salida formateada con Rich
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    
+    console = Console()
+    
+    # Panel principal
+    status_icon = "✅" if info["is_responsive"] else "❌" if info["exists"] else "⚠️"
+    status_text = "Activo" if info["is_responsive"] else "Huérfano" if info["is_orphan"] and info["exists"] else "Inexistente"
+    
+    panel = Panel(
+        f"[bold cyan]Socket:[/bold cyan] {socket_path}\n"
+        f"[bold green]Estado:[/bold green] {status_icon} {status_text}",
+        title="🔌 Socket Check",
+        border_style="cyan" if info["is_responsive"] else "yellow" if info["exists"] else "red"
+    )
+    console.print(panel)
+    
+    # Tabla de detalles
+    table = Table(show_header=False, box=None, padding=(0, 2))
+    table.add_column("Propiedad", style="cyan")
+    table.add_column("Valor", style="green")
+    
+    table.add_row("Existe:", "✓ Sí" if info["exists"] else "✗ No")
+    table.add_row("Es socket UNIX:", "✓ Sí" if info["is_socket"] else "✗ No")
+    table.add_row("Responsivo:", "✓ Sí" if info["is_responsive"] else "✗ No")
+    table.add_row("Huérfano:", "✓ Sí" if info["is_orphan"] else "✗ No")
+    
+    if info["permissions"]:
+        table.add_row("Permisos:", info["permissions"])
+    if info["owner_uid"] is not None:
+        table.add_row("Owner UID:", str(info["owner_uid"]))
+    if info["error"]:
+        table.add_row("Error:", f"[red]{info['error']}[/red]")
+    
+    console.print(table)
+
+    # Recomendaciones
+    if not info["exists"]:
+        console.print("\n[yellow]💡 El socket no existe. Kitty no está corriendo con este socket.[/yellow]")
+    elif not info["is_responsive"]:
+        console.print("\n[yellow]💡 Socket huérfano detectado. Usa 'ares gs deploy --force' para limpiar.[/yellow]")
+    elif info["is_responsive"]:
+        console.print("\n[green]✓ Socket operativo. Listo para usar.[/green]")
+
+
+@cli.command(name="windows")
+@click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON")
+@click.option("--cleanup", "-c", is_flag=True, help="Limpiar ventanas huérfanas")
+@click.pass_obj
+def windows_cmd(obj, as_json, cleanup):
+    """🪟 Lista ventanas Kitty gestionadas por ARES.
+    
+    Muestra el registro de ventanas con sus sockets asociados.
+    Permite identificar qué ventana corresponde a qué sesión.
+    
+    Con --cleanup: Elimina registros de ventanas cuyos sockets ya no existen.
+    Con --json: Formato JSON para scripting.
+    
+    Ejemplos:
+      ares windows
+      ares windows --cleanup
+      ares windows --json
+    """
+    from modules.core.window_registry import (
+        list_active_windows,
+        cleanup_stale_windows,
+        get_registry_stats
+    )
+    import json as json_module
+    
+    # Limpieza si se solicita
+    if cleanup:
+        removed = cleanup_stale_windows()
+        if removed:
+            click.echo(f"🧹 {len(removed)} ventana(s) huérfana(s) eliminada(s):")
+            for name in removed:
+                click.echo(f"   - {name}")
+        else:
+            click.echo("✅ No hay ventanas huérfanas")
+        if not as_json:
+            click.echo()
+    
+    # Obtener estadísticas
+    stats = get_registry_stats()
+    
+    if as_json:
+        windows = list_active_windows()
+        click.echo(json_module.dumps({
+            "stats": stats,
+            "windows": windows
+        }, indent=2))
+        return
+    
+    # Salida formateada con Rich
+    from rich.console import Console
+    from rich.panel import Panel
+    from rich.table import Table
+    
+    console = Console()
+    
+    # Panel de estadísticas
+    panel = Panel(
+        f"[bold green]Total registradas:[/bold green] {stats['count']}\n"
+        f"[bold cyan]Activas (socket existe):[/bold cyan] {stats['sockets_existentes']}\n"
+        f"[bold yellow]Huérfanas (socket no existe):[/bold yellow] {stats['sockets_huerfanos']}",
+        title="🪟 Window Registry",
+        border_style="cyan"
+    )
+    console.print(panel)
+    
+    # Listar ventanas
+    windows = list_active_windows()
+    
+    if not windows:
+        console.print("\n[yellow]⚠️  No hay ventanas registradas.[/yellow]")
+        console.print("[dim]Usa 'ares gs deploy <nombre>' para crear una.[/dim]")
+        return
+    
+    # Tabla de ventanas
+    table = Table(title="Ventanas Activas", show_header=True, header_style="bold magenta")
+    table.add_column("Sesión", style="green", width=20)
+    table.add_column("Socket", style="cyan", width=50)
+    table.add_column("Window ID", style="yellow", width=12)
+    table.add_column("Creada", style="white", width=20)
+    
+    for w in windows:
+        # Estado del socket
+        import os
+        clean_path = w["socket_path"].replace('unix:', '')
+        socket_exists = os.path.exists(clean_path)
+        status_icon = "✅" if socket_exists else "❌"
+        
+        session_name = f"{status_icon} {w['session_name']}"
+        socket_path = w["socket_path"][:47] + "..." if len(w["socket_path"]) > 50 else w["socket_path"]
+        window_id = str(w["window_id"]) if w["window_id"] else "[dim]N/A[/dim]"
+        created = w["created_at"][:16].replace('T', ' ')
+        
+        table.add_row(session_name, socket_path, window_id, created)
+    
+    console.print(table)
+    console.print(f"\n[dim]💡 Usa 'ares gs deploy <nombre>' para crear nueva ventana[/dim]")
+    console.print(f"[dim]💡 Usa 'ares gs deploy <nombre> --socket <ruta>' para socket fijo[/dim]")
 
 
 @cli.command()

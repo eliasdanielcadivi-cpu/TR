@@ -1,0 +1,159 @@
+/* AgenteDeCambio App - Estilos Textual (TCSS) */
+
+/* Layout principal */
+Screen {
+    background: $background;
+    overflow: hidden;
+}
+
+/* Header */
+Header {
+    background: $primary;
+    color: $text;
+}
+
+/* Footer */
+Footer {
+    background: $panel;
+    dock: bottom;
+}
+
+/* Barra de métricas */
+#metrics-bar {
+    height: 3;
+    background: $panel;
+    padding: 0 1;
+    align: center middle;
+}
+
+#metrics-bar #title {
+    width: 30%;
+    content-align: left middle;
+}
+
+#metrics-bar #delta-display {
+    width: 40%;
+    content-align: center middle;
+}
+
+#metrics-bar #status {
+    width: 30%;
+    content-align: right middle;
+}
+
+/* Área de chat */
+#chat-area {
+    height: 1fr;
+    border: solid $secondary;
+    padding: 1;
+    margin: 1 0;
+    scrollbar-gutter: stable;
+}
+
+/* Área de input */
+#input-area {
+    height: 3;
+    dock: bottom;
+    padding: 0 1;
+}
+
+#chat-input {
+    width: 3fr;
+    height: 100%;
+}
+
+#send-btn {
+    width: 1fr;
+    height: 100%;
+    margin-left: 1;
+}
+
+/* Mensajes de chat */
+ChatMessage {
+    padding: 1 2;
+    margin: 1 0;
+    width: 100%;
+}
+
+ChatMessage.user {
+    background: $secondary;
+    color: $text;
+    align: right;
+    text-align: right;
+}
+
+ChatMessage.assistant {
+    background: $surface;
+    color: $text;
+    align: left;
+    text-align: left;
+}
+
+/* Display de delta */
+DeltaDisplay {
+    padding: 0 1;
+    margin: 0 1;
+    width: auto;
+}
+
+DeltaDisplay.ok {
+    color: $success;
+}
+
+DeltaDisplay.warning {
+    color: $warning;
+}
+
+DeltaDisplay.error {
+    color: $error;
+}
+
+/* Botones */
+Button {
+    margin: 1 0;
+}
+
+Button.primary {
+    background: $primary;
+}
+
+Button.success {
+    background: $success;
+}
+
+Button.warning {
+    background: $warning;
+}
+
+Button.error {
+    background: $error;
+}
+
+/* Inputs */
+Input {
+    border: solid $primary;
+}
+
+Input:focus {
+    border: solid $success;
+    background: $surface;
+}
+
+/* Contenedores */
+Container {
+    width: 100%;
+    height: 100%;
+}
+
+Vertical {
+    width: 100%;
+}
+
+Horizontal {
+    width: 100%;
+}
+
+ScrollableContainer {
+    scrollbar-background: $panel;
+    scrollbar-color: $primary;
+}

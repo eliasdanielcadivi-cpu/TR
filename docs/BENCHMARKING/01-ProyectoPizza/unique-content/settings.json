@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 TRON/CORE/despachador.py *)",
+      "Read(TRON/resultados/web/explorador_web_resultados.json)"
+    ],
+    "deny": [
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 TRON/CORE/utilidades/verificador_peso.py"
+          }
+        ]
+      }
+    ]
+  }
+}

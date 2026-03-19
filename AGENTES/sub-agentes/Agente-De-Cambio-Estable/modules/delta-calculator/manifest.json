@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/delta-calculator",
+  "version": "0.1.0",
+  "name": "Delta Calculator",
+  "description": "Cálculo de deriva semántica entre versiones de prompts",
+  "author": "AgenteDeCambio2 Team",
+  "license": "MIT",
+  "type": "module",
+  "actions": [
+    {
+      "name": "calculate",
+      "description": "Calcula la deriva entre dos prompts",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "oldPrompt": {
+            "type": "string",
+            "description": "Versión anterior del prompt"
+          },
+          "newPrompt": {
+            "type": "string",
+            "description": "Nueva versión del prompt"
+          }
+        },
+        "required": ["oldPrompt", "newPrompt"]
+      },
+      "returns": {
+        "type": "number",
+        "description": "Score de deriva (0.0 a 1.0)"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "compare",
+      "description": "Compara dos prompts y retorna métricas detalladas",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "oldPrompt": {
+            "type": "string",
+            "description": "Versión anterior del prompt"
+          },
+          "newPrompt": {
+            "type": "string",
+            "description": "Nueva versión del prompt"
+          }
+        },
+        "required": ["oldPrompt", "newPrompt"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Objeto con métricas detalladas del cambio"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "threshold",
+      "description": "Obtiene el umbral configurado para aprobación de cambios",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      },
+      "returns": {
+        "type": "number",
+        "description": "Umbral de 0.0 a 1.0"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "requiresApproval",
+      "description": "Determina si un cambio requiere aprobación",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "deltaScore": {
+            "type": "number",
+            "description": "Score de deriva (0.0 a 1.0)"
+          }
+        },
+        "required": ["deltaScore"]
+      },
+      "returns": {
+        "type": "boolean",
+        "description": "True si requiere aprobación"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    }
+  ],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [],
+  "exports": {
+    ".": {
+      "types": "./actions.ts",
+      "import": "./actions.ts"
+    }
+  },
+  "keywords": [
+    "agentedecambio2",
+    "delta",
+    "prompt",
+    "deriva",
+    "comparacion"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/AgenteDeCambio2.git",
+    "directory": "modules/delta-calculator"
+  }
+}

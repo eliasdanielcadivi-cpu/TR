@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Skill(docs)",
+      "Skill(metaconocimiento)",
+      "Bash(~/.claude-code-docs/claude-docs-helper.sh:*)",
+      "Skill(creador-herramientas)",
+      "Bash(chmod:*)",
+      "Bash(curl:*)",
+      "Skill(gestor-git)"
+    ]
+  }
+}

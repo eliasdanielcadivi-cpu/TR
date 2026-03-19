@@ -27,8 +27,7 @@ def run_demo():
     
     # Intentar cargar renderer Rust
     try:
-        sys.path.insert(0, str(AGENTE_ROOT / "modules" / "ui"))
-        from hybrid_renderer import RatatuiRenderer
+        from .hybrid_renderer import RatatuiRenderer
         renderer = RatatuiRenderer()
         rust_ok = True
         print("✅ Rust components: OK")
@@ -36,87 +35,19 @@ def run_demo():
         rust_ok = False
         renderer = None
         print(f"⚠️  Rust components: NO DISPONIBLES ({e})")
-        print(f"   Ejecuta: ares agente-de-cambio install")
+        print(f"   Ejecuta: ares agente AgenteDeCambio install")
     
     print()
     print("═" * 60)
     print("DEMO: Componentes Híbridos (Textual + Ratatui)")
     print("═" * 60)
+    print()
+    print("Presiona Ctrl+Q para salir")
+    print()
     
-    # Importar Textual
-    from textual.app import App, ComposeResult
-    from textual.widgets import Header, Footer, Button, Label, Static
-    from textual.containers import Vertical, Horizontal
-    from textual.binding import Binding
-    
-    class DemoApp(App):
-        """App de demostración"""
-        
-        CSS = """
-        Screen { align: center middle; }
-        Vertical { align: center middle; padding: 2; }
-        #gauge { width: 80; margin: 1 0; }
-        #info { width: 80; color: $text-muted; }
-        """
-        
-        BINDINGS = [
-            Binding("q", "quit", "Quit"),
-            Binding("up", "increase", "▲"),
-            Binding("down", "decrease", "▼"),
-        ]
-        
-        def compose(self) -> ComposeResult:
-            yield Header()
-            with Vertical():
-                yield Label("🤖 AgenteDeCambio CLI - Demo", id="title")
-                yield Static("", id="gauge")
-                yield Label("", id="info")
-                with Horizontal():
-                    yield Button("▲ Aumentar Delta", id="up", variant="success")
-                    yield Button("▼ Disminuir Delta", id="down", variant="error")
-                yield Label("Presiona Q para salir", id="help")
-            yield Footer()
-        
-        def on_mount(self) -> None:
-            self.delta_value = 0.2
-            self.threshold = 0.3
-            self.update_gauge()
-        
-        def update_gauge(self) -> None:
-            gauge_widget = self.query_one("#gauge", Static)
-            info_widget = self.query_one("#info", Label)
-            
-            if renderer:
-                # Usar Ratatui (Rust)
-                gauge_str = renderer.render_gauge(self.delta_value, self.threshold)
-                gauge_widget.update(gauge_str)
-                info_widget.update("Render: Rust/Ratatui 🦀")
-            else:
-                # Fallback ASCII (Textual puro)
-                filled = int(self.delta_value * 40)
-                bar = "█" * filled + "░" * (40 - filled)
-                status = "✓ OK" if self.delta_value < self.threshold else "⚠ REVIEW"
-                gauge_widget.update(f"Deriva: [{bar}] {self.delta_value*100:.1f}% {status}")
-                info_widget.update("Render: ASCII (fallback)")
-        
-        def on_button_pressed(self, event: Button.Pressed) -> None:
-            if event.button.id == "up":
-                self.delta_value = min(1.0, self.delta_value + 0.1)
-            elif event.button.id == "down":
-                self.delta_value = max(0.0, self.delta_value - 0.1)
-            self.update_gauge()
-        
-        def action_increase(self) -> None:
-            self.delta_value = min(1.0, self.delta_value + 0.1)
-            self.update_gauge()
-        
-        def action_decrease(self) -> None:
-            self.delta_value = max(0.0, self.delta_value - 0.1)
-            self.update_gauge()
-    
-    # Ejecutar app
-    app = DemoApp()
-    app.run()
+    # Importar y ejecutar app real
+    from .app import run_app
+    run_app()
 
 
 def run_tests():

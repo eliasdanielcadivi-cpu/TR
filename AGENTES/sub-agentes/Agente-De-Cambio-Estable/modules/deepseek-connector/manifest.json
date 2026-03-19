@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/deepseek-connector",
+  "version": "0.1.0",
+  "name": "DeepSeek Connector",
+  "description": "Conexión con DeepSeek API para completaciones y streaming de respuestas",
+  "author": "AgenteDeCambio2 Team",
+  "license": "MIT",
+  "type": "module",
+  "actions": [
+    {
+      "name": "createCompletion",
+      "description": "Solicita una completación síncrona a DeepSeek API",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "description": "Lista de mensajes de la conversación",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": { "type": "string", "enum": ["system", "user", "assistant"] },
+                "content": { "type": "string" }
+              },
+              "required": ["role", "content"]
+            }
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "API Key de DeepSeek"
+          },
+          "model": {
+            "type": "string",
+            "description": "Modelo a usar (deepseek-chat o deepseek-reasoner)",
+            "default": "deepseek-chat"
+          },
+          "temperature": {
+            "type": "number",
+            "description": "Temperatura 0.0-2.0",
+            "default": 0.7,
+            "minimum": 0,
+            "maximum": 2
+          },
+          "max_tokens": {
+            "type": "integer",
+            "description": "Máximo de tokens a generar",
+            "default": 4096
+          }
+        },
+        "required": ["messages", "apiKey"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "Respuesta completa con choices y uso de tokens"
+      },
+      "throws": ["Error si API key inválida (401)", "Error si quota excedida (429)", "Error si servidor falla (5xx)"],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "createCompletionStream",
+      "description": "Crea stream de completación en tiempo real via SSE",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "description": "Lista de mensajes de la conversación"
+          },
+          "apiKey": {
+            "type": "string",
+            "description": "API Key de DeepSeek"
+          },
+          "model": {
+            "type": "string",
+            "description": "Modelo a usar",
+            "default": "deepseek-chat"
+          },
+          "temperature": {
+            "type": "number",
+            "description": "Temperatura 0.0-2.0",
+            "default": 0.7
+          }
+        },
+        "required": ["messages", "apiKey"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "AsyncGenerator que yield chunks SSE"
+      },
+      "throws": ["Error si API key inválida", "Error si falla conexión"],
+      "sideEffects": false,
+      "aiSafe": true
+    }
+  ],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [
+    {
+      "moduleId": "axios",
+      "version": ">=1.0.0",
+      "reason": "Cliente HTTP para requests a DeepSeek API"
+    }
+  ],
+  "exports": {
+    ".": {
+      "types": "./actions.ts",
+      "import": "./actions.ts"
+    },
+    "./types": {
+      "types": "./actions.ts",
+      "import": "./actions.ts"
+    }
+  },
+  "keywords": [
+    "agentedecambio2",
+    "deepseek",
+    "api",
+    "llm",
+    "streaming",
+    "chat-completion"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/AgenteDeCambio2.git",
+    "directory": "modules/deepseek-connector"
+  }
+}

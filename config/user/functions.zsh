@@ -268,20 +268,66 @@ chismoso() {
     fi
 }
 
+
+
 hayinternet() {
   echo "TRON: Verificando conexión..."
-  if ! ping -c 1 google.com &>/dev/null; then
-    echo "❌ Sin Internet"
-    notify-send "TRON: Sin Internet"
-  else
+  
+  if ping -c 1 google.com &>/dev/null; then
     echo "✅ Con Internet"
-    notify-send "TRON: Con Internet"
-    if ! command -v speedtest-cli &>/dev/null; then
-        sudo apt install -y speedtest-cli
+    
+    # Forzamos la impresión de la pregunta
+    echo -n "¿Deseas hacer un test de velocidad? (1=Sí / Otra=Salir): "
+    
+    # Leemos un solo carácter (-k1 en zsh, -n1 en bash)
+    if [ -n "$ZSH_VERSION" ]; then
+        read -k 1 opcion_test
+    else
+        read -n 1 opcion_test
     fi
-    speedtest-cli
+    echo "" # Salto de línea estético
+
+    if [[ "$opcion_test" == "1" ]]; then
+      echo "Iniciando test de velocidad..."
+      if ! command -v speedtest-cli &>/dev/null; then
+          echo "Instalando speedtest-cli..."
+          sudo apt update && sudo apt install -y speedtest-cli
+      fi
+      speedtest-cli
+    else
+      echo "Saliendo de la verificación."
+    fi
+    
+  else
+    echo "❌ Sin Internet"
+    
+    echo -n "¿Deseas que te avise cuando llegue el internet? (1=Sí / Otra=Salir): "
+    
+    if [ -n "$ZSH_VERSION" ]; then
+        read -k 1 opcion_aviso
+    else
+        read -n 1 opcion_aviso
+    fi
+    echo ""
+
+    if [[ "$opcion_aviso" == "1" ]]; then
+      echo "Esperando conexión... (comprobando cada 5 segundos)"
+      
+      while true; do
+        if ping -c 1 google.com &>/dev/null; then
+          echo "✅ ¡El Internet ha regresado!"
+          # Usamos zenity para el aviso visual
+          zenity --info --title="TRON" --text="✅ ¡El Internet ha regresado!" --width=300 &
+          break
+        fi
+        sleep 5
+      done
+    else
+      echo "Saliendo sin esperar conexión."
+    fi
   fi
 }
+
 
 pausa() {
     echo "$1"

@@ -65,7 +65,8 @@ export templates=$(xdg-user-dir TEMPLATES)
 export publicshare=$(xdg-user-dir PUBLICSHARE)
 export documents=$(xdg-user-dir DOCUMENTS)
 export music=$(xdg-user-dir MUSIC)
-export pictures=$(xdg-user-dir PICTURES)
+#export pictures=$(xdg-user-dir PICTURES)
+export pictures="/home/daniel/Imagenes"
 export videos=$(xdg-user-dir VIDEOS)
 
 export escritorio="$desktop"

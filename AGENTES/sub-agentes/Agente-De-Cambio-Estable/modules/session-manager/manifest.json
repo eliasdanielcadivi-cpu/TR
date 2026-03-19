@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "@agentedecambio2/session-manager",
+  "version": "0.1.0",
+  "name": "Session Manager",
+  "description": "Gestión de sesiones de conversación en memoria",
+  "author": "AgenteDeCambio2 Team",
+  "license": "MIT",
+  "type": "module",
+  "actions": [
+    {
+      "name": "createSession",
+      "description": "Crea una nueva sesión de conversación",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "ID opcional para la sesión"
+          }
+        }
+      },
+      "returns": {
+        "type": "object",
+        "description": "La nueva sesión creada"
+      },
+      "throws": [],
+      "sideEffects": true,
+      "aiSafe": true
+    },
+    {
+      "name": "getSession",
+      "description": "Obtiene una sesión por su ID",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "ID de la sesión a recuperar"
+          }
+        },
+        "required": ["sessionId"]
+      },
+      "returns": {
+        "type": "object",
+        "description": "La sesión o undefined si no existe"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "updateSession",
+      "description": "Actualiza una sesión existente",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "ID de la sesión a actualizar"
+          },
+          "updates": {
+            "type": "object",
+            "description": "Campos a actualizar (parcial)"
+          }
+        },
+        "required": ["sessionId", "updates"]
+      },
+      "returns": {
+        "type": "boolean",
+        "description": "True si se actualizó, false si no existe"
+      },
+      "throws": [],
+      "sideEffects": true,
+      "aiSafe": true
+    },
+    {
+      "name": "deleteSession",
+      "description": "Elimina una sesión del almacenamiento",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "description": "ID de la sesión a eliminar"
+          }
+        },
+        "required": ["sessionId"]
+      },
+      "returns": {
+        "type": "boolean",
+        "description": "True si se eliminó, false si no existía"
+      },
+      "throws": [],
+      "sideEffects": true,
+      "aiSafe": true
+    },
+    {
+      "name": "listSessions",
+      "description": "Lista todas las sesiones activas",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      },
+      "returns": {
+        "type": "array",
+        "description": "Array de IDs de sesiones"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    },
+    {
+      "name": "getSessionStats",
+      "description": "Obtiene estadísticas del almacenamiento",
+      "parameters": {
+        "type": "object",
+        "properties": {}
+      },
+      "returns": {
+        "type": "object",
+        "description": "Estadísticas del almacenamiento"
+      },
+      "throws": [],
+      "sideEffects": false,
+      "aiSafe": true
+    }
+  ],
+  "events": {
+    "emits": [],
+    "subscribes": []
+  },
+  "dependencies": [
+    {
+      "moduleId": "@agentedecambio2/shared-types",
+      "version": ">=0.1.0",
+      "reason": "Tipos Session y ChatMessage"
+    }
+  ],
+  "exports": {
+    ".": {
+      "types": "./actions.ts",
+      "import": "./actions.ts"
+    }
+  },
+  "keywords": [
+    "agentedecambio2",
+    "session",
+    "memoria",
+    "conversacion"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/usuario/AgenteDeCambio2.git",
+    "directory": "modules/session-manager"
+  }
+}

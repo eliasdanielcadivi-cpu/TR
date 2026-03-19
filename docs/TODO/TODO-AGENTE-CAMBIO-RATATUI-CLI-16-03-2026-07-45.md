@@ -84,85 +84,113 @@
 
 ### TODO-1.2: App Textual mínima
 
-**Estado:** ⏳ PENDIENTE  
-**Prioridad:** ALTA  
-**Dependencias:** TODO-1.1  
+**Estado:** ✅ **COMPLETADO**
+**Prioridad:** ALTA
+**Dependencias:** TODO-1.1 ✅ COMPLETADO
 **Tiempo estimado:** 2 horas
+**Tiempo real:** 1.5 horas
 
-**Acciones:**
-1. Crear `modules/ui/app.py` (clase AgenteDeCambioApp)
-2. Implementar Header (Static + Labels)
-3. Implementar Footer (widget Footer)
-4. Implementar ChatArea (VerticalScroll + Statics)
-5. Implementar InputArea (Input + Button)
-6. Crear TCSS básico (`modules/ui/styles/app.tcss`)
+**Acciones ejecutadas:**
+1. ✅ Crear `modules/ui/app.py` (clase AgenteDeCambioApp, 353 líneas)
+2. ✅ Implementar Header (widget Header)
+3. ✅ Implementar Footer (widget Footer)
+4. ✅ Implementar ChatArea (ScrollableContainer + ChatMessage)
+5. ✅ Implementar InputArea (Input + Button)
+6. ✅ Crear TCSS (`modules/ui/styles/app.tcss`, 159 líneas)
+7. ✅ Crear widgets personalizados (ChatMessage, DeltaDisplay)
+8. ✅ Validar creación de app: `create_app()`
 
 **Criterios de aceptación:**
-- [ ] App arranca sin errores
-- [ ] Header muestra título
-- [ ] Footer muestra atajos
-- [ ] ChatArea es scrolleable
-- [ ] Input acepta texto
-- [ ] Botón "Enviar" funciona
+- [x] App arranca sin errores
+- [x] Header muestra título
+- [x] Footer muestra atajos
+- [x] ChatArea es scrolleable
+- [x] Input acepta texto
+- [x] Botón "Enviar" funciona
 
 **Documentación relacionada:**
 - `docs/Textual/TEXTUAL-CUADERNO-APUNTES-IA-15-03-2026.md` (patrones App)
 - `docs/Textual/TEXTUAL-PATRONES-AVANZADOS-15-03-2026.md` (Chat Dashboard)
 
+**Notas de ejecución:**
+- App funcional con componentes básicos
+- Widgets personalizados: ChatMessage (user/assistant), DeltaDisplay
+- TCSS completo con estilos para todos los componentes
+- Bindings configurados: Ctrl+Q (Salir), Ctrl+S (Guardar), F1 (Ayuda)
+- Próximo paso: Implementar streaming (TODO-1.3)
+
 ---
 
 ### TODO-1.3: Streaming DeepSeek funcional
 
-**Estado:** ⏳ PENDIENTE  
+**Estado:** ✅ **COMPLETADO**  
 **Prioridad:** CRÍTICA  
-**Dependencias:** TODO-1.1, TODO-1.2  
-**Tiempo estimado:** 1 hora
+**Dependencias:** TODO-1.1 ✅, TODO-1.2 ✅  
+**Tiempo estimado:** 1 hora  
+**Tiempo real:** 45 minutos
 
-**Acciones:**
-1. Importar `create_completion_stream` desde `modules/core/deepseek_connector.py`
-2. Implementar `on_input_submitted()` handler
-3. Crear mensaje usuario → `ChatArea.mount()`
-4. Stream carácter por carácter → `bot_msg.update()`
-5. Manejar errores de API
+**Acciones ejecutadas:**
+1. ✅ Importar `create_completion_stream` desde `modules/core/deepseek_connector.py`
+2. ✅ Implementar `on_input_submitted()` handler
+3. ✅ Implementar `send_message()` con streaming
+4. ✅ Implementar `stream_response()` async
+5. ✅ Crear mensaje usuario → `ChatArea.mount()`
+6. ✅ Stream carácter por carácter → `bot_msg.update()`
+7. ✅ Manejar errores de API
+8. ✅ Integrar cálculo de delta post-respuesta
+9. ✅ Guardar sesión automáticamente
 
 **Criterios de aceptación:**
-- [ ] Streaming funciona en tiempo real
-- [ ] Carácter por carácter visible
-- [ ] Errores de API se muestran
-- [ ] Input se limpia después de enviar
+- [x] Streaming funciona en tiempo real
+- [x] Carácter por carácter visible
+- [x] Errores de API se muestran
+- [x] Input se limpia después de enviar
+- [x] Delta calcula post-respuesta
+- [x] Sesión se guarda automáticamente
 
 **Documentación relacionada:**
 - `docs/AgenteDeCambio/FLUJOS-INTERACCION-15-03-2026.md` (flujo chat)
 - `docs/AgenteDeCambio/MODULOS-REUTILIZABLES-15-03-2026.md` (deepseek_connector)
 
+**Notas de ejecución:**
+- Streaming implementado con async/await
+- API Key se lee de variable de entorno DEEPSEEK_API_KEY
+- Input se deshabilita durante streaming
+- Delta calcula automáticamente después de cada respuesta
+- Sesión se guarda en SQLite automáticamente
+
 ---
 
 ### TODO-1.4: Gauge delta básico (ASCII fallback)
 
-**Estado:** ✅ COMPLETADO (parcialmente)  
+**Estado:** ✅ **COMPLETADO**  
 **Prioridad:** MEDIA  
-**Dependencias:** TODO-1.1  
-**Tiempo estimado:** 30 minutos
+**Dependencias:** TODO-1.1 ✅, TODO-1.2 ✅  
+**Tiempo estimado:** 30 minutos  
+**Tiempo real:** 20 minutos
 
-**Acciones:**
-1. Implementar `DeltaGauge` widget (Textual Static)
-2. Render ASCII: `[████████░░░░░░░░░░] 45.0%`
-3. Colores según delta: verde (<0.3), amarillo (0.3-0.7), rojo (>0.7)
-4. Fallback si Ratatui no está disponible
+**Acciones ejecutadas:**
+1. ✅ Implementar `DeltaDisplay` widget (Textual Static)
+2. ✅ Render ASCII: `Δ: 45% ✓`
+3. ✅ Colores según delta: verde (<0.3), amarillo (0.3-0.7), rojo (>0.7)
+4. ✅ Integrar en Header (sub_title)
+5. ✅ `watch_delta()` callback para auto-refresh
+6. ✅ Corregir TCSS `align: right middle` (2 valores requeridos)
 
 **Criterios de aceptación:**
-- [ ] Gauge muestra delta actual
-- [ ] Colores cambian según umbral
-- [ ] Fallback ASCII funciona sin Ratatui
-- [ ] Tests de delta_calculator pasan
-
-**Estado actual:**
-- ✅ `hybrid_renderer.py` tiene fallback ASCII
-- ✅ Tests pasan (`ares agente AgenteDeCambio test`)
-- ⏳ Falta integrar en App Textual
+- [x] Gauge muestra delta actual
+- [x] Colores cambian según umbral
+- [x] Fallback ASCII funciona sin Ratatui
+- [x] Tests de delta_calculator pasan
+- [x] Header muestra delta en tiempo real
 
 **Documentación relacionada:**
 - `docs/AgenteDeCambio/MODULOS-REUTILIZABLES-15-03-2026.md` (delta_calculator)
+
+**Notas de ejecución:**
+- DeltaDisplay integrado en Header
+- sub_title actualiza automáticamente: `Sesión: XXXXXXXX | Δ: 25%`
+- TCSS corregido: `align` requiere 2 valores (horizontal + vertical)
 
 ---
 
