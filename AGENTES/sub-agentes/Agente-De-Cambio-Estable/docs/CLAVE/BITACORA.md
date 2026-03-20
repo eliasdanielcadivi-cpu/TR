@@ -165,5 +165,41 @@
 
 ---
 
+### [19:30] Aclaración: Agenda del Sistema vs Agenda del Proyecto
+**Archivos:**
+- `/home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md` - ACTUALIZADO
+- `LEEME.md` - ACTUALIZADO (sección AGENDA DEL SISTEMA)
+
+**Cambios:**
+- **IA-MEMORY.md** ahora incluye sección completa sobre Agenda del Sistema
+- **LEEME.md** actualizado con diferencia SISTEMA vs PROYECTO
+- Aclarada jerarquía:
+  - **SISTEMA:** Ecosistema completo ARES-TRON
+  - **PROYECTO:** Unidad específica (ej: Agente-De-Cambio-Estable)
+
+**Documentos de Agenda:**
+| Documento | Ubicación | Propósito |
+|-----------|-----------|-----------|
+| Agenda del Sistema | `/home/daniel/tron/programas/AGENDA/agenda.md` | Tareas de TODOS los proyectos |
+| Memoria de IA | `TR/docs/ALMAS-IAS/IA-MEMORY.md` | Memoria compartida Qwen/Gemini |
+| Estado del Proyecto | `docs/CLAVE/estado.md` | Estado de ESTE proyecto |
+| TODO-001 | `docs/CLAVE/TODO-001-MAESTRO.md` | Problemas de ESTE proyecto |
+
+**Flujo de información:**
+```
+Agenda del Sistema (agenda.md)
+    ↓ (sincroniza tareas relevantes)
+Estado del Proyecto (estado.md)
+    ↓ (documenta cambios)
+Bitácora del Proyecto (BITACORA.md)
+```
+
+**Razón:** Confusión sobre dónde va la información de agenda. Ahora está claro:
+- Agenda del Sistema = ÚNICA, para TODOS los proyectos
+- Agenda del Proyecto = estado.md + TODO-001 (sincronizado con agenda.md)
+- Memoria de IA = IA-MEMORY.md (enlaces duros ~/.qwen/QWEN.md + ~/.gemini/GEMINI.md)
+
+---
+
 *Bitácora iniciada: 2026-03-20*  
-*Última actualización: 2026-03-20 19:00*
+*Última actualización: 2026-03-20 19:30*

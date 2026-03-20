@@ -42,13 +42,48 @@ npm run dev
 
 ## 📍 AGENDA DEL SISTEMA (UNA SOLA)
 
-**Ubicación:** `/home/daniel/tron/programas/TR/AGENTES/sub-agentes/Agente-De-Cambio-Estable/docs/CLAVE/`
+**Ubicación Maestra:** `/home/daniel/tron/programas/AGENDA/agenda.md`  
+**Comando:** `agenda` (alias para `uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py`)
 
-| Documento | Propósito | Cuándo Leer |
-|-----------|-----------|-------------|
-| **[TODO-001-MAESTRO.md](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md)** | Problemas pendientes + rutas absolutas | **PRIMERO** - Nueva IA |
-| **[estado.md](./docs/CLAVE/estado.md)** | Qué está en desarrollo | Antes de modificar código |
-| **[BITACORA.md](./docs/CLAVE/BITACORA.md)** | Historial de cambios | Después de modificar |
+### ¿Qué es la Agenda del Sistema?
+
+La **Agenda del Sistema** es el documento maestro único que mantiene información relevante pero concisa sobre las tareas de **TODOS los proyectos del sistema ARES-TRON**.
+
+**Características:**
+- **AI-OPERATED:** Diseñada para ser mantenida por IAs (Qwen/Gemini)
+- **Estratégica + Táctica:** Planificación de alto nivel + tareas ejecutables
+- **Histórico permanente:** Nada se elimina, se marca como completado
+- **Trazable:** Cada tarea tiene contexto, objetivo, fase, prioridad
+
+### Diferencia: SISTEMA vs PROYECTO
+
+| Concepto | Definición | Ejemplo |
+|----------|------------|---------|
+| **SISTEMA** | El ecosistema completo ARES-TRON | Todos los proyectos interconectados |
+| **PROYECTO** | Una unidad específica dentro del sistema | `Agente-De-Cambio-Estable`, `TR`, etc. |
+
+### Documentos de Agenda
+
+| Documento | Ubicación | Propósito |
+|-----------|-----------|-----------|
+| **Agenda del Sistema** | `/home/daniel/tron/programas/AGENDA/agenda.md` | Tareas de TODOS los proyectos |
+| **Memoria de IA** | `/home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md` | Memoria compartida Qwen/Gemini |
+| **Estado del Proyecto** | `/docs/CLAVE/estado.md` (este proyecto) | Estado específico de ESTE proyecto |
+| **TODO-001-MAESTRO** | `/docs/CLAVE/TODO-001-MAESTRO.md` (este proyecto) | Problemas pendientes de ESTE proyecto |
+
+**Flujo de información:**
+```
+Agenda del Sistema (agenda.md)
+    ↓ (sincroniza tareas relevantes)
+Estado del Proyecto (estado.md)
+    ↓ (documenta cambios)
+Bitácora del Proyecto (BITACORA.md)
+```
+
+### Enlaces de Memoria
+
+- **Memoria Compartida:** [`IA-MEMORY.md`](../../../TR/docs/ALMAS-IAS/IA-MEMORY.md)
+- **Agenda del Sistema:** `/home/daniel/tron/programas/AGENDA/agenda.md`
 
 ---
 
