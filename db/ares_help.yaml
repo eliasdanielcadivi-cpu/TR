@@ -74,6 +74,42 @@ commands:
       restore: "Reconstruye una sesión completa desde DB."
       deploy: "Despliega sesión en una ventana/socket NUEVO."
       com: "Envía comandos a pestañas específicas."
+      edit: "✏️  Edita una sesión guardada (títulos y comandos)."
+
+  diario:
+    description: "📅 Despliega sesión diaria (alias de 'ares gs deploy diaria')."
+    usage: "ares diario"
+    category: "Gestión"
+    details: |
+      Atajo para lanzar rápidamente la sesión de trabajo diario configurada en db/diaria.json.
+      
+      La sesión puede editarse con: ares diario-edit
+      
+      Estructura de db/diaria.json:
+        [
+          {
+            "is_focused": true,
+            "tabs": [
+              {"title": "GEMINI", "cmd": ""},
+              {"title": "QWEN", "cmd": "comando;a-ejecutar"}
+            ]
+          }
+        ]
+
+  diario-edit:
+    description: "✏️  Edita la sesión diaria (alias de 'ares gs edit diaria')."
+    usage: "ares diario-edit"
+    category: "Gestión"
+    details: |
+      Atajo para editar rápidamente la configuración de la sesión diaria.
+      
+      Abre db/diaria.json en el editor micro para modificar:
+        • Títulos de pestañas
+        • Comandos de inicialización (usa ';' para separar múltiples)
+        • Estructura de ventanas
+      
+      El sistema valida automáticamente la estructura JSON después de guardar.
+      Si hay error, restaura el backup automáticamente.
 
   plan:
     description: "🚩 Despliegue Táctico Original."

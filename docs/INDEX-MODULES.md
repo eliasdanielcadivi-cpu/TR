@@ -11,7 +11,14 @@
 ### `src/main.py` - Despachador Puro
 **Propósito:** Punto de entrada único. Orquestación de comandos, sin lógica de negocio.
 
-**Comandos:** `ares`, `ares p`, `ares i`, `ares plan`, `ares zshplan`, `ares model`, `ares models`
+**Comandos:**
+- Core: `ares`, `ares p`, `ares i`, `ares help`
+- IA: `ares apollo`, `ares model-creator`, `ares modelfile-creator`, `ares models`, `ares templates`, `ares tools`
+- Gestión: `ares gs`, `ares gs save`, `ares gs list`, `ares gs restore`, `ares gs deploy`, `ares gs com`, `ares gs edit`
+- Alias diarios: `ares diario`, `ares diario-edit`
+- Táctico: `ares plan`, `ares zshplan`, `ares mcat-demo`
+- Multimedia: `ares video`, `ares image`
+- Sistema: `ares status`, `ares config`, `ares init`, `ares socket-check`
 
 ### `config/` - Gestión de Entorno
 | Archivo | Propósito |
@@ -33,8 +40,13 @@
 | `diag_manager.py` | Diagnóstico sockets/pestañas | ✅ |
 | `init_manager.py` | Enlaces simbólicos, recarga config | ✅ |
 | `session_manager.py` | Captura/persistencia sesiones Kitty (JSON) | ✅ |
+| `session_editor.py` | Edición interactiva de sesiones db/*.json | ✅ |
 
-**Funciones clave:** `capture_and_save()`, `list_sessions()`, `load_session_data()`
+**Funciones clave:** `capture_and_save()`, `list_sessions()`, `load_session_data()`, `edit_session_interactive()`
+
+**Comandos relacionados:**
+- `ares gs edit <nombre>` - Edita sesión en micro editor
+- `ares diario-edit` - Alias para editar sesión diaria
 
 ---
 
@@ -202,6 +214,7 @@
 | `tactico/` | ✅ | ✅ | ✅ |
 | `whatsapp/` | 🚧 | ⏳ | ⏳ |
 | `aviso/` | 🚧 | ⏳ | ⏳ |
+| `session_editor/` | ✅ | ✅ | ✅ |
 
 ---
 

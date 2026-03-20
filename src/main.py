@@ -480,6 +480,96 @@ def gs_com(obj, tab_title, command):
         click.echo(f"❌ {msg}")
 
 
+@gs_cmd.command(name="edit")
+@click.argument("name")
+@click.pass_obj
+def gs_edit(obj, name):
+    """✏️  Edita una sesión guardada (títulos y comandos).
+    
+    Abre el archivo JSON de la sesión en el editor micro para modificar:
+      • Títulos de pestañas
+      • Comandos de inicialización (usa ';' para separar múltiples)
+      • Estructura de ventanas
+    
+    El sistema valida automáticamente la estructura después de guardar.
+    """
+    from modules.admon.session_editor import edit_session_interactive
+    from rich.console import Console
+    
+    console = Console()
+    
+    success, msg = edit_session_interactive(obj, name)
+    
+    if success:
+        console.print(f"\n✅ [green]{msg}[/green]")
+        console.print(f"[dim]💡 Usa 'ares gs deploy {name}' para lanzar la sesión editada[/dim]")
+    else:
+        console.print(f"\n❌ [red]{msg}[/red]")
+
+
+@cli.command(name="diario")
+@click.pass_obj
+def diario_cmd(obj):
+    """📅 Despliega sesión diaria (alias de 'ares gs deploy diaria').
+    
+    Atajo para lanzar rápidamente la sesión de trabajo diario configurada en db/diaria.json.
+    Equivalente a: ares gs deploy diaria
+    
+    La sesión 'diaria' puede editarse con: ares diario-edit
+    """
+    from modules.tactico.orchestrator import KittyOrchestrator
+    from modules.core.socket_manager import generate_unique_socket
+    from rich.console import Console
+    
+    console = Console()
+    orch = KittyOrchestrator(obj)
+    
+    # Generar socket único automático
+    target_socket = generate_unique_socket("ares_session_diaria")
+    console.print(f"🆔 Socket único generado: {target_socket}")
+    console.print(f"📅 Desplegando sesión 'diaria'...")
+    
+    success, msg, used_socket = orch.deploy_session_from_db(
+        "diaria",
+        socket=None,  # None = usar generado automáticamente
+        new_window=True,
+        register=True
+    )
+    
+    if success:
+        console.print(f"✅ {msg}")
+        console.print(f"🔌 Socket: {used_socket}")
+        console.print(f"📋 Registrada en window_registry (usa 'ares windows' para ver)")
+    else:
+        console.print(f"❌ {msg}")
+
+
+@cli.command(name="diario-edit")
+@click.pass_obj
+def diario_edit_cmd(obj):
+    """✏️  Edita la sesión diaria (alias de 'ares gs edit diaria').
+    
+    Atajo para editar rápidamente la configuración de la sesión diaria.
+    Equivalente a: ares gs edit diaria
+    
+    Abre db/diaria.json en el editor micro para modificar:
+      • Títulos de pestañas
+      • Comandos de inicialización
+    """
+    from modules.admon.session_editor import edit_session_interactive
+    from rich.console import Console
+    
+    console = Console()
+    
+    success, msg = edit_session_interactive(obj, "diaria")
+    
+    if success:
+        console.print(f"\n✅ [green]{msg}[/green]")
+        console.print(f"[dim]💡 Usa 'ares diario' para lanzar la sesión editada[/dim]")
+    else:
+        console.print(f"\n❌ [red]{msg}[/red]")
+
+
 @cli.command(name="socket-check")
 @click.argument("socket-path", required=False)
 @click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON")
