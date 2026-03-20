@@ -1,0 +1,46 @@
+ares:
+  avatar:
+    path: "/home/daniel/tron/programas/TR/assets/ares/ares-neon.png"
+    width: 6
+    height: 6
+    x: 2
+    y: 1
+    z_index: 10
+  spinner:
+    width: 4
+    height: 4
+    x: 10
+    y: 2
+    z_index: 20
+    list:
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner1.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner2.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner3.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner4.gif"
+      - "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner5.gif"
+  footer:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/separator_ares.gif"
+    width: 40
+    height: 2
+    x: 0
+    y: 25
+    z_index: 5
+  ares_anim:
+    path: "/home/daniel/tron/programas/TR/assets/ui/layaout/spinner7.gif"
+    width: 12
+    height: 12
+    x: 30
+    y: 5
+    z_index: 15
+  anim:
+    loop: -1
+user:
+  avatar:
+    path: "/home/daniel/tron/programas/TR/assets/ares/ares-emoji.png"
+    width: 4
+    height: 4
+    x: 2
+    y: 20
+    z_index: 10
+cache:
+  dir: "/home/daniel/tron/programas/TR/modules/ui/GO2/cache"

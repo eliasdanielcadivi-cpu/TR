@@ -93,8 +93,25 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       setCurrentQuestion(question);
     });
 
-    socketInstance.on('mode:switch', (mode) => {
-      setMode(mode);
+    socketInstance.on('mode:switch', (data) => {
+      // data: { from, to, reason, message, estimatedTime }
+      console.log('[MODE SWITCH]', data);
+      
+      // Cambiar el modo
+      setMode(data.to);
+      
+      // Agregar mensaje de transición como mensaje del sistema
+      if (data.message) {
+        addMessage({
+          id: `mode_switch_${Date.now()}`,
+          role: 'system',
+          content: `🔄 ${data.message}`,
+          timestamp: new Date(),
+          metadata: {
+            mode: data.to
+          }
+        });
+      }
     });
 
     socketInstance.on('delta:update', (delta) => {

@@ -23,6 +23,7 @@ import {
 } from '@modules/session-manager';
 import { buildSystemPrompt } from '@modules/prompt-engine';
 import { calculate, compare } from '@modules/delta-calculator';
+import { createOrchestratorHandler } from './orchestrator-handler';
 import type {
   ServerToClientEvents,
   ClientToServerEvents,
@@ -98,6 +99,29 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // ========================================
+    // ORCHESTRATOR: Analizar necesidad cognitiva
+    // ========================================
+    const orchestrator = createOrchestratorHandler(socket, currentSessionId);
+    
+    const messageHistory = session.messages.map(m => ({
+      role: m.role,
+      content: m.content
+    }));
+    
+    const decision = await orchestrator.analyzeAndDecide(
+      content,
+      mode as 'chat' | 'questionnaire' | 'mixed',
+      messageHistory
+    );
+    
+    // Si hubo cambio de modo, actualizar contexto
+    const effectiveMode = decision.newMode;
+    
+    // ========================================
+    // FIN ORCHESTRATOR
+    // ========================================
+
     // Agregar mensaje del usuario
     const userMessage: ChatMessage = {
       id: `msg_${Date.now()}`,
@@ -105,7 +129,7 @@ io.on('connection', (socket) => {
       content,
       timestamp: new Date(),
       metadata: {
-        mode,
+        mode: effectiveMode,
         reasoning: context.isReasoning,
       },
     };
@@ -115,7 +139,7 @@ io.on('connection', (socket) => {
     const systemPrompt = buildSystemPrompt({
       basePrompt: session.systemPrompt,
       objectives: session.objectives,
-      mode,
+      mode: effectiveMode,
     });
 
     // Preparar mensajes para DeepSeek (últimos 10 para contexto)
@@ -152,7 +176,7 @@ io.on('connection', (socket) => {
         content: fullResponse,
         timestamp: new Date(),
         metadata: {
-          mode,
+          mode: effectiveMode,
           reasoning: context.isReasoning,
         },
       };
@@ -165,7 +189,7 @@ io.on('connection', (socket) => {
       // Calcular delta del prompt
       const deltaScore = calculate(session.systemPrompt, fullResponse);
       const thresholdValue = parseFloat(process.env.PROMPT_DELTA_THRESHOLD || '0.3');
-      
+
       const deltaMetrics: DeltaMetrics = {
         currentScore: deltaScore,
         threshold: thresholdValue,
