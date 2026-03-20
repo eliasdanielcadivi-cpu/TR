@@ -135,5 +135,35 @@
 
 ---
 
+### [19:00] Documentación maestra para IAs nuevas
+**Archivos:**
+- `docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md` - NUEVO (problemas + rutas absolutas)
+- `docs/INDICE-MODULOS.md` - NUEVO (lista de módulos con enlaces)
+- `docs/INDICE-DOCUMENTACION.md` - NUEVO (lista de documentos de ayuda)
+- `LEEME.md` - ACTUALIZADO (procedimientos + referencias a índices)
+
+**Cambios:**
+- TODO-001: Documento maestro con rutas absolutas para nueva IA
+- Índices complementarios (NO repetitivos):
+  - INDICE-MAESTRO-PARA-IAS.md → Arquitectura TR-ARES
+  - LEEME.md → Procedimientos de este proyecto
+  - INDICE-MODULOS.md → Si vas a modificar módulos
+  - INDICE-DOCUMENTACION.md → Si vas a leer documentación
+- LEEME.md ahora incluye:
+  - Agenda del sistema (TODO-001, estado, BITACORA)
+  - Flujo de lectura para nueva IA
+  - Procedimientos obligatorios (antes de/durante/después)
+  - Problemas conocidos (referencia a TODO-001)
+
+**Razón:** Nueva IA necesita punto de entrada único con:
+1. Rutas absolutas para encontrar archivos
+2. Problemas conocidos y intentos fallidos
+3. Flujo de trabajo claro (qué leer primero)
+4. Índices complementarios para navegar
+
+**Commit:** Por aprobar
+
+---
+
 *Bitácora iniciada: 2026-03-20*  
-*Última actualización: 2026-03-20 18:45*
+*Última actualización: 2026-03-20 19:00*
