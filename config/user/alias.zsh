@@ -64,6 +64,7 @@ alias clonezilla="/usr/sbin/clonezilla"
 alias cloudflareded="br ~/.cloudflared/"
 alias cloudflare-node="crom-eliashung https://dash.cloudflare.com"
 alias cls='clear'
+alias clear='/usr/bin/clear'
 alias cody-programador="crom-eliashung $programador > /dev/null 2>&1 &"
 alias comprimir="sudo /home/daniel/Escritorio/.venv-compressor/bin/python /home/daniel/tron/programas/Admon/COMPRIMIR/comprimir"
 alias computadora='echo "--- CPU ---" && lscpu | grep -E "Model name|CPU\(s\)|MHz" && echo "--- Memoria RAM ---" && free -h | grep "Mem" && echo "--- GPU ---" && lspci -vnn | grep -i vga && echo "--- Velocidad de Internet ---" && speedtest-cli; cat /etc/os-release; hostnamectl'

@@ -10,9 +10,9 @@
 
 import type { Socket } from 'socket.io';
 import type { ServerToClientEvents, ClientToServerEvents } from '@modules/shared-types';
-import { analyzeCognitiveNeed, detectEmotionalState } from '@modules/cognitive-need-detector/actions';
-import { generateTransitionPrompt, createBridgeMessage } from '@modules/mode-transition-engine/actions';
-import type { SessionContext, InteractionMode } from '@modules/cognitive-need-detector/types';
+import { analyzeCognitiveNeed, detectEmotionalState } from '@modules/cognitive-need-detector';
+import { generateTransitionPrompt, createBridgeMessage } from '@modules/mode-transition-engine';
+import type { SessionContext, InteractionMode } from '@modules/cognitive-need-detector';
 
 /**
  * OrchestratorHandler - Maneja decisiones cognitivas en tiempo real
