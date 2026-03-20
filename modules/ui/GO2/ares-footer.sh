@@ -1,2 +1,3 @@
 #!/bin/bash
-./ares_engine -mode footer -config config.yaml
+cd /home/daniel/tron/programas/TR/modules/ui/GO2/
+./ares_ui -mode footer -config config.yaml

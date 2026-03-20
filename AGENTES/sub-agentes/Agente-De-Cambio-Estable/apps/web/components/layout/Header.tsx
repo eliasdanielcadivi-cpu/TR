@@ -1,12 +1,21 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Brain, Zap, Settings, User } from 'lucide-react';
+import { Brain, Zap, Settings, User, RotateCcw } from 'lucide-react';
 import { ReasoningToggle } from './ReasoningToggle';
 import { useChatStore } from '@/app/store/chatStore';
+import { useState } from 'react';
 
 export function Header() {
-  const { isConnected } = useChatStore();
+  const { isConnected, clearMessages } = useChatStore();
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const handleReset = () => {
+    clearMessages();
+    setShowResetConfirm(false);
+    // TODO: También resetear sesión en backend
+    console.log('Sistema reseteado');
+  };
 
   return (
     <motion.header
@@ -41,6 +50,17 @@ export function Header() {
 
       {/* Right Actions */}
       <div className="flex items-center gap-2">
+        {/* Botón RESET con confirmación */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setShowResetConfirm(true)}
+          className="p-2 rounded-lg hover:bg-error/20 text-error/70 hover:text-error transition-colors"
+          title="Resetear conversación"
+        >
+          <RotateCcw className="w-5 h-5" />
+        </motion.button>
+        
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -66,6 +86,43 @@ export function Header() {
           <span className="text-sm text-white/80">Usuario</span>
         </motion.button>
       </div>
+
+      {/* Confirmación de RESET */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="glass-panel rounded-2xl p-6 max-w-md mx-4 border-2 border-error/50"
+          >
+            <h3 className="text-xl font-bold text-white mb-4">
+              ⚠️ ¿Resetear todo el sistema?
+            </h3>
+            <p className="text-white/70 mb-6">
+              Esta acción eliminará:
+            </p>
+            <ul className="text-white/60 text-sm space-y-2 mb-6">
+              <li>• Todos los mensajes de la conversación</li>
+              <li>• El estado actual del cuestionario</li>
+              <li>• Las métricas de delta acumuladas</li>
+            </ul>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="flex-1 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleReset}
+                className="flex-1 px-4 py-2 rounded-xl bg-error hover:bg-error/80 text-white transition-colors"
+              >
+                Sí, resetear todo
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </motion.header>
   );
 }

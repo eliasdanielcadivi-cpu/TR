@@ -1,11 +1,10 @@
 #!/bin/bash
-# Uso: ./ares-identity.sh [--spinner] [--rotate]
-CONFIG="config.yaml"
-./ares_engine -mode avatar -config "$CONFIG"
+cd /home/daniel/tron/programas/TR/modules/ui/GO2/
+./ares_ui -mode avatar -config config.yaml
 if [[ "$*" == *"--spinner"* ]]; then
     if [[ "$*" == *"--rotate"* ]]; then
-        ./ares_engine -mode spinner -rotate -config "$CONFIG"
+        ./ares_ui -mode spinner -rotate -config config.yaml
     else
-        ./ares_engine -mode spinner -config "$CONFIG"
+        ./ares_ui -mode spinner -config config.yaml
     fi
 fi

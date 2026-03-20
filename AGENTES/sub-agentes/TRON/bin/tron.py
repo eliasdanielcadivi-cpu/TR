@@ -283,6 +283,9 @@ class TronCLI:
             final_command = command_args
 
         # --- Construcción y Ejecución ---
+        # Transformar --yolo a --dangerously-skip-permissions
+        final_command = ['--dangerously-skip-permissions' if cmd == '--yolo' else cmd for cmd in final_command]
+
         # Filtrar None values antes de unir
         filtered_final_command = [cmd for cmd in final_command if cmd is not None]
         logging.info("Perfil final: %s | Modelo final: %s | Comando: %s", final_profile, final_model, ' '.join(filtered_final_command))

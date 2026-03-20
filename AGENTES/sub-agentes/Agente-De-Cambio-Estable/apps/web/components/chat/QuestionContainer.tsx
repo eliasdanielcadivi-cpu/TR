@@ -31,8 +31,9 @@ import { OpenExplorationViewer } from './viewers/OpenExplorationViewer';
 
 /**
  * MODO DEMO: Cambiar a true para probar visualmente las capacidades
+ * IMPORTANTE: false para producción - el cuestionario se activa por Socket.IO
  */
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 
 /**
  * Mapeo de capacidades por tipo de pregunta
@@ -165,11 +166,14 @@ export function QuestionContainer() {
       },
     });
 
+    // TODO: Emitir via Socket.IO (se hará en Hito 1 completo)
+    // socket.emit('option:select', currentQuestion.id, answer, comment);
+
     // Resetear
     setComment('');
     setAnswer(null);
     
-    // Para modo demo: mostrar feedback
+    // Para modo demo: mostrar feedback en consola
     if (DEMO_MODE) {
       console.log('✅ RESPUESTA ENVIADA:', {
         question: questionToUse.prompt,
@@ -185,6 +189,11 @@ export function QuestionContainer() {
 
   // Obtener el Viewer (capacidad) para este tipo de pregunta
   const ViewerComponent = VIEWERS[questionToRender.type] || OpenExplorationViewer;
+
+  // Si no hay pregunta y no es demo mode, no mostrar nada
+  if (!currentQuestion && !DEMO_MODE) {
+    return null;
+  }
 
   return (
     <div className="space-y-4 w-full max-w-full">
