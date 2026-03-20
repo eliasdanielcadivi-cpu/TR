@@ -119,5 +119,21 @@
 
 ---
 
+### [18:45] Prompt anti-JSON + Enter para enviar
+**Archivos:**
+- `modules/prompt-engine/templates/system-master-prompt.ts` - Instrucciones explícitas anti-JSON
+- `apps/web/components/chat/QuestionContainer.tsx` - Enter envía, scroll automático
+
+**Cambios:**
+- Prompt ahora incluye ejemplos ✅ y ❌ MUY explícitos
+- Instrucciones en lenguaje coloquial ("Escribí COMO UNA PERSONA")
+- Tecla Enter (sin Shift) envía la respuesta
+- Placeholder actualizado: "Presiona Enter para enviar"
+- Scroll automático al cambiar de modo
+
+**Razón:** El LLM ignoraba instrucciones anteriores y seguía respondiendo con JSON.
+
+---
+
 *Bitácora iniciada: 2026-03-20*  
-*Última actualización: 2026-03-20 18:30*
+*Última actualización: 2026-03-20 18:45*

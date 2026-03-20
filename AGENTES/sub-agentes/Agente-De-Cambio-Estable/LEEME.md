@@ -1,8 +1,9 @@
 # 📘 LEEME.md - Agente de Cambio Estable
 
-> **Resumen Ejecutivo de 1 Página**  
-> **Última actualización:** 2026-03-19  
-> **Versión:** 0.1.0
+> **Resumen Ejecutivo + Procedimientos**  
+> **Última actualización:** 2026-03-20 19:00  
+> **Versión:** 0.2.0  
+> **Estado:** Hito 2 Completado - Integración Chat-Cuestionarios
 
 ---
 
@@ -14,6 +15,7 @@
 2. **Memoria de objetivos** - Guarda metas EMT (Evidencia-Métrica-Tiempo)
 3. **Control de deriva** - Evita que la IA se desvíe del objetivo
 4. **Detección de estancamiento** - 12 señales + 3 terapias de intervención
+5. **Orquestador cognitivo** - Decide automáticamente cuándo cambiar entre chat y cuestionario
 
 **NO es un chatbot.** Es un motor de ejecución con interfaz conversacional.
 
@@ -38,99 +40,176 @@ npm run dev
 
 ---
 
-## 📚 DOCUMENTACIÓN CLAVE (ORDEN DE LECTURA)
+## 📍 AGENDA DEL SISTEMA (UNA SOLA)
 
-| # | Documento | Ruta | Tiempo |
-|---|-----------|------|--------|
-| 1 | **PLAN DE CONSTRUCCIÓN** | [`/docs/CLAVE/PLAN-CONSTRUCCION.md`](./docs/CLAVE/PLAN-CONSTRUCCION.md) | 10 min |
-| 2 | **ÍNDICE MAESTRO PARA IAs** | [`../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md`](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md) | 15 min |
-| 3 | **27 Requerimientos** | [`/docs/CLAVE/ListaRequerimientos.md`](./docs/CLAVE/ListaRequerimientos.md) | 20 min |
-| 4 | **Estado Actual** | [`/docs/CLAVE/estado.md`](./docs/CLAVE/estado.md) | 5 min |
+**Ubicación:** `/home/daniel/tron/programas/TR/AGENTES/sub-agentes/Agente-De-Cambio-Estable/docs/CLAVE/`
+
+| Documento | Propósito | Cuándo Leer |
+|-----------|-----------|-------------|
+| **[TODO-001-MAESTRO.md](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md)** | Problemas pendientes + rutas absolutas | **PRIMERO** - Nueva IA |
+| **[estado.md](./docs/CLAVE/estado.md)** | Qué está en desarrollo | Antes de modificar código |
+| **[BITACORA.md](./docs/CLAVE/BITACORA.md)** | Historial de cambios | Después de modificar |
 
 ---
 
-## 🎯 HITOS (PLAN COMPLETO EN PLAN-CONSTRUCCION.md)
+## 📚 ÍNDICES DE DOCUMENTACIÓN
+
+### Índices Complementarios (NO Repetitivos)
+
+| Índice | Contenido | Cuándo Usar |
+|--------|-----------|-------------|
+| **[ÍNDICE-MAESTRO-PARA-IAS.md](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md)** | Arquitectura TR-ARES completa | **Siempre primero** - Contexto general |
+| **[LEEME.md](/LEEME.md)** (este archivo) | Procedimientos + estado del proyecto | **Segundo** - Este proyecto específico |
+| **[INDICE-MODULOS.md](./docs/INDICE-MODULOS.md)** | Lista de módulos con enlaces | Si vas a **modificar módulos** |
+| **[INDICE-DOCUMENTACION.md](./docs/INDICE-DOCUMENTACION.md)** | Lista de documentos de ayuda | Si vas a **leer documentación** |
+
+### Flujo de Lectura para Nueva IA
+
+```
+1. INDICE-MAESTRO-PARA-IAS.md (arquitectura TR-ARES)
+   ↓
+2. LEEME.md (este proyecto - procedimientos)
+   ↓
+3. TODO-001-MAESTRO.md (problemas pendientes)
+   ↓
+4. estado.md (qué está en desarrollo)
+   ↓
+5. Según tarea:
+   ├── ¿Modificar módulos? → INDICE-MODULOS.md → módulo/INDEX.md
+   └── ¿Leer docs? → INDICE-DOCUMENTACION.md → documento.md
+```
+
+---
+
+## 📋 PROCEDIMIENTOS OBLIGATORIOS
+
+### Antes de Modificar Código
+
+1. **Leer LEEME.md** (este archivo) - Procedimientos
+2. **Leer TODO-001-MAESTRO.md** - Problemas conocidos
+3. **Leer estado.md** - Qué está en desarrollo
+4. **Crear backup git:**
+   ```bash
+   git tag "backup-$(date '+%Y%m%d-%H%M%S')"
+   ```
+
+### Al Modificar Módulos
+
+1. **Máximo 3 funciones** por módulo (regla de modularidad atómica)
+2. **INDEX.md < 50 líneas** (resumen ejecutivo)
+3. **manifest.json obligatorio** en cada módulo
+4. **JSDoc en todas las funciones** exportadas
+5. **Actualizar registry.json** si agregó módulo nuevo
+
+### Después de Modificar
+
+1. **Git diff:**
+   ```bash
+   git diff --stat
+   ```
+2. **Tests passing:**
+   ```bash
+   npm test
+   ```
+3. **Actualizar INDEX.md** del módulo (si tocó código)
+4. **Actualizar BITACORA.md** si es cambio significativo
+5. **Commit descriptivo:**
+   ```bash
+   git add -A
+   git commit -m "[TIPO] Descripción corta"
+   # Tipos: FIX, FEAT, DOC, TEST, REFACTOR
+   ```
+
+### Git Tags de Respaldo
+
+| Situación | Comando |
+|-----------|---------|
+| **Antes de cambios estructurales** | `git tag "backup-$(date '+%Y%m%d-%H%M%S')" ` |
+| **Hito completado** | `git tag "hito-N-completado-YYYYMMDD"` |
+| **Listo para prueba** | `git tag "hito-N-listo-para-prueba-YYYYMMDD"` |
+
+---
+
+## 🎯 HITOS ACTUALES
 
 | Hito | Nombre | Estado | Criterio |
 |------|--------|--------|----------|
-| **1** | Motor Cuestionarios + Quiz | ❌ | Genera preguntas dinámicas |
-| **2** | Objetivos + Estancamiento | ❌ | Guarda EMT, detecta 12 señales |
-| **3** | Arquitecto + Control Deriva | ❌ | Doble instancia, veto cambios |
-| **4** | Perfil Biológico | ❌ | Adapta al cronotipo |
-| **5** | Integración TR-ARES | ❌ | Standalone + ARES |
-| **6** | Documentación Unificada | ⚠️ | README actualizado |
+| **1** | Motor Cuestionarios + Quiz | ✅ **COMPLETADO** | 8 capacidades implementadas |
+| **2** | Integración Chat-Cuestionarios | ✅ **COMPLETADO** | Orquestador + Socket.IO |
+| **3** | Arquitecto + Control Deriva | ❌ Pendiente | Doble instancia, veto cambios |
+| **4** | Perfil Biológico | ❌ Pendiente | Adapta al cronotipo |
+| **5** | Integración TR-ARES | ❌ Pendiente | Standalone + ARES |
+
+**Ver plan completo:** [`/docs/CLAVE/PLAN-CONSTRUCCION.md`](./docs/CLAVE/PLAN-CONSTRUCCION.md)
 
 ---
 
 ## 🔧 COMANDOS ESENCIALES
 
+### Desarrollo
+
 ```bash
-# Desarrollo
 npm run dev              # Ambos servidores
 npm run dev:server       # Solo backend (puerto 3001)
 npm run dev:web          # Solo frontend (puerto 3000)
+```
 
-# Tests
+### Tests y Linting
+
+```bash
 npm test                 # Todos los módulos
 npm run lint             # Linting
+```
 
-# Git Backups (OBLIGATORIO)
+### Git Backups (OBLIGATORIO)
+
+```bash
 git tag "backup-$(date '+%Y%m%d-%H%M%S')"   # Antes de cambiar
 git diff --stat                             # Después de cambiar
+git log -3 --oneline                        # Ver últimos commits
+```
+
+### Reset de Emergencia
+
+```bash
+# Resetear sesión (frontend)
+# Click en botón ↻ (arriba derecha) → Confirmar
+
+# Resetear git (si algo sale mal)
+git reset --hard HEAD
+git clean -fd
 ```
 
 ---
 
-## 📦 ESTRUCTURA (LO QUE IMPORTA)
+## 📦 ESTRUCTURA DEL PROYECTO
 
 ```
 Agente-De-Cambio-Estable/
-├── apps/
-│   ├── web/           # Frontend Next.js
-│   └── server/        # Backend Node.js + Socket.IO
-├── modules/           # Módulos (metodología modular)
-│   ├── deepseek-connector/    # ✅ DeepSeek API
-│   ├── session-manager/       # ✅ Sesiones
-│   ├── prompt-engine/         # ✅ Prompts dinámicos
-│   ├── delta-calculator/      # ✅ Deriva semántica
-│   └── [más módulos en desarrollo]
-├── docs/CLAVE/        # Documentación fundamental
-│   ├── PLAN-CONSTRUCCION.md   # ← LEER PRIMERO
-│   ├── ListaRequerimientos.md
-│   ├── proyecto.md
-│   ├── estado.md
+├── LEEME.md                      ← ESTE ARCHIVO (procedimientos)
+├── README.md                     ← Extendido (referencias)
+├── docs/
+│   ├── CLAVE/
+│   │   ├── TODO-001-MAESTRO.md   ← PROBLEMAS PENDIENTES (leer primero)
+│   │   ├── estado.md             ← Qué está en desarrollo
+│   │   ├── BITACORA.md           ← Historial de cambios
+│   │   ├── PLAN-CONSTRUCCION.md  ← Hitos y cronograma
+│   │   └── ...
+│   ├── INDICE-MODULOS.md         ← Lista de módulos
+│   ├── INDICE-DOCUMENTACION.md   ← Lista de documentos
+│   └── FLUJOS-MERMAID/           ← Diagramas
+├── modules/
+│   ├── registry.json             ← Registro automático de módulos
+│   ├── cognitive-need-detector/  ← Orquestador cognitivo
+│   ├── mode-transition-engine/   ← Transiciones suaves
+│   ├── questionnaire-engine/     ← Motor de preguntas
 │   └── ...
-└── README.md          # Este archivo (versión extendida)
+├── apps/
+│   ├── server/                   ← Backend Node.js + Socket.IO
+│   └── web/                      ← Frontend Next.js
+└── herramientas/
+    └── agente-de-cambio.sh       ← Wrapper bash
 ```
-
----
-
-## ⚠️ PROTOCOLOS OBLIGATORIOS
-
-### Antes de Modificar Código
-
-1. **Leer INDICE-MAESTRO-PARA-IAS.md** - Entender arquitectura
-2. **Crear backup git** - `git tag "backup-$(date '+%Y%m%d-%H%M%S')"`
-3. **Verificar checklist pre-commit** - 10 puntos en README.md
-
-### Después de Modificar
-
-1. **Git diff** - `git diff --stat` para validar cambios
-2. **Tests passing** - `npm test`
-3. **Actualizar INDEX.md** - Cada módulo con su índice <50 líneas
-4. **Actualizar registry.json** - Si agregó módulo nuevo
-
----
-
-## 🔗 ENLACES RÁPIDOS
-
-| Tipo | Enlace |
-|------|--------|
-| **Plan Completo** | [`/docs/CLAVE/PLAN-CONSTRUCCION.md`](./docs/CLAVE/PLAN-CONSTRUCCION.md) |
-| **Índice para IAs** | [`INDICE-MAESTRO-PARA-IAS.md`](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md) |
-| **Estado Actual** | [`/docs/CLAVE/estado.md`](./docs/CLAVE/estado.md) |
-| **Registry Módulos** | [`/modules/registry.json`](./modules/registry.json) |
-| **Memoria TR-ARES** | [`~/.qwen/QWEN.md`](file:///home/daniel/.qwen/QWEN.md) |
 
 ---
 
@@ -142,6 +221,25 @@ Agente-De-Cambio-Estable/
 | **Pragmatismo radical** | Navaja suiza, no catedral |
 | **No sobra ni falta nada** | Utilidad/esfuerzo > elegancia |
 | **Conducción, no chat** | Conversación → Decisión → Acción |
+| **Modularidad atómica** | Máx 3 funciones por módulo |
+| **Documentación viva** | BITACORA.md actualizado siempre |
+
+---
+
+## 🐛 PROBLEMAS CONOCIDOS (VER TODO-001)
+
+### Crítico: LLM Responde con JSON
+
+**Síntoma:** El LLM (DeepSeek) responde con formato JSON en lugar de usar lenguaje natural.
+
+**Estado:** PENDIENTE DE SOLUCIÓN
+
+**Archivos involucrados:**
+- `/modules/prompt-engine/templates/system-master-prompt.ts`
+- `/apps/server/src/orchestrator-handler.ts`
+- `/apps/web/components/chat/QuestionContainer.tsx`
+
+**Ver detalles completos:** [`/docs/CLAVE/TODO-001-MAESTRO.md`](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md)
 
 ---
 
@@ -149,42 +247,51 @@ Agente-De-Cambio-Estable/
 
 | Métrica | Valor |
 |---------|-------|
-| Módulos completados | 5/12 |
-| Funciona standalone | ✅ |
-| Funciona con ARES | ❌ (Hito 5) |
-| Documentación actualizada | ⚠️ (En progreso) |
+| **Módulos completados** | 8/12 |
+| **Viewers implementados** | 8/8 |
+| **Orquestador cognitivo** | ✅ Integrado |
+| **Funciona standalone** | ✅ |
+| **Funciona con ARES** | ❌ (Hito 5) |
+| **Documentación actualizada** | ✅ |
+| **Scroll unificado** | ✅ |
+| **Botón RESET** | ✅ |
+| **Bitácora de cambios** | ✅ |
 
 **Ver estado completo:** [`/docs/CLAVE/estado.md`](./docs/CLAVE/estado.md)
 
 ---
 
+## 🔗 ENLACES RÁPIDOS
+
+| Tipo | Enlace |
+|------|--------|
+| **Agenda del Sistema** | [`/docs/CLAVE/TODO-001-MAESTRO.md`](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md) |
+| **Índice de Módulos** | [`/docs/INDICE-MODULOS.md`](./docs/INDICE-MODULOS.md) |
+| **Índice de Documentación** | [`/docs/INDICE-DOCUMENTACION.md`](./docs/INDICE-DOCUMENTACION.md) |
+| **Índice Maestro TR-ARES** | [`INDICE-MAESTRO-PARA-IAS.md`](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md) |
+| **Estado Actual** | [`/docs/CLAVE/estado.md`](./docs/CLAVE/estado.md) |
+| **Bitácora** | [`/docs/CLAVE/BITACORA.md`](./docs/CLAVE/BITACORA.md) |
+| **Registry Módulos** | [`/modules/registry.json`](./modules/registry.json) |
+| **Memoria TR-ARES** | [`~/.qwen/QWEN.md`](file:///home/daniel/.qwen/QWEN.md) |
+
+---
+
 ## 🎯 PRÓXIMO PASO INMEDIATO
 
-**COMENZAR HITO 1:**
+**Resolver problema del JSON** (TODO-001)
 
-```bash
-# 1. Crear backup inicial
-git add .
-git commit -m "BACKUP $(date '+%Y-%m-%d_%H-%M-%S') - Pre-Hito1"
-git tag "backup-$(date '+%Y%m%d-%H%M%S')"
-
-# 2. Crear rama del hito
-git checkout -b hito-1-questionnaire
-
-# 3. Crear estructura de carpetas
-mkdir -p modules/questionnaire-engine/test
-mkdir -p modules/quiz-engine/templates
-mkdir -p modules/question-types/test
-
-# 4. Seguir PLAN-CONSTRUCCION.md → Hito 1
-```
+1. Leer [`/docs/CLAVE/TODO-001-MAESTRO.md`](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md)
+2. Entender intentos fallidos (1-4)
+3. Probar soluciones propuestas (5-8)
+4. Documentar en `BITACORA.md`
+5. Actualizar TODO-001 con estado
 
 ---
 
-**¿Primera vez aquí?** → Leer [`PLAN-CONSTRUCCION.md`](./docs/CLAVE/PLAN-CONSTRUCCION.md) completo antes de tocar código.
+**¿Primera vez aquí?** → Leer [`TODO-001-MAESTRO.md`](./docs/CLAVE/TODO-001-MAESTRO-20260320-1900.md) para problemas pendientes y [`INDICE-MAESTRO-PARA-IAS.md`](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md) para arquitectura.
 
-**¿Ya conoces el sistema?** → Ir directamente al [`ÍNDICE MAESTRO PARA IAS`](../../../TR/docs/AgenteDeCambio/ARQUITECTURA-NUEVA/INDICE-MAESTRO-PARA-IAS.md) para referencia técnica.
+**¿Ya conoces el sistema?** → Ir directamente a [`INDICE-MODULOS.md`](./docs/INDICE-MODULOS.md) para modificar módulos o [`INDICE-DOCUMENTACION.md`](./docs/INDICE-DOCUMENTACION.md) para leer documentación.
 
 ---
 
-*Fin de LEEME.md - Resumen de 1 página*
+*Fin de LEEME.md - Resumen de 1 página + procedimientos*
