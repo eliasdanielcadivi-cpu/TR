@@ -148,7 +148,10 @@ export function QuestionContainer() {
   }, [selectedDemoType]);
 
   const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const questionToUse = currentQuestion || DEMO_QUESTIONS[selectedDemoType];
     if (!questionToUse || !answer) return;
 
@@ -181,6 +184,14 @@ export function QuestionContainer() {
         answer,
         comment,
       });
+    }
+  };
+
+  // Manejar tecla Enter (sin Shift) para enviar
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -261,7 +272,8 @@ export function QuestionContainer() {
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="Comentario adicional (opcional)..."
+            onKeyDown={handleKeyDown}
+            placeholder="Comentario adicional (opcional)... Presiona Enter para enviar"
             className="w-full glass-input rounded-2xl px-4 py-3 text-white placeholder-white/30 resize-none focus:outline-none focus:ring-2 focus:ring-cognitive-500/50 responsive-textarea"
             rows={2}
           />
