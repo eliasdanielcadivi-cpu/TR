@@ -32,6 +32,76 @@
 
 ---
 
+## 📋 AGENDA DEL SISTEMA (ÚNICA)
+
+**Ubicación:** `/home/daniel/tron/programas/AGENDA/agenda.md`  
+**Comando:** `agenda` (alias para `uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py`)  
+**Base de datos:** `/home/daniel/tron/programas/AGENDA/` (SQLite u otro)
+
+### ¿Qué es la Agenda del Sistema?
+
+La **Agenda del Sistema** es el **documento maestro único** que mantiene información relevante pero concisa sobre las tareas de **TODOS los proyectos del sistema ARES-TRON**.
+
+**Características:**
+- **AI-OPERATED:** Diseñada para ser mantenida por IAs (Qwen/Gemini)
+- **Estratégica + Táctica:** Planificación de alto nivel + tareas ejecutables
+- **Histórico permanente:** Nada se elimina, se marca como completado
+- **Trazable:** Cada tarea tiene contexto, objetivo, fase, prioridad
+
+### Diferencia: SISTEMA vs PROYECTO
+
+| Concepto | Definición | Ejemplo |
+|----------|------------|---------|
+| **SISTEMA** | El ecosistema completo ARES-TRON | Todos los proyectos interconectados |
+| **PROYECTO** | Una unidad específica dentro del sistema | `Agente-De-Cambio-Estable`, `TR`, etc. |
+
+**Jerarquía:**
+```
+SISTEMA ARES-TRON
+├── PROYECTO: Agente-De-Cambio-Estable
+│   ├── Documentación: LEEME.md, TODO-001, etc.
+│   ├── Código: modules/, apps/
+│   └── Agenda local: docs/CLAVE/estado.md (sincronizado con agenda.md)
+├── PROYECTO: TR
+│   ├── Documentación: docs/
+│   └── Módulos: modules/
+└── PROYECTO: Otros
+```
+
+### ¿Dónde se guarda la información?
+
+| Tipo de Información | Ubicación |
+|---------------------|-----------|
+| **Agenda del Sistema** | `/home/daniel/tron/programas/AGENDA/agenda.md` |
+| **Memoria de IA** | `/home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md` |
+| **Estado del Proyecto** | `/path/to/proyecto/docs/CLAVE/estado.md` |
+| **Bitácora del Proyecto** | `/path/to/proyecto/docs/CLAVE/BITACORA.md` |
+
+**Flujo de información:**
+```
+Agenda del Sistema (agenda.md)
+    ↓ (sincroniza tareas relevantes)
+Estado del Proyecto (estado.md)
+    ↓ (documenta cambios)
+Bitácora del Proyecto (BITACORA.md)
+```
+
+### Enlaces Duros de Memoria
+
+```
+~/.qwen/QWEN.md  ──┐
+                   ├──> /home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md
+~/.gemini/GEMINI.md ──┘
+```
+
+**Esto significa:**
+- Qwen y Gemini comparten la MISMA memoria
+- Una sola lectura, una sola verdad
+- Editar SIEMPRE desde `TR/docs/ALMAS-IAS/IA-MEMORY.md`
+- Los cambios se reflejan instantáneamente en ambos enlaces
+
+---
+
 ## 🔬 OBSERVACIÓN TÉCNICA: ENTROPÍA DE REFALIZACIÓN (NUEVA DIRECTIVA)
 
 **Problema (Entropic Refactoring Drift):** Durante procesos de modularización o refactorización de alto nivel, la IA tiende a priorizar la elegancia del código (lógica sintáctica) sobre la fidelidad del pixel (constantes geométricas), provocando "desviaciones interpretativas" que destruyen maquetaciones estables.
