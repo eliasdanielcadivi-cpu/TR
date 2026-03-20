@@ -1,0 +1,29 @@
+{
+  "name": "cognitive-need-detector",
+  "version": "0.1.0",
+  "description": "Detecta necesidad cognitiva y decide modo (chat/questionnaire/mixed)",
+  "functions": [
+    {
+      "name": "analyzeCognitiveNeed",
+      "description": "Analiza contexto y decide modo adecuado",
+      "params": ["SessionContext"],
+      "returns": "ModeDecision"
+    },
+    {
+      "name": "evaluateDataGaps",
+      "description": "Evalúa datos faltantes estructurados",
+      "params": ["SessionContext"],
+      "returns": "DataGap[]"
+    },
+    {
+      "name": "detectEmotionalState",
+      "description": "Detecta estado emocional del usuario",
+      "params": ["string"],
+      "returns": "EmotionalState"
+    }
+  ],
+  "dependencies": [],
+  "aiReady": true,
+  "created": "2026-03-20",
+  "status": "in-development"
+}

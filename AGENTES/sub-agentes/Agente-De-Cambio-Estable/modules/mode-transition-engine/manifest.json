@@ -1,0 +1,29 @@
+{
+  "name": "mode-transition-engine",
+  "version": "0.1.0",
+  "description": "Genera transiciones conversacionales suaves entre modos",
+  "functions": [
+    {
+      "name": "generateTransitionPrompt",
+      "description": "Crea puente conversacional entre modos",
+      "params": ["fromMode", "toMode", "reason", "context"],
+      "returns": "TransitionMessage"
+    },
+    {
+      "name": "buildContextSummary",
+      "description": "Resume contexto para inyectar en transición",
+      "params": ["SessionContext"],
+      "returns": "string"
+    },
+    {
+      "name": "createBridgeMessage",
+      "description": "Construye mensaje completo de transición",
+      "params": ["TransitionMessage", "context"],
+      "returns": "string"
+    }
+  ],
+  "dependencies": ["cognitive-need-detector"],
+  "aiReady": true,
+  "created": "2026-03-20",
+  "status": "in-development"
+}

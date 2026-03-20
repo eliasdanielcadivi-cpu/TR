@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "id": "@agentedecambio2/modules-registry",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "AgenteDeCambio2 Modules Registry",
   "description": "Registro central de todos los módulos del sistema AgenteDeCambio2",
-  "lastUpdated": "2026-03-19T00:00:00.000Z",
+  "lastUpdated": "2026-03-20T00:00:00.000Z",
   "modules": [
     {
       "id": "@agentedecambio2/deepseek-connector",
@@ -192,17 +192,57 @@
       ],
       "aiReady": true,
       "docs": "./question-types/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/cognitive-need-detector",
+      "name": "Cognitive Need Detector",
+      "version": "0.1.0",
+      "path": "./cognitive-need-detector",
+      "status": "in-development",
+      "type": "backend",
+      "description": "Detecta necesidad cognitiva y decide modo (chat/questionnaire/mixed)",
+      "actions": ["analyzeCognitiveNeed", "evaluateDataGaps", "detectEmotionalState"],
+      "events": {
+        "emits": ["mode:decision", "data:gaps"],
+        "subscribes": ["message:received", "context:updated"]
+      },
+      "dependencies": [
+        "@agentedecambio2/shared-types",
+        "@agentedecambio2/session-manager"
+      ],
+      "aiReady": true,
+      "docs": "./cognitive-need-detector/INDEX.md"
+    },
+    {
+      "id": "@agentedecambio2/mode-transition-engine",
+      "name": "Mode Transition Engine",
+      "version": "0.1.0",
+      "path": "./mode-transition-engine",
+      "status": "in-development",
+      "type": "backend",
+      "description": "Genera transiciones conversacionales suaves entre modos",
+      "actions": ["generateTransitionPrompt", "buildContextSummary", "createBridgeMessage"],
+      "events": {
+        "emits": ["transition:generated", "mode:switched"],
+        "subscribes": ["mode:decision", "context:updated"]
+      },
+      "dependencies": [
+        "@agentedecambio2/cognitive-need-detector",
+        "@agentedecambio2/session-manager"
+      ],
+      "aiReady": true,
+      "docs": "./mode-transition-engine/INDEX.md"
     }
   ],
   "statistics": {
-    "total": 10,
+    "total": 12,
     "active": 5,
     "pending": 2,
-    "in-development": 3,
-    "backend": 6,
+    "in-development": 5,
+    "backend": 8,
     "frontend": 1,
     "shared": 3,
-    "aiReady": 3
+    "aiReady": 5
   },
   "conventions": {
     "maxActionsPerModule": 3,
