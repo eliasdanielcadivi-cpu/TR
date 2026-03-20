@@ -102,5 +102,22 @@
 
 ---
 
+### [18:30] Commit masivo de correcciones
+**Archivos:** Múltiples (ver abajo)
+- `QuestionContainer.tsx` - DEMO_MODE = false
+- `system-master-prompt.ts` - Prohibido JSON
+- `Header.tsx` - Botón RESET
+- `BITACORA.md` - Este archivo
+
+**Razón:** Corregir problemas reportados por usuario:
+1. LLM respondía con JSON en lugar de UI
+2. Modo demo siempre activo
+3. Sin botón de reset
+4. Sin bitácora de cambios
+
+**Commit:** `3a5c7db4 [FIX] Desactivar demo mode + prohibir JSON LLM + botón RESET + bitácora`
+
+---
+
 *Bitácora iniciada: 2026-03-20*  
-*Última actualización: 2026-03-20 18:00*
+*Última actualización: 2026-03-20 18:30*
