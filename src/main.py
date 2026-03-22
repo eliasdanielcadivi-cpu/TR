@@ -48,6 +48,21 @@ def cli(ctx, prompt, help):
 
     # --- MANEJO DE AYUDA ENRIQUECIDA (REDIRECCIÓN A AYUDA ARES) ---
     if help:
+        # Mostrar imagen ARES primero con icat
+        from rich.console import Console
+        console = Console()
+        
+        assets_dir = Path(obj.base_path) / "assets" / "ares"
+        ares_image = assets_dir / "ares-neon.png"
+        
+        if ares_image.exists():
+            try:
+                # Usar kitten icat para mostrar imagen
+                subprocess.run(["kitten", "icat", str(ares_image)], check=False, timeout=2)
+                console.print()  # Nueva línea después de la imagen
+            except Exception:
+                pass  # Si falla icat, continuar sin imagen
+        
         try:
             subprocess.run(["ayuda", "ares"], check=True)
         except (subprocess.CalledProcessError, FileNotFoundError):
