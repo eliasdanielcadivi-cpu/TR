@@ -1,8 +1,4 @@
 #!/bin/bash
-# Generado por 'ini' v2.1 - Ecosistema TRON (Local)
-# Proyecto: ares
-
-# Determinar raíz relativa a la ubicación del script
+# Generado por 'ini' v3.0 - Lanzador local portátil
 export TR_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
-exec uv run --project "$TR_PROJECT_ROOT" python "$TR_PROJECT_ROOT/src/main.py" "$@"
+exec env -u VIRTUAL_ENV uv run --project "$TR_PROJECT_ROOT" python "$TR_PROJECT_ROOT/src/main.py" "$@"
