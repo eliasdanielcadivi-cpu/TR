@@ -7,6 +7,7 @@ Orquestador táctico para Kitty terminal con IA multi-provider.
 import click
 import sys
 import os
+import subprocess
 from pathlib import Path
 
 # --- FIX DE RUTA ---
@@ -45,11 +46,15 @@ def cli(ctx, prompt, help):
     obj = ctx.ensure_object(TRContext)
     ctx.obj = obj
 
-    # --- MANEJO DE AYUDA ENRIQUECIDA ---
+    # --- MANEJO DE AYUDA ENRIQUECIDA (REDIRECCIÓN A AYUDA ARES) ---
     if help:
-        HelpManager(obj).show_enhanced_help()
+        try:
+            subprocess.run(["ayuda", "ares"], check=True)
+        except (subprocess.CalledProcessError, FileNotFoundError):
+            # Fallback a ayuda visual interna si falla ayuda externa
+            HelpManager(obj).show_enhanced_help()
         ctx.exit()
-    # ----------------------------------
+    # -----------------------------------------------------------
 
     if prompt:
         HelpManager(ctx.obj).query_ai(prompt)
@@ -570,6 +575,55 @@ def diario_edit_cmd(obj):
         console.print(f"\n❌ [red]{msg}[/red]")
 
 
+@cli.command(name="identidad-inyectar")
+@click.pass_obj
+def identidad_inyectar_cmd(obj):
+    """🧠 Inyecta la Identidad Maestra de ARES en todo el sistema.
+    
+    Proceso quirúrgico que:
+      1. Actualiza la definición en LEEME.md y ares.md (vía TRON).
+      2. Inyecta la identidad en los Modelfiles de Ollama.
+      3. Recrea los modelos 'ares' y 'ares-think' en Ollama.
+    """
+    import subprocess
+    from pathlib import Path
+    
+    script_path = Path(obj.base_path) / "scripts/ares_sync_identity.py"
+    
+    if not script_path.exists():
+        click.echo(f"❌ Error: No se encontró el script de sincronización en {script_path}")
+        return
+
+    click.echo("🛰️  Iniciando proceso de Inyección de Identidad ARES...")
+    # Usar el intérprete de python del venv actual
+    python_bin = sys.executable
+    subprocess.run([python_bin, str(script_path)])
+
+
+@cli.command(name="identidad-editar")
+@click.pass_obj
+def identidad_editar_cmd(obj):
+    """✏️  Edita la Identidad Maestra de ARES (ares.yaml).
+    
+    Abre la configuración de identidad en el editor micro.
+    Permite modificar la definición y las rutas de inyección.
+    
+    IMPORTANTE: Tras editar, ejecuta 'ares identidad-inyectar' para aplicar.
+    """
+    import subprocess
+    from pathlib import Path
+    
+    yaml_path = Path(obj.base_path) / "config/identidad/ares.yaml"
+    
+    if not yaml_path.exists():
+        click.echo(f"❌ Error: No se encontró el archivo de identidad en {yaml_path}")
+        return
+
+    subprocess.run(["micro", str(yaml_path)])
+    click.echo("\n✅ [green]Edición finalizada.[/green]")
+    click.echo("[dim]💡 Ejecuta 'ares identidad-inyectar' para propagar los cambios.[/dim]")
+
+
 @cli.command(name="socket-check")
 @click.argument("socket-path", required=False)
 @click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON")
@@ -896,13 +950,81 @@ def agente(obj):
     Sub-Agentes Disponibles:
       AgenteDeCambio  - Interfaz TUI híbrida (90% Textual + 10% Ratatui)
       sherlok         - Auditor de código con ADN Técnico Industrial
+      tron            - Orquestador de modelos Cloud (DeepSeek/OpenRouter)
     
     Ejemplos:
       ares agente AgenteDeCambio run      - Ejecutar AgenteDeCambio TUI
-      ares agente AgenteDeCambio status   - Verificar estado
+      ares agente tron --router           - Menú interactivo de OpenRouter
       ares agente sherlok                 - Ejecutar auditoría Sherlok
     """
     pass
+
+
+# ============================================================================
+# TRON - Orquestador de IA Multi-provider
+# ============================================================================
+
+@agente.command(name="tron", context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@click.pass_context
+def agente_tron(ctx):
+    """🤖 TRON: Orquestador de IA Multi-provider (DeepSeek/OpenRouter).
+    
+    Permite interactuar con modelos de nube de forma transparente.
+    Equivalente al comando 'tron' o 'tronAres'.
+    
+    Uso: ares agente tron [opciones] [perfil] [modelo] [comando]
+    
+    Ejemplos:
+      ares agente tron --router           - Menú interactivo
+      ares agente tron openrouter claude  - Iniciar chat con Claude
+    """
+    from modules.admon.init_manager import get_binary_path
+    
+    # Ruta al script real de tron
+    # Usando la ruta detectada en la investigación inicial
+    tron_script = "/home/daniel/tron/programas/TR/AGENTES/sub-agentes/TRON/bin/tron.py"
+    
+    if not os.path.exists(tron_script):
+        # Intentar ruta alternativa
+        tron_script = "/home/daniel/tron/programas/ProyectoPizza/TRON/bin/tron.py"
+        
+    if not os.path.exists(tron_script):
+        click.echo("❌ Error: No se encontró el script de TRON.")
+        return
+
+    # Ejecutar tron con los argumentos pasados
+    cmd = ["uv", "run", "--project", os.path.dirname(tron_script), "python", tron_script] + ctx.args
+    subprocess.run(cmd)
+
+
+# ============================================================================
+# SHERLOK - Auditor de código
+# ============================================================================
+
+@agente.command(name="sherlok", context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@click.pass_context
+def agente_sherlok(ctx):
+    """🔍 SHERLOK: Auditor de código con ADN Técnico Industrial.
+    
+    Analiza la base de código para detectar fallos, sugerir mejoras
+    y auditar la modularidad industrial.
+    
+    Uso: ares agente sherlok [opciones]
+    
+    Ejemplos:
+      ares agente sherlok run             - Iniciar auditoría completa
+      ares agente sherlok status          - Ver estado de auditorías previas
+    """
+    # Ruta al script real de sherlok
+    sherlok_script = "/home/daniel/tron/programas/TR/AGENTES/sub-agentes/sherlok/main.py"
+    
+    if not os.path.exists(sherlok_script):
+        click.echo("❌ Error: No se encontró el script de SHERLOK.")
+        return
+
+    # Ejecutar sherlok con los argumentos pasados
+    cmd = ["uv", "run", "--project", os.path.dirname(sherlok_script), "python", sherlok_script] + ctx.args
+    subprocess.run(cmd)
 
 
 # ============================================================================

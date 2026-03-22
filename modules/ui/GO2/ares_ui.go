@@ -68,11 +68,12 @@ func getTermSize() (cellW, cellH int) {
 
 func resizeImage(src image.Image, w, h int) image.Image {
 	dst := image.NewRGBA(image.Rect(0, 0, w, h))
-	srcBounds := src.Bounds()
-	if srcBounds.Dx() == 0 || srcBounds.Dy() == 0 { return dst }
+	sb := src.Bounds()
+	sW, sH := sb.Dx(), sb.Dy()
+	if sW == 0 || sH == 0 { return dst }
 	for y := 0; y < h; y++ {
 		for x := 0; x < w; x++ {
-			dst.Set(x, y, src.At(x*srcBounds.Dx()/w, y*srcBounds.Dy()/h))
+			dst.Set(x, y, src.At(x*sW/w, y*sH/h))
 		}
 	}
 	return dst
@@ -89,8 +90,6 @@ func transmitViaFile(cmd string, data []byte) {
 func renderAsset(path string, cfg AssetConfig, id uint32, loop int) {
 	if _, err := os.Stat(path); err != nil { return }
 	cW, cH := getTermSize()
-	
-	// Posicionamiento de la imagen
 	fmt.Printf("\033[%d;%dH", cfg.Y+1, cfg.X+1)
 	
 	if filepath.Ext(path) == ".gif" {
@@ -129,8 +128,8 @@ func renderAsset(path string, cfg AssetConfig, id uint32, loop int) {
 func main() {
 	mode := flag.String("mode", "", "avatar|spinner|footer|user|anim|space")
 	rotate := flag.Bool("rotate", false, "rotar index")
-	slogan := flag.String("slogan", "", "texto a mostrar")
-	espacios := flag.Int("espacios", 0, "retornos de carro")
+	slogan := flag.String("slogan", "", "texto")
+	espacios := flag.Int("espacios", 0, "n")
 	configPath := flag.String("config", "config.yaml", "path")
 	flag.Parse()
 
@@ -139,21 +138,13 @@ func main() {
 		return
 	}
 
-	if *mode == "" { return }
-
 	cfgData, _ := os.ReadFile(*configPath)
 	var cfg Config
 	yaml.Unmarshal(cfgData, &cfg)
 
-	// Lógica de salida: mover el cursor al final para no romper la terminal
-	defer func() {
-		// Mover el cursor un par de líneas debajo de la zona de avatares (aprox fila 10)
-		fmt.Printf("\033[%d;1H\n", 10) 
-	}()
-
 	switch *mode {
 	case "avatar":
-		fmt.Println() 
+		// Imprime slogan y retorno de carro
 		if *slogan != "" { fmt.Println(*slogan) } else { fmt.Println(cfg.Ares.Slogan) }
 		renderAsset(cfg.Ares.Avatar.Path, cfg.Ares.Avatar, IDAvatar, 0)
 		
@@ -176,16 +167,10 @@ func main() {
 		renderAsset(sCfg.Path, sCfg, IDSpinner, cfg.Ares.Anim.Loop)
 
 	case "footer":
-		fmt.Print("\n\n")
 		renderAsset(cfg.Ares.Footer.Path, cfg.Ares.Footer, IDFooter, cfg.Ares.Anim.Loop)
 
 	case "user":
-		fmt.Println()
-		if *slogan != "" { fmt.Println(*slogan) }
-		uCfg := cfg.User.Avatar
-		uCfg.X = cfg.Ares.Avatar.X
-		uCfg.Y = cfg.Ares.Avatar.Y
-		renderAsset(uCfg.Path, uCfg, IDUser, 0)
+		renderAsset(cfg.User.Avatar.Path, cfg.User.Avatar, IDUser, 0)
 
 	case "anim":
 		renderAsset(cfg.Ares.AresAnim.Path, cfg.Ares.AresAnim, IDAnimAres, cfg.Ares.Anim.Loop)
