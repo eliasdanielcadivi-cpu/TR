@@ -48,12 +48,12 @@ def cli(ctx, prompt, help):
 
     # --- MANEJO DE AYUDA ENRIQUECIDA (REDIRECCIÓN A AYUDA ARES) ---
     if help:
-        # Mostrar imagen ARES primero con icat
+        # Mostrar imagen ARES primero con icat (usa la misma de neofetch)
         from rich.console import Console
         console = Console()
         
-        assets_dir = Path(obj.base_path) / "assets" / "ares"
-        ares_image = assets_dir / "ares-neon.png"
+        # Imagen original de neofetch: /home/daniel/tron/programas/AGENDA/ares logo.png
+        ares_image = Path("/home/daniel/tron/programas/AGENDA/ares logo.png")
         
         if ares_image.exists():
             try:
