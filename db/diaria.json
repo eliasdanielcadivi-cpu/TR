@@ -25,11 +25,7 @@
             },
             {
                 "title": "BR",
-                "cmd": "/home/daniel/tron/programas/TR/bin/br $TR"
-            },
-            {
-                "title": "OLLAMA-SERVE",
-                "cmd": "ollama serve"
+                "cmd": "/home/daniel/tron/programas/TR/bin/br /home/daniel/tron/programas/TR"
             }
         ]
     }
