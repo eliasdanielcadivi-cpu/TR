@@ -1,0 +1,205 @@
+#!/bin/bash
+# Neo Config Injector - ARES TRON
+# Inyecta configuración de neofetch desde TR/config/neofetch/
+#
+# Uso:
+#   neo inject              # Inyecta configuración completa
+#   neo edit                # Edita configuración con micro
+#   neo status              # Verifica estado de enlaces
+#   neo restore             # Restaura configuración original
+
+CONFIG_SOURCE="/home/daniel/tron/programas/TR/config/neofetch/config.conf"
+CONFIG_TARGET="$HOME/.config/neofetch/config.conf"
+IMAGE_SOURCE="/home/daniel/tron/programas/TR/config/neofetch/ares logo.png"
+IMAGE_TARGET="/home/daniel/tron/programas/AGENDA/ares logo.png"
+
+show_help() {
+    cat << 'EOF'
+🛠️  Neo Config Injector - ARES TRON
+
+USO:
+  neo <comando> [opciones]
+
+COMANDOS:
+  inject      Inyecta configuración de neofetch (enlace duro)
+  edit        Edita configuración con micro editor
+  status      Verifica estado de enlaces y configuración
+  restore     Restaura configuración original de neofetch
+  help        Muestra esta ayuda
+
+EJEMPLOS:
+  neo inject              # Crea enlace duro desde TR/config a ~/.config
+  neo edit                # Abre config.conf en micro editor
+  neo status              # Verifica si los enlaces están activos
+  neo restore             # Elimina enlaces, restaura original
+
+RUTAS:
+  Configuración:
+    Origen:  /home/daniel/tron/programas/TR/config/neofetch/config.conf
+    Destino: ~/.config/neofetch/config.conf
+  
+  Imagen:
+    Origen:  /home/daniel/tron/programas/TR/config/neofetch/ares logo.png
+    Destino: /home/daniel/tron/programas/AGENDA/ares logo.png
+
+NOTAS:
+  - Los cambios en TR/config/neofetch/ se reflejan en neofetch después de 'neo inject'
+  - Usa 'neo edit' para modificar la configuración rápidamente
+  - La imagen se actualiza automáticamente con el enlace
+
+EOF
+}
+
+check_status() {
+    echo "📊 Estado de Neo Config"
+    echo "========================"
+    echo ""
+    
+    # Verificar enlace de configuración
+    if [ -L "$CONFIG_TARGET" ]; then
+        link_target=$(readlink "$CONFIG_TARGET")
+        if [ "$link_target" = "$CONFIG_SOURCE" ]; then
+            echo "✅ Config: Enlace duro activo"
+            echo "   → $CONFIG_SOURCE"
+        else
+            echo "⚠️  Config: Enlace apunta a otro archivo"
+            echo "   → $link_target"
+        fi
+    elif [ -f "$CONFIG_TARGET" ]; then
+        echo "❌ Config: Archivo regular (sin enlace)"
+        echo "   → $CONFIG_TARGET"
+    else
+        echo "❌ Config: Archivo no existe"
+    fi
+    
+    echo ""
+    
+    # Verificar enlace de imagen
+    if [ -L "$IMAGE_TARGET" ]; then
+        link_target=$(readlink "$IMAGE_TARGET")
+        if [ "$link_target" = "$IMAGE_SOURCE" ]; then
+            echo "✅ Imagen: Enlace duro activo"
+            echo "   → $IMAGE_SOURCE"
+        else
+            echo "⚠️  Imagen: Enlace apunta a otro archivo"
+            echo "   → $link_target"
+        fi
+    elif [ -f "$IMAGE_TARGET" ]; then
+        echo "ℹ️  Imagen: Archivo regular (copia directa)"
+        echo "   → $IMAGE_TARGET"
+    else
+        echo "❌ Imagen: Archivo no existe"
+    fi
+    
+    echo ""
+    
+    # Verificar archivos origen
+    if [ -f "$CONFIG_SOURCE" ]; then
+        echo "✅ Origen config: Existe"
+    else
+        echo "❌ Origen config: No existe"
+    fi
+    
+    if [ -f "$IMAGE_SOURCE" ]; then
+        echo "✅ Origen imagen: Existe"
+    else
+        echo "❌ Origen imagen: No existe"
+    fi
+}
+
+do_inject() {
+    echo "🔧 Inyectando configuración de neofetch..."
+    echo ""
+    
+    # Crear directorio de destino si no existe
+    mkdir -p "$(dirname "$CONFIG_TARGET")"
+    
+    # Eliminar archivo/link existente
+    if [ -L "$CONFIG_TARGET" ] || [ -f "$CONFIG_TARGET" ]; then
+        rm -f "$CONFIG_TARGET"
+        echo "🗑️  Eliminado: $CONFIG_TARGET"
+    fi
+    
+    # Crear enlace duro
+    ln -s "$CONFIG_SOURCE" "$CONFIG_TARGET"
+    echo "✅ Enlace creado: $CONFIG_TARGET → $CONFIG_SOURCE"
+    
+    # Actualizar imagen (copia, no enlace, para compatibilidad)
+    if [ -f "$IMAGE_SOURCE" ]; then
+        if [ -f "$IMAGE_TARGET" ]; then
+            # Verificar si es enlace o archivo
+            if [ -L "$IMAGE_TARGET" ]; then
+                rm -f "$IMAGE_TARGET"
+            fi
+        fi
+        cp "$IMAGE_SOURCE" "$IMAGE_TARGET"
+        echo "✅ Imagen actualizada: $IMAGE_TARGET"
+    fi
+    
+    echo ""
+    echo "✨ Configuración inyectada exitosamente"
+    echo "💡 Ejecuta 'neofetch' para ver los cambios"
+}
+
+do_edit() {
+    echo "📝 Editando configuración de neofetch..."
+    echo ""
+    
+    if [ ! -f "$CONFIG_SOURCE" ]; then
+        echo "❌ Error: Archivo de configuración no existe"
+        echo "   Ruta: $CONFIG_SOURCE"
+        exit 1
+    fi
+    
+    # Abrir con micro editor
+    micro "$CONFIG_SOURCE"
+    
+    echo ""
+    echo "✨ Edición completada"
+    echo "💡 Ejecuta 'neo inject' para aplicar cambios"
+}
+
+do_restore() {
+    echo "🔄 Restaurando configuración original de neofetch..."
+    echo ""
+    
+    # Eliminar enlace de configuración
+    if [ -L "$CONFIG_TARGET" ]; then
+        rm -f "$CONFIG_TARGET"
+        echo "🗑️  Eliminado enlace: $CONFIG_TARGET"
+        
+        # Generar configuración por defecto
+        neofetch --print-config > "$CONFIG_TARGET" 2>/dev/null
+        echo "✅ Configuración por defecto generada"
+    else
+        echo "ℹ️  No hay enlace que eliminar"
+    fi
+    
+    echo ""
+    echo "✨ Restauración completada"
+}
+
+# Main
+case "${1:-help}" in
+    inject)
+        do_inject
+        ;;
+    edit)
+        do_edit
+        ;;
+    status)
+        check_status
+        ;;
+    restore)
+        do_restore
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "❌ Comando desconocido: $1"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac
