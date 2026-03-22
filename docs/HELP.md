@@ -9,22 +9,57 @@
 | Comando | Descripción |
 |---------|-------------|
 | `ares` | Sin argumentos: abre ARES Hub |
-| `ares p "pregunta"` | Consulta a la IA ARES (Gemma/DeepSeek) |
+| `ares -h` | Muestra esta ayuda |
+| `ares p "pregunta"` | Consulta IA rápida |
 | `ares p "pregunta" --model gemma` | Usar modelo específico |
 | `ares p "pregunta" --template code` | Usar plantilla YAML |
+| `ares p "pregunta" --rag docs` | Consulta con contexto RAG |
+| `ares p "razona" --think` | Usa modelo pensante (ares-think) |
+| `ares i` | Modo interactivo REPL |
 | `ares status` | Diagnóstico del sistema |
-| `ares config` | Ver configuración de IA |
+| `ares config` | Ver configuración global |
 | `ares models` | Listar modelos disponibles |
 | `ares templates` | Listar plantillas YAML |
 | `ares tools` | Listar herramientas (function calling) |
-| `ares color <ruta>` | Aplica color Hacker Neon a pestaña |
+| `ares apollo ingest archivo.pdf` | Ingerir documento a RAG |
+| `ares model-creator list` | Gestionar modelos Ollama |
+| `ares modelfile-creator list` | Gestionar Modelfiles YAML |
 | `ares video <archivo>` | Reproduce video en kitty |
 | `ares image <archivo>` | Muestra imagen en kitty |
 | `ares plan` | Despliegue táctico (4 pestañas) |
-| `ares zshPlan` | Hacker AI Session (ZSH) |
-| `ares mcat-demo` | Demo exhaustiva de capacidades Mcat |
-| `ayuda zsh` | Ver hoja de trucos WOW y productividad Zsh |
-| `sherlok --help` | Ojo Forense: Escanea e indexa tus programas propios |
+| `ares zshplan` | Hacker AI Session (ZSH) |
+| `ares mcat-demo` | Demo exhaustiva Mcat |
+| `ares help` | Navegar docs/ con Broot |
+
+### Gestión de Sesiones (gs)
+
+| Comando | Descripción |
+|---------|-------------|
+| `ares gs save [nombre]` | Guarda sesión actual |
+| `ares gs list` | Lista sesiones en db/ |
+| `ares gs restore [nombre]` | Restaura en ventana actual |
+| `ares gs deploy [nombre]` | Despliega en ventana NUEVA |
+| `ares gs com "TITLE" "cmd"` | Envía comando a pestaña |
+| `ares gs edit [nombre]` | Edita sesión JSON en micro |
+| `ares diario` | Alias: deploy diaria |
+| `ares diario-edit` | Alias: edit diaria |
+
+### Inicialización (init)
+
+| Opción | Descripción |
+|--------|-------------|
+| `ares init -l` | Enlaza config Kitty con ARES |
+| `ares init -s` | Verifica estado (enlaces, dirs) |
+| `ares init -r` | Recarga config en caliente |
+
+### Socket y Ventanas
+
+| Comando | Descripción |
+|---------|-------------|
+| `ares socket-check` | Verifica socket por defecto |
+| `ares socket-check unix:/tmp/x` | Verifica socket específico |
+| `ares socket-check --json` | Salida JSON para scripting |
+| `ares windows` | Ver ventanas registradas |
 
 ### Aliases de Modelos
 
@@ -312,10 +347,212 @@ ares tools
 ares config
 ```
 
-### Documentación Adicional
+---
 
-- `docs/GEMMA_OLLAMA_GUIDE.md`: Guía completa de Gemma + Ollama
-- `docs/DEEPSEEK_GUIDE.md`: Guía de DeepSeek API
+## 🔧 Comandos Detallados (Menos Intuitivos)
+
+### `ares init` - Gestión de Infraestructura
+
+**¿Qué inicializa?** La infraestructura de Kitty y ARES: enlaces simbólicos, directorios, permisos.
+
+```bash
+# Enlazar configuración de Kitty con ARES (crea symlink kitty.conf)
+ares init -l
+
+# Verificar estado: enlaces, directorios, permisos
+ares init -s
+
+# Recargar configuración en Kitty caliente (sin reiniciar terminal)
+ares init -r
+```
+
+**Cuándo usar:**
+- `-l`: Primera instalación o cuando cambias kitty.conf
+- `-s`: Diagnóstico, algo no funciona
+- `-r`: Modificaste config y quieres aplicar sin cerrar Kitty
+
+---
+
+### `ares gs` - Gestión de Sesiones (Completo)
+
+**Sesiones:** Configuraciones JSON en `db/` que definen ventanas, pestañas, títulos y comandos.
+
+```bash
+# Guardar sesión actual (ventanas, pestañas, colores)
+ares gs save mi-sesion
+
+# Listar sesiones guardadas
+ares gs list
+
+# Restaurar en ventana actual
+ares gs restore mi-sesion
+
+# Desplegar en ventana NUEVA (socket único automático)
+ares gs deploy mi-sesion
+
+# Enviar comando a pestaña específica por título
+ares gs com "NOTAS" "micro /home/daniel/notas.md"
+
+# Editar configuración JSON de sesión en editor micro
+ares gs edit mi-sesion
+```
+
+**Estructura de sesión (`db/*.json`):**
+```json
+[
+  {
+    "is_focused": true,
+    "tabs": [
+      {"title": "GEMINI", "cmd": ""},
+      {"title": "NOTAS", "cmd": "micro /path/to/notas.md"},
+      {"title": "TERM", "cmd": "comando1;comando2;comando3"}
+    ]
+  }
+]
+```
+
+**Comandos en pestañas:**
+- Vacío `""`: Solo abre pestaña con título
+- Simple `"micro archivo"`: Ejecuta comando
+- Múltiple `"cmd1;cmd2;cmd3"`: Separa con `;`, la shell interpreta
+
+---
+
+### `ares diario` y `ares diario-edit` - Atajos Diarios
+
+**`ares diario`**: Alias directo de `ares gs deploy diaria`. Lanza la sesión de trabajo diario.
+
+**`ares diario-edit`**: Alias de `ares gs edit diaria`. Edita `db/diaria.json` en micro.
+
+```bash
+# Lanzar sesión diaria
+ares diario
+
+# Editar sesión diaria
+ares diario-edit
+```
+
+**Backup automático:** Antes de editar, crea `diaria.json.bak`. Si hay error JSON, restaura automáticamente.
+
+---
+
+### `ares socket-check` - Diagnóstico de Sockets
+
+**Socket Kitty:** Punto de comunicación UNIX para control remoto de ventanas/pestañas.
+
+```bash
+# Verificar socket por defecto (desde config.yaml)
+ares socket-check
+
+# Verificar socket específico
+ares socket-check unix:/tmp/custom_socket
+
+# Salida JSON (para scripting)
+ares socket-check --json
+```
+
+**Qué verifica:**
+- Existencia del archivo socket
+- Permisos de lectura/escritura
+- Proceso propietario
+- Estado (activo/huérfano)
+
+**Cuándo usar:**
+- `ares gs deploy` falla con "socket ya existe"
+- Kitty no responde a comandos remotos
+- Debug de problemas de conexión
+
+---
+
+### `ares apollo ingest` - Sistema RAG
+
+**RAG:** Retrieval-Augmented Generation. Ingiere documentos para búsqueda semántica con IA.
+
+```bash
+# Ingerir documento (PDF, MD, TXT, etc.)
+ares apollo ingest documento.pdf
+
+# Ingerir directorio completo
+ares apollo ingest /path/to/docs/
+```
+
+**Qué hace:**
+1. Extrae texto del documento
+2. Divide en chunks semánticos
+3. Genera embeddings (Ollama: mxbai-embed-large)
+4. Guarda en SQLite + sqlite-vec
+5. Indexa para búsqueda vectorial
+
+**Luego usa:**
+```bash
+ares p "¿Qué dice el documento sobre X?" --rag docs
+```
+
+---
+
+### `ares model-creator` y `modelfile-creator`
+
+**model-creator:** Gestiona modelos Ollama (crear, actualizar, eliminar).
+
+```bash
+# Listar modelos Ollama disponibles
+ares model-creator list
+
+# Crear modelo desde padre
+ares model-creator create mi-gemma --parent gemma:7b
+
+# Actualizar parámetros (temp, top_p, etc.)
+ares model-creator update mi-gemma --temperature 0.8
+
+# Eliminar modelo
+ares model-creator delete mi-gemma
+
+# Mostrar Modelfile asociado
+ares model-creator show mi-gemma
+```
+
+**modelfile-creator:** Gestiona plantillas YAML de comportamiento IA.
+
+```bash
+# Listar Modelfiles YAML
+ares modelfile-creator list
+
+# Crear nueva plantilla
+ares modelfile-creator create code-reviewer --template code
+
+# Actualizar plantilla existente
+ares modelfile-creator update code-reviewer
+
+# Eliminar plantilla
+ares modelfile-creator delete code-reviewer
+
+# Mostrar contenido
+ares modelfile-creator show code-reviewer
+```
+
+**Diferencia:**
+- `model-creator`: Modelos Ollama (binarios, pesos)
+- `modelfile-creator`: Plantillas YAML (prompts, comportamiento)
+
+---
+
+### `ares help` vs `ares -h`
+
+**`ares -h`:** Muestra ayuda rápida en terminal (este documento).
+
+**`ares help`:** Abre navegador Broot en `docs/` para exploración jerárquica.
+
+```bash
+# Ayuda rápida (lo que estás leyendo)
+ares -h
+
+# Navegador documental completo
+ares help
+```
+
+**Cuándo usar cada uno:**
+- `-h`: Consulta rápida, no sabes el comando
+- `help`: Exploración profunda, buscas documentación específica
 
 ---
 

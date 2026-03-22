@@ -34,18 +34,18 @@ class HelpManager:
         self._ai_engine = None
 
     def show_enhanced_help(self) -> None:
-        """Muestra una ayuda visualmente enriquecida desde db/ares_help.yaml."""
+        """Muestra ayuda compacta y completa desde db/ares_help.yaml."""
         import yaml
         help_db_path = os.path.join(self.ctx.base_path, "db", "ares_help.yaml")
-        
+
         if not os.path.exists(help_db_path):
-            self.show_help() # Fallback
+            self.show_help()  # Fallback
             return
 
         with open(help_db_path, "r", encoding="utf-8") as f:
             help_data = yaml.safe_load(f)
 
-        # Encabezado Soberano
+        # Encabezado
         console.print(Panel.fit(
             "[bold cyan]🛰  ARES - Terminal Remote Operations Nexus[/bold cyan]\n"
             "[dim]Orquestador Táctico por Daniel Hung[/dim]",
@@ -56,65 +56,77 @@ class HelpManager:
         categories = {}
         for name, info in help_data.get('commands', {}).items():
             cat = info.get('category', 'Otros')
-            if cat not in categories: categories[cat] = []
+            if cat not in categories:
+                categories[cat] = []
             categories[cat].append((name, info))
 
-        # Mostrar por categorías
+        # Mostrar por categorías (formato compacto horizontal)
         for cat, cmds in categories.items():
-            table = Table(title=f"[black bg_cyan]{cat}[/black bg_cyan]", 
-                         title_justify="left", box=None, show_header=False)
-            table.add_column("Command", style="bold green", width=15)
-            table.add_column("Description", style="white")
-
+            console.print(f"\n[bold black bg_cyan] {cat} [/bold black bg_cyan]")
+            
             for name, info in cmds:
                 desc = info.get('description', '')
-                display_name = f"ares {name}" if name != "ares" else "ares"
-                table.add_row(display_name, desc)
+                usage = info.get('usage', '')
+                examples = info.get('examples', '')
+                options = info.get('options', [])
+                subcommands = info.get('subcommands', info.get('commands', {}))
+                details = info.get('details', '')
                 
-                # Subcomandos (si existen)
-                if 'commands' in info:
-                    for sub_name, sub_desc in info['commands'].items():
-                        table.add_row(f"  └ {sub_name}", f"[dim]{sub_desc}[/dim]")
+                # Nombre y descripción en misma línea
+                display_name = f"[bold green]ares {name}[/bold green]" if name != "ares" else "[bold green]ares[/bold green]"
+                console.print(f"\n{display_name} [white]{desc}[/white]")
                 
-                # Opciones (si existen)
-                if 'options' in info:
-                    for opt in info['options']:
+                # Uso en línea separada (si existe)
+                if usage and usage != f"ares {name}":
+                    console.print(f"  [dim]Uso: {usage}[/dim]")
+                
+                # Ejemplos en línea compacta
+                if examples:
+                    console.print(f"  [yellow]Ej: {examples}[/yellow]")
+                
+                # Opciones en línea horizontal (separadas por |)
+                if options:
+                    opt_lines = []
+                    for opt in options:
                         if isinstance(opt, dict):
                             opt_name = list(opt.keys())[0]
                             opt_desc = opt[opt_name]
-                        else:
-                            # Si es un string de la lista (formato YAML previo)
-                            opt_name = opt
-                            opt_desc = ""
-                        table.add_row(f"    [yellow]{opt_name}[/yellow]", f"[dim]{opt_desc}[/dim]")
-            
-            console.print(table)
-            console.print("")
+                            opt_lines.append(f"[yellow]{opt_name}[/yellow]: {opt_desc}")
+                        elif isinstance(opt, str):
+                            opt_lines.append(f"[yellow]{opt}[/yellow]")
+                    if opt_lines:
+                        console.print(f"  {' | '.join(opt_lines)}")
+                
+                # Subcomandos en línea horizontal
+                if subcommands and isinstance(subcommands, dict):
+                    sub_lines = []
+                    for sub_name, sub_desc in subcommands.items():
+                        sub_lines.append(f"[green]{sub_name}[/green]: {sub_desc}")
+                    if sub_lines:
+                        console.print(f"  └ {' | '.join(sub_lines)}")
+                
+                # Detalles finales (si existen)
+                if details:
+                    console.print(f"  [dim]{details}[/dim]")
 
-        # Herramientas del Ecosistema
-        eco_table = Table(title="🛠️  HERRAMIENTAS DE ECOSISTEMA (Soberanía TRON)", 
-                         title_style="bold yellow", box=None)
-        eco_table.add_column("Herramienta", style="bold yellow", width=15)
-        eco_table.add_column("Propósito", style="dim white")
+            console.print()
 
+        # Herramientas del Ecosistema (compacto)
+        console.print(f"\n[bold black bg_yellow] 🛠️  HERRAMIENTAS DE ECOSISTEMA [/bold black bg_yellow]")
+        eco_items = []
         for tool, desc in help_data.get('ecosystem_tools', {}).items():
-            eco_table.add_row(tool, desc)
+            eco_items.append(f"[bold yellow]{tool}[/bold yellow]: {desc}")
+        console.print(" | ".join(eco_items))
 
-        console.print(Panel(eco_table, border_style="yellow"))
-
-        # Sub-Agentes
+        # Sub-Agentes (compacto)
         if 'sub_agents' in help_data:
-            agent_table = Table(title="🕵️  SUB-AGENTES ESPECIALIZADOS", 
-                               title_style="bold magenta", box=None)
-            agent_table.add_column("Agente", style="bold magenta", width=15)
-            agent_table.add_column("Especialidad", style="dim white")
-
+            console.print(f"\n[bold black bg_magenta] 🕵️  SUB-AGENTES [/bold black bg_magenta]")
+            agent_items = []
             for agent, desc in help_data.get('sub_agents', {}).items():
-                agent_table.add_row(agent, desc)
+                agent_items.append(f"[bold magenta]{agent}[/bold magenta]: {desc}")
+            console.print(" | ".join(agent_items))
 
-            console.print(Panel(agent_table, border_style="magenta"))
-
-        console.print("\n[dim]Usa 'ares help' para navegar la documentación completa con Broot.[/dim]")
+        console.print(f"\n[dim]Usa 'ares help' para navegar docs/ con Broot.[/dim]")
 
     def query_ai(self, prompt: str, model_alias: Optional[str] = None,
                  template: Optional[str] = None, **kwargs) -> None:

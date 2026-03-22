@@ -1,243 +1,187 @@
 commands:
   ares:
-    description: "🚀 Abre el ARES Hub (Dashboard táctico) en la terminal actual."
+    description: "🚀 Abre el ARES Hub (Dashboard táctico)"
     usage: "ares"
     category: "Core"
-    details: "Lanza la interfaz principal con título 'Ares por Daniel Hung'. Si Kitty no está corriendo, intenta inicializar el entorno."
+    details: "Lanza interfaz principal. Si Kitty no corre, intenta inicializar."
 
   p:
-    description: "🤖 Consulta Inteligente a la IA (Modo Experto)."
-    usage: "ares p [PROMPT] [OPTIONS]"
+    description: "🤖 Consulta Inteligente (Modo Experto)"
+    usage: "ares p [PROMPT] [-m MODEL] [-t TEMPLATE] [--rag DATASET] [--think]"
     category: "IA"
+    examples: "ares p 'explica Python' -m gemma | ares p 'codifica algo' -t code --rag codigo"
     options:
-      - "-m, --model TEXT": "Alias del modelo (gemma, deepseek, openrouter, ares, ares-think)."
-      - "-t, --template TEXT": "Plantilla YAML a aplicar (code, chat, tools)."
-      - "--rag TEXT": "Dataset RAG (docs, skills, codigo, config)."
-      - "--think": "Usar modelo pensante (ares-think:latest)."
-    details: "Integra inyección dinámica de skills y RAG híbrido."
+      - "-m, --model": "gemma, deepseek, openrouter, ares, ares-think"
+      - "-t, --template": "code, chat, tools (comportamiento IA)"
+      - "--rag": "docs, skills, codigo, config (contexto extra)"
+      - "--think": "Usa ares-think:latest (razonamiento profundo)"
 
   i:
-    description: "💬 Modo Interactivo (REPL con IA)."
-    usage: "ares i [OPTIONS]"
+    description: "💬 Modo Interactivo (REPL con IA)"
+    usage: "ares i [--rag DATASET] [-m MODEL] [--think]"
     category: "IA"
-    options:
-      - "--rag TEXT": "Dataset RAG por defecto."
-      - "-m, --model TEXT": "Modelo LLM inicial."
-      - "--think": "Activar modo pensante (ares-think)."
-    details: |
-      REPL interactivo con comandos especiales:
-        /quit, /exit - Salir
-        /model <nombre> - Cambiar modelo
-        /rag <dataset> - Cambiar dataset RAG
-        /think on|off - Activar/desactivar modo pensante
-        /clear - Limpiar pantalla
-        /help - Mostrar ayuda
-      Incluye emojis como imágenes PNG (Term-Image).
+    examples: "ares i --rag docs | ares i -m deepseek --think"
+    commands:
+      "/quit o /exit": "Salir | /model <nombre>": "Cambiar modelo | /rag <dataset>": "Cambiar RAG"
+      "/think on|off": "Modo pensante | /clear": "Limpiar | /help": "Ayuda"
+    details: "REPL con emojis PNG (Term-Image). Streaming en tiempo real."
 
   apollo:
-    description: "🧠 Sistema Apollo (RAG + CRM)."
-    usage: "ares apollo [COMMAND]"
+    description: "🧠 Sistema Apollo (RAG + CRM)"
+    usage: "ares apollo ingest [ARCHIVO]"
     category: "IA"
-    commands:
-      ingest: "Ingerir documento al sistema RAG."
-    details: "Sistema RAG híbrido con SQLite + sqlite-vec + Ollama embeddings."
+    examples: "ares apollo ingest documento.pdf"
+    details: "RAG híbrido: SQLite + sqlite-vec + Ollama embeddings. Ingiere documentos para búsqueda semántica."
 
   model-creator:
-    description: "🛠️ Gestor de Modelos Ollama."
-    usage: "ares model-creator [COMMAND]"
+    description: "🛠️ Gestor de Modelos Ollama"
+    usage: "ares model-creator [list|create|update|delete|show]"
     category: "IA"
-    commands:
-      list: "Listar modelos disponibles."
-      create: "Crear modelo desde padre."
-      update: "Actualizar parámetros."
-      delete: "Eliminar modelo."
-      show: "Mostrar Modelfile asociado."
+    examples: "ares model-creator list | ares model-creator create mi-modelo --parent gemma:7b"
+    details: "Crea, actualiza, elimina modelos Ollama. Muestra Modelfiles asociados."
 
   modelfile-creator:
-    description: "📝 Gestor de Modelfiles YAML."
-    usage: "ares modelfile-creator [COMMAND]"
+    description: "📝 Gestor de Modelfiles YAML"
+    usage: "ares modelfile-creator [list|create|update|delete|show]"
     category: "IA"
-    commands:
-      list: "Listar Modelfiles guardados."
-      create: "Crear Modelfile nuevo."
-      update: "Actualizar Modelfile."
-      delete: "Eliminar Modelfile."
-      show: "Mostrar contenido Modelfile."
+    examples: "ares modelfile-creator create chat-system --template code"
+    details: "Gestiona plantillas YAML de comportamiento IA (templates/)."
 
   gs:
-    description: "💾 Gestión Avanzada de Sesiones de Kitty."
-    usage: "ares gs [COMMAND] [ARGS]"
+    description: "💾 Gestión de Sesiones Kitty"
+    usage: "ares gs [save|list|restore|deploy|com|edit]"
     category: "Gestión"
-    commands:
-      save: "Guarda el estado actual (ventanas, pestañas, colores)."
-      list: "Lista sesiones guardadas en la base de datos."
-      restore: "Reconstruye una sesión completa desde DB."
-      deploy: "Despliega sesión en una ventana/socket NUEVO."
-      com: "Envía comandos a pestañas específicas."
-      edit: "✏️  Edita una sesión guardada (títulos y comandos)."
+    examples: "ares gs save | ares gs list | ares gs deploy diaria"
+    subcommands:
+      save: "Guarda estado actual (ventanas, pestañas, colores)"
+      list: "Lista sesiones en db/"
+      restore: "Reconstruye sesión en ventana actual"
+      deploy: "Despliega en ventana/socket NUEVO (genera socket único automático)"
+      com: "Envía comando a pestaña: ares gs com 'TITLE' 'comando'"
+      edit: "Edita sesión JSON en micro: ares gs edit diaria"
 
   diario:
-    description: "📅 Despliega sesión diaria (alias de 'ares gs deploy diaria')."
+    description: "📅 Despliega sesión diaria"
     usage: "ares diario"
     category: "Gestión"
-    details: |
-      Atajo para lanzar rápidamente la sesión de trabajo diario configurada en db/diaria.json.
-      
-      La sesión puede editarse con: ares diario-edit
-      
-      Estructura de db/diaria.json:
-        [
-          {
-            "is_focused": true,
-            "tabs": [
-              {"title": "GEMINI", "cmd": ""},
-              {"title": "QWEN", "cmd": "comando;a-ejecutar"}
-            ]
-          }
-        ]
+    examples: "ares diario"
+    details: "Alias de 'ares gs deploy diaria'. Edita con 'ares diario-edit'. Config en db/diaria.json."
 
   diario-edit:
-    description: "✏️  Edita la sesión diaria (alias de 'ares gs edit diaria')."
+    description: "✏️ Edita sesión diaria"
     usage: "ares diario-edit"
     category: "Gestión"
-    details: |
-      Atajo para editar rápidamente la configuración de la sesión diaria.
-      
-      Abre db/diaria.json en el editor micro para modificar:
-        • Títulos de pestañas
-        • Comandos de inicialización (usa ';' para separar múltiples)
-        • Estructura de ventanas
-      
-      El sistema valida automáticamente la estructura JSON después de guardar.
-      Si hay error, restaura el backup automáticamente.
+    examples: "ares diario-edit"
+    details: "Alias de 'ares gs edit diaria'. Abre db/diaria.json en micro. Valida JSON y crea backup automático."
 
   plan:
-    description: "🚩 Despliegue Táctico Original."
+    description: "🚩 Despliegue Táctico (4 pestañas)"
     usage: "ares plan"
     category: "Táctico"
-    details: "Lanza 4 pestañas Hacker Neon fijas (CYBERPUNK, NEON, MATRIX, BLADE)."
+    examples: "ares plan"
+    details: "Lanza 4 pestañas Hacker Neon: CYBERPUNK, NEON, MATRIX, BLADE. Colores fijos del ciclo maestro."
 
   zshplan:
-    description: "⚔️ Despliegue Táctico ZSH (Hacker AI Session)."
+    description: "⚔️ Despliegue Táctico ZSH"
     usage: "ares zshplan"
     category: "Táctico"
+    examples: "ares zshplan"
+    details: "Sesión Hacker AI con ZSH configurado. Entorno ZDOTDIR en config/zsh."
 
   mcat-demo:
-    description: "🛠️ Mcat Demo: Despliegue de capacidades completas."
+    description: "🛠️ Mcat Demo (4 pestañas)"
     usage: "ares mcat-demo"
     category: "Táctico"
-    details: |
-      📁 1. El Arsenal Táctico (Organización de Assets)
-
-      Todos los recursos residen en assets/mcat-demo/. Cada archivo tiene un propósito técnico específico para poner a prueba los motores de parseo de mcat.
-
-      ┌────────────────┬────────────────────────┬──────────────────────────────────────────────────────────────────────┐
-      │ Recurso        │ Nomenclatura           │ Propósito Didáctico                                                  │
-      ├────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────────────┤
-      │ Código Fuente  │ rs-codigo.rs           │ Probar el resaltado de sintaxis (Highlighter) y temas (-t).          │
-      │ Documento PDF  │ pdf-documento.pdf      │ Probar el parseo de binario a ANSI y el modo interactivo.            │
-      │ Archivo Office │ docx-documento.docx    │ Demostrar la conversión de formatos propietarios a Markdown.         │
-      │ Presentación   │ pptx-presentacion.pptx │ Probar la extracción de datos vía stdin (tuberías).                  │
-      │ Contenedor     │ zip-archivo.zip        │ Mostrar la inspección de estructuras de directorios comprimidos.     │
-      │ Imagen         │ png-imagen.png         │ Validar el renderizado de alta fidelidad en la celda de la terminal. │
-      │ Video          │ mp4-video.mp4          │ Probar la integración multimedia fluida.                             │
-      │ Web            │ html-web.html          │ Demostrar el motor de renderizado HTML -> Imagen/PNG.                │
-      └────────────────┴────────────────────────┴──────────────────────────────────────────────────────────────────────┘
-
-      ---
-
-      ⚙️ 2. El Pipeline de Comandos (Lógica de Ejecución)
-
-      La demo se divide en 4 Fases Tácticas, cada una desplegada en una pestaña independiente con identidad visual Hacker Neon.
-
-      Fase A: Parseo y Temas (MCAT-DOCS)
-       * Comando: mcat pdf-documento.pdf && mcat rs-codigo.rs -t monokai
-       * Explicación: Primero extrae el texto del PDF directamente a la terminal. Luego lee el código Rust aplicando el tema monokai, demostrando estética y legibilidad.
-
-      Fase B: Motor de Conversión (MCAT-CONVERT)
-       * Comando: mcat zip-archivo.zip > preview.md && mcat html-web.html -o image > page.png
-       * Explicación: Muestra la potencia de transformación. Convierte la estructura de un ZIP en un archivo Markdown legible y renderiza un sitio HTML estático en una imagen física PNG.
-
-      Fase C: Multimedia y Exploración (MCAT-MEDIA)
-       * Comando: mcat png-imagen.png && mcat ls assets/mcat-demo/
-       * Explicación: Renderiza la imagen directamente. Luego usa el subcomando ls de mcat, que genera una lista de archivos con miniaturas visuales (thumbnails) en la terminal.
-
-      Fase D: Inmersión Interactiva (MCAT-INTERACTIVE)
-       * Comando: mcat . && mcat pdf-documento.pdf -o interactive
-       * Explicación: Lanza el selector interactivo en el directorio actual (permite elegir archivos con las flechas). Finalmente, abre el visor interactivo para hacer Zoom y Pan (desplazamiento) dentro del PDF.
-
-      ---
-
-      🚀 3. Ejecución del Demo
-
-      Para activar este despliegue, el usuario soberano solo debe ejecutar el comando maestro desde cualquier punto de la terminal Kitty controlada por ARES:
-
-       ares mcat-demo
+    examples: "ares mcat-demo"
+    details: "Fases: A) Parseo y Temas (PDF, código), B) Conversión (ZIP→MD, HTML→PNG), C) Multimedia (imágenes, ls con thumbs), D) Interactivo (selector, zoom/pan PDF)."
 
   status:
-    description: "🔍 Diagnóstico Integral del Sistema."
+    description: "🔍 Diagnóstico Integral"
     usage: "ares status"
     category: "Gestión"
-    details: "Verifica estado del socket Kitty, enlaces simbólicos y salud de la IA."
+    examples: "ares status"
+    details: "Verifica: socket Kitty, handshakes IA, conectividad modelos, enlaces simbólicos config."
 
   config:
-    description: "⚙️ Inspección de Configuración Global."
+    description: "⚙️ Configuración Global"
     usage: "ares config"
     category: "Gestión"
+    examples: "ares config"
+    details: "Muestra: identidad (window_title), sockets (kitty, path), provider IA, modelos activos."
 
   init:
-    description: "🛠️  Gestión de Infraestructura."
-    usage: "ares init [OPTIONS]"
+    description: "🛠️ Gestión de Infraestructura"
+    usage: "ares init [--link|--status|--reload]"
     category: "Gestión"
+    examples: "ares init -l | ares init -s | ares init -r"
     options:
-      - "--link, -l": "Enlazar configuración de Kitty con ARES."
-      - "--status, -s": "Ver estado de la inicialización."
-      - "--reload, -r": "Recargar configuración en Kitty caliente."
+      - "--link, -l": "Enlaza config Kitty con ARES (symlink kitty.conf)"
+      - "--status, -s": "Verifica estado: enlaces, directorios, permisos"
+      - "--reload, -r": "Recarga config en Kitty caliente (sin reiniciar)"
+    details: "Inicializa infraestructura: enlaces simbólicos, valida directorios, recarga configuración en caliente."
 
   model:
-    description: "⚙️  Configura el Provider de IA por defecto."
-    usage: "ares model [PROVIDER]"
+    description: "⚙️ Configura Provider IA"
+    usage: "ares model [gemma|deepseek]"
     category: "IA"
-    details: "Cambia entre 'gemma' (Ollama local) y 'deepseek' (API remota)."
+    examples: "ares model gemma | ares model deepseek"
+    details: "Cambia provider por defecto: gemma (Ollama local) o deepseek (API remota)."
 
   models:
-    description: "📦 Lista Modelos Disponibles."
+    description: "📦 Lista Modelos"
     usage: "ares models"
     category: "IA"
+    examples: "ares models"
+    details: "Lista modelos disponibles por provider (Ollama, DeepSeek, OpenRouter)."
 
   templates:
-    description: "📄 Catálogo de Plantillas YAML."
+    description: "📄 Catálogo de Plantillas"
     usage: "ares templates"
     category: "IA"
+    examples: "ares templates"
+    details: "Lista plantillas YAML: default, chat, code, tools (comportamiento IA por contexto)."
 
   tools:
-    description: "🛠️  Inventario de Herramientas (Function Calling)."
+    description: "🛠️ Herramientas (Function Calling)"
     usage: "ares tools"
     category: "IA"
+    examples: "ares tools"
+    details: "Inventario: google_search, translate, weather, shell, file_ops (herramientas IA)."
 
   video:
-    description: "🎬 Multimedia: Reproductor de Video en Terminal."
+    description: "🎬 Reproductor de Video"
     usage: "ares video [ARCHIVO]"
     category: "Multimedia"
-    details: "Usa mpv con protocolo gráfico integrado en Kitty."
+    examples: "ares video /path/to/video.mp4"
+    details: "Usa mpv con protocolo gráfico Kitty. Integración fluida en terminal."
 
   image:
-    description: "🖼️ Multimedia: Visualizador de Imágenes (icat)."
+    description: "🖼️ Visualizador de Imágenes"
     usage: "ares image [ARCHIVO]"
     category: "Multimedia"
+    examples: "ares image /path/to/image.png"
+    details: "Usa icat (kitten). Renderizado nativo en celda de terminal."
+
+  socket-check:
+    description: "🔍 Verifica Sockets"
+    usage: "ares socket-check [SOCKET] [--json]"
+    category: "Gestión"
+    examples: "ares socket-check | ares socket-check unix:/tmp/custom --json"
+    details: "Diagnostica sockets: existencia, permisos, procesos. --json para scripting."
 
   help:
-    description: "📚 Manual de Operaciones y Documentación."
+    description: "📚 Navegador de Documentación"
     usage: "ares help"
     category: "Core"
-    details: "Abre la carpeta docs/ usando Broot para navegación jerárquica."
+    examples: "ares help"
+    details: "Abre docs/ con Broot (navegación jerárquica). Índice, skills, bitácoras."
 
 ecosystem_tools:
-  ini: "Orquestador de ciclo de vida (venv, prod, globalización)."
-  repo: "Auditor táctico de Git y gestor de backups comprimidos."
-  aviso: "Sistema de recordatorios con lenguaje natural y daemon."
-  tr-color: "Pigmentación dinámica de pestañas basada en contexto."
-  tr-investigador: "Búsqueda Google, oteo web y consulta de docs."
+  ini: "Ciclo de vida: ini venv (entorno), ini prod (publica en /usr/bin), ini env (variables)"
+  repo: "Git táctico: backup comprimido, auditoría de repositorio"
+  aviso: "Recordatorios: lenguaje natural + daemon (aviso 'mañana a las 9')"
+  tr-color: "Pigmenta pestañas: tr-color <ruta> (match por ruta → color/título)"
+  tr-investigador: "Web research: buscar, otear, consultar docs (Google + web scraping)"
 
 sub_agents:
-  sherlok: "Auditor de código con ADN Técnico Industrial (codellama, qwen, deepseek)."
+  sherlok: "Auditor de código: codellama, qwen, deepseek (ADN Técnico Industrial)"
