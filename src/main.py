@@ -57,8 +57,8 @@ def cli(ctx, prompt, help):
         
         if ares_image.exists():
             try:
-                # Usar kitten icat para mostrar imagen
-                subprocess.run(["kitten", "icat", str(ares_image)], check=False, timeout=2)
+                # Usar kitten icat para mostrar imagen (una sola vez)
+                subprocess.run(["kitten", "icat", "--align", "left", str(ares_image)], check=False, timeout=2)
                 console.print()  # Nueva línea después de la imagen
             except Exception:
                 pass  # Si falla icat, continuar sin imagen
