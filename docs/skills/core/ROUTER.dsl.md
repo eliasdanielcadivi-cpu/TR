@@ -37,6 +37,11 @@ sub-skills:
     caps: ["kitty-session", "save-tabs", "restore-state"]
     trig: ["gs", "session", "sesion"]
 
+  sys-config:
+    ref: "skill-sys-config.dsl.md"
+    caps: ["meta-configuration", "system-shield", "dsl-editing"]
+    trig: ["configurar sistema", "editar memoria", "ajustar router"]
+
   agenda:
     ref: "skill-agenda.dsl.md"
     caps: ["gantt-management", "project-timeline", "task-reconciliation"]
@@ -47,6 +52,11 @@ sub-skills:
     caps: ["lifecycle-orchestration", "init-dev-prod-maint", "agenda-sync"]
     trig: ["ciclo de vida", "proyecto", "fases", "seguimiento proyecto", "estado proyecto"]
 
+  ayuda:
+    ref: "skill-ayuda-sistema.dsl.md"
+    caps: ["unified-help", "program-docs", "contextual-help"]
+    trig: ["ayuda", "help", "--help", "-h", "documentación"]
+
 logic:
   (match-intent $query
     (case (in_trig? "kernel") (load $kernel))
@@ -55,6 +65,8 @@ logic:
     (case (in_trig? "prod") (load $prod))
     (case (in_trig? "maint") (load $maint))
     (case (in_trig? "session") (load $session))
+    (case (in_trig? "config") (load $sys-config))
     (case (in_trig? "agenda") (load $agenda))
     (case (in_trig? "ciclo") (load $ciclo-vida))
+    (case (in_trig? "ayuda") (load $ayuda))
   )

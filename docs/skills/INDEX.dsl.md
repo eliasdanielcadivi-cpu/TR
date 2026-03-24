@@ -44,8 +44,8 @@ arsenal:
 
   core:
     router: "@SKILLS/core/ROUTER.dsl.md"
-    caps: ["system-kernel", "initialization", "session-mgmt", "agenda-gantt", "ciclo-vida"]
-    trig: ["kernel", "sys", "init", "sesion", "agenda", "gantt", "ciclo de vida", "proyecto"]
+    caps: ["system-kernel", "initialization", "session-mgmt", "agenda-gantt", "ciclo-vida", "system-shield", "ayuda-sistema"]
+    trig: ["kernel", "sys", "init", "sesion", "agenda", "gantt", "ciclo de vida", "proyecto", "configurar", "ayuda", "help"]
 
 logic:
   (on-intent $query
