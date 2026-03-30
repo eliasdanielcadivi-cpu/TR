@@ -76,6 +76,9 @@ ARES es el **cerebro** que controla la terminal ares para crear flujos de trabaj
 | `ares help` | Abre documentación navegable con Broot |
 | `ares apollo ingest <archivo>` | Ingerir documento al sistema RAG |
 | `ares apollo ingest <archivo> --extract` | Ingerir con extracción de entidades |
+| `ares rag status` | Estado del sistema RAG V3 |
+| `ares rag ingest <archivo>` | Ingerir documento en el nuevo módulo RAG |
+| `ares rag cartografo` | Modo interactivo Cartógrafo para gestión del grafo |
 | `ares model-creator list` | Listar modelos Ollama disponibles |
 | `ares model-creator create <name> --from <parent>` | Crear modelo desde padre |
 | `ares model-creator update <name> --params` | Actualizar parámetros de modelo |
@@ -151,6 +154,7 @@ ARES no actúa solo; se integra con herramientas globales diseñadas para la pre
 Los módulos están agrupados jerárárquicamente en `modules/`:
 - **admon/**: Salud y configuración del sistema.
 - **ia/**: Inteligencia y búsqueda avanzada (multi-provider).
+- **rag/**: Sistema RAG híbrido T0-T4 con zero-hallucination y validación C1-C4.
 - **color/**: Identidad visual dinámica para pestañas Kitty.
 - **multimedia/**: Puppeteering de video, imagen y audio.
 - **tactico/**: Despliegue de flujos de trabajo complejos.
@@ -304,6 +308,7 @@ Los dashboards de ARES (en desarrollo) utilizan transiciones tipo **morphing** p
 | `docs/DEEPSEEK_GUIDE.md` | Guía de DeepSeek API |
 | `docs/Ollama-API.md` | Referencia de API de Ollama |
 | `docs/sacar-jugo-gemma.md` | Recopilación de técnicas para Gemma |
+| `docs/RAG-TECNICO/RAG-MODULO-V3-IMPLEMENTACION-TECNICA.md` | **Implementación técnica completa** del módulo RAG V3: arquitectura híbrida T0-T4, zero-hallucination, validación C1-C4, skill Cartógrafo |
 | `docs/Ares-Terminal/` | Configuración de terminal predeterminada |
 | `docs/Ares-Terminal/CONFIGURACION_TERMINAL_PREDETERMINADA.md` | Guía forense completa de ARES como terminal |
 | `docs/Ares-Terminal/REFERENCIA_RAPIDA.md` | Comandos y atajos rápidos |

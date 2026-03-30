@@ -1,7 +1,7 @@
 # 🛰️ ARES - ÍNDICE MAESTRO DE DOCUMENTACIÓN
 
 > **Navegación recomendada:** `broot` o `ares help`  
-> **Última actualización:** 2026-03-13  
+> **Última actualización:** 2026-03-30  
 > **Estructura:** 17 carpetas + 3 archivos raíz | **Total documentos:** 50+
 
 ---
@@ -62,7 +62,8 @@ docs/
 ├── RAG-TECNICO/
 │   ├── FASE0-COMPLETADA-APOLLO-DB.md
 │   ├── FASE1-COMPLETADA-APOLLO-INGESTA.md
-│   └── INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md
+│   ├── INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md
+│   └── RAG-MODULO-V3-IMPLEMENTACION-TECNICA.md
 ├── skills/ (18 skills, 367 archivos, 9.6 MB)
 │   ├── INDEX.md (maestro de skills)
 │   ├── comms/internal-comms/
@@ -236,6 +237,7 @@ docs/
 | `FASE0-COMPLETADA-APOLLO-DB.md` | Fase 0: Base de datos Apollo completada |
 | `FASE1-COMPLETADA-APOLLO-INGESTA.md` | Fase 1: Ingesta Apollo completada |
 | `INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md` | **Informe técnico exhaustivo** (825 líneas): SQLite + sqlite-vec, GraphRAG, embeddings cuantizados |
+| `RAG-MODULO-V3-IMPLEMENTACION-TECNICA.md` | **Implementación técnica completa** del módulo RAG V3: arquitectura híbrida T0-T4, zero-hallucination, validación C1-C4, agnosticismo estructural, skill Cartógrafo |
 
 ---
 
@@ -291,6 +293,7 @@ docs/
 2. `Modulos-y-Sus-Problemas/STREAMING.md` - Implementación de streaming
 3. `Modulos-y-Sus-Problemas/VENTANA_VS_PESTANA.md` - Diferenciación crítica
 4. `RAG-TECNICO/INFORME-TECNICO-ARQUITECTURA-RAG-HIBRIDA-ULTRALIGERA-DE-ALTA-EFICACIA.md` - Arquitectura RAG
+5. `RAG-TECNICO/RAG-MODULO-V3-IMPLEMENTACION-TECNICA.md` - Implementación técnica del módulo RAG V3
 
 ### Para Operación Diaria
 1. `HELP.md` - Comandos y referencias rápidas

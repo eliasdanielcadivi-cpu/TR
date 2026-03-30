@@ -95,6 +95,60 @@
 
 ---
 
+### `rag/` - Sistema RAG Híbrido V3 (Zero-Hallucination)
+
+**Arquitectura:** 5 niveles T0-T4 (Cache → SQL → Vector → Graph → Reasoning)
+**Validación:** Sistema C1-C4 (Descriptivo → Operacional → Integridad → Seguridad)
+**Tecnologías:** SQLite + sqlite-vec + Kùzu + Ollama/DeepSeek
+**Características:** Zero-hallucination, agnosticismo estructural ($MAP pointers), inmutabilidad por sesión
+
+#### `core/` - Núcleo del Sistema
+| Módulo | Funciones | Estado |
+|--------|-----------|--------|
+| `tier_router.py` | `TieredRAGRouter`: `retrieve()`, routing T0-T4, lazy loading de motores | ✅ |
+| `rag_orchestrator.py` | `RAGOrchestrator`: `retrieve()`, `ingest_document()`, `get_status()`, `run_cartografo()` | ✅ |
+
+#### `engines/` - Motores Especializados
+| Motor | Tecnología | Funciones |
+|-------|------------|-----------|
+| `sql_engine.py` | SQLite3 + FTS5 | `keyword_search()`, `entity_search()`, `hybrid_search()` (T1) |
+| `vector_engine.py` | sqlite-vec + Ollama embeddings | `embed_text()`, `similarity_search()`, `hybrid_rerank()` (T2) |
+| `graph_engine.py` | Kùzu graph database | `traverse()`, `find_relationships()`, `expand_neighborhood()` (T3) |
+| `llm_engine.py` | Ollama/DeepSeek + Chain-of-Thought | `reason()`, `reason_async()`, `get_status()` (T4) |
+
+#### `ingestors/` - Procesamiento de Documentos
+| Ingestor | Formatos | Características |
+|----------|----------|-----------------|
+| `file_ingestor.py` | `.txt`, `.md`, `.py`, `.json`, `.yaml` | Chunking inteligente, metadata extraction |
+| `code_ingestor.py` | `.py` (Python) | Análisis AST, extracción de entidades y relaciones |
+
+#### `validators/` - Validación C1-C4
+| Módulo | Funciones | Niveles |
+|--------|-----------|---------|
+| `relation_guard.py` | `validate()`, `can_execute()`, `get_pending()` | C1 (Descriptivo) → C4 (Seguridad) |
+
+#### `skills/` - Habilidades Especializadas
+| Skill | Propósito | Comandos |
+|-------|-----------|----------|
+| `cartografo.py` | Gestión conversacional del grafo | `mapear`, `validar`, `conectar`, `grafo`, `salir` |
+
+**Bases de datos:**
+- `db/rag/rag_sqlite.db` - Documentos y entidades (SQLite)
+- `db/rag/rag_vector.db` - Embeddings (sqlite-vec)
+- `db/rag/rag_graph.kuzu/` - Grafo de conocimiento (Kùzu)
+- `db/rag/rag_core.sqlite` - Validaciones C1-C4 (RelationGuard)
+
+**Comandos ARES:**
+- `ares rag status` - Estado del sistema RAG
+- `ares rag ingest <archivo>` - Ingerir documento
+- `ares rag cartografo` - Modo Cartógrafo interactivo
+- `ares p "consulta" --rag` - Consulta con RAG (headless)
+- `ares i --rag` - Interactivo con RAG activado
+
+**Documentación técnica:** `docs/RAG-TECNICO/RAG-MODULO-V3-IMPLEMENTACION-TECNICA.md`
+
+---
+
 ### `investigador/` - Exploración Web
 | Tipo | CLI | Funciones |
 |------|-----|-----------|

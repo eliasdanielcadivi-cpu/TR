@@ -29,6 +29,7 @@ from modules.core.window_registry import init_db as init_window_db
 init_session_db()
 init_window_db()
 
+from modules.rag import RAGOrchestrator
 from modules.ui.help_manager import HelpManager
 from modules.multimedia.media_manager import MediaManager
 
@@ -1080,6 +1081,65 @@ def agente_agente_de_cambio(obj, accion):
         from modules.ui.agente_de_cambio import show_status
         show_status()
 
+
+# ============================================================================
+# RAG - Sistema de Recuperación Aumentada por Grafo
+# ============================================================================
+
+@cli.group(name="rag")
+def rag_cmd():
+    """🧠 Sistema RAG T0-T4: Recuperación Aumentada por Grafo.
+
+    Subcomandos:
+      cartografo  - Modo conversacional para gestión del grafo de conocimiento
+      ingest      - Indexar documentos en el RAG
+      status      - Ver estadísticas del índice
+    """
+    pass
+
+@rag_cmd.command(name="cartografo")
+@click.pass_obj
+def rag_cartografo_cmd(obj):
+    """🗺️  Modo Cartógrafo: Negociación conversacional del grafo de conocimiento."""
+    try:
+        rag = RAGOrchestrator()
+        rag.run_cartografo()
+    except Exception as e:
+        click.echo(f"❌ Error iniciando Cartógrafo: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+@rag_cmd.command(name="ingest")
+@click.argument("path")
+@click.option("--doc-type", "-t", help="Tipo de documento (auto-detected si no se especifica)")
+@click.pass_obj
+def rag_ingest_cmd(obj, path, doc_type):
+    """📥 Indexar documento en el sistema RAG."""
+    try:
+        rag = RAGOrchestrator()
+        result = rag.ingest_document(path, doc_type)
+        click.echo(f"✅ Documento indexado: {result}")
+    except Exception as e:
+        click.echo(f"❌ Error indexando documento: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+@rag_cmd.command(name="status")
+@click.pass_obj
+def rag_status_cmd(obj):
+    """📊 Ver estadísticas del índice RAG."""
+    try:
+        rag = RAGOrchestrator()
+        status = rag.get_status()
+        click.echo("📊 Estado del sistema RAG:")
+        for key, value in status.items():
+            click.echo(f"  {key}: {value}")
+    except Exception as e:
+        click.echo(f"❌ Error obteniendo estado: {e}")
+        import traceback
+        traceback.print_exc()
 
 # ============================================================================
 

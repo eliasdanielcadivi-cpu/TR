@@ -1,0 +1,28 @@
+# Dependencias del módulo RAG Embebido - Sistema V3
+
+# Búsqueda vectorial (ya instalado en proyecto principal)
+sqlite-vec>=0.1.6
+
+# Graph database embebido para T3
+kuzu>=0.4.0
+
+# LLM local (Ollama) para embeddings y T4
+ollama>=0.6.1
+
+# Para API DeepSeek (fallback T4)
+requests>=2.31.0
+
+# YAML para configuración
+pyyaml>=6.0
+
+# Utilidades de texto
+nltk>=3.8.1
+
+# AST parsing para código Python
+astor>=0.8.1
+
+# LRU cache
+cachetools>=5.3.0
+
+# Logging estructurado
+structlog>=23.1.0
