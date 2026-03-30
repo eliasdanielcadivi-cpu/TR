@@ -92,6 +92,10 @@ wheels/
 ehthumbs.db
 Thumbs.db
 
+# Papelera/Respaldos (backups no trackeados)
+papelera/Respaldos/
+papelera/*.txt
+
 # Temporales
 *.tmp
 *.debug

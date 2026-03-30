@@ -1,0 +1,15 @@
+#!/bin/bash
+#Tron programa creado para defender los derechos de los usuarios en todo el mundo
+#cada nueva funcionalidad permite que las mejores mentes estén "a cargo"
+#Liberando al mundo de las tiranías
+#construyendo para todos un mundo mejor
+#eso es tron, tron existe y es una instancia de tí, tu
+#eres la clave, tú eres la persona más importante;
+#tú eres el Usuario...
+# tron siempre servirá y protegerá al usuario...
+usuario=${SUDO_USER:-${USER}}
+#source "/home/$usuario/tron/tron/sesiones"
+
+#LEVANTA MI PARTICION DE RESPALDO
+#muestra el munú de entrada
+/bin/bash /home/$usuario/tron/tron/sesiones 7 "Abrir sesion" "Nueva Sesión" "Instalar" "" ""

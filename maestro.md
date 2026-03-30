@@ -1,0 +1,3814 @@
+# maestro.md - Contenido de: /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA
+
+**Extensiones procesadas:** `.md`
+
+## /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA/PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md
+
+```
+**Documentos clave que rigen este diseño:**
+- `VersionIaArquitecturadeMódulosOrientadaaIA.md`: Máximo 3 funciones/módulo, organización paranoica, papelera/, docs/ para lo problemático, LEEME.md como verdad funcional
+- `RECOMENDACIONES-OLLAMA-MODELFILE-VARIABLES-ENTORNO-POR-MODELO.md`: Contexto limitado (8K tokens), RAM <1GB, lectura selectiva
+- Tus memorias actuales: TRON tools (ini, com, repo), filosofía ARES headless, soberanía tecnológica
+
+## Metodología de Avance Empírico y Registro de Trazabilidad
+
+Para asegurar el progreso constante sin regresiones y mantener la soberanía de autoría, se establece el siguiente protocolo de obligatorio cumplimiento para la IA:
+
+1.  **Inyección Documental Previa**: Antes de proponer cambios estructurales, la IA debe leer los documentos técnicos pertinentes (ej. `COLOR_SYSTEM.md`, `VENTANA_VS_PESTANA.md`).
+2.  **Protocolo de No Borrado (Snapshotting)**:
+    - Las versiones de scripts que alcancen hitos funcionales (ej. "Abre ventana OK") deben respaldarse físicamente con nombres descriptivos (ej. `abrió-ventana-OK.py`).
+    - Estas versiones sirven como puntos de restauración inmediata en caso de fallo en la siguiente iteración.
+3.  **Validación Granular por Hitos**:
+    - No realizar validaciones de "todo o nada". 
+    - Descomponer la verificación en una batería de preguntas granulares (vía Zenity o consola) que aíslen fallos de títulos, colores, sockets y comandos.
+4.  **Registro de Logros (INDEX-TESTS.md)**:
+    - Cada experimento exitoso debe documentarse en `docs/INDEX-TESTS.md`, detallando el objetivo, los errores superados y los artefactos generados.
+    - Este registro es la base legal y operativa para comprobar la evolución del sistema y la autoría del diseño.
+5.  **Aislamiento de Sockets**: Para pruebas de orquestación, usar siempre sockets aislados (`--listen-on unix:/tmp/test_socket`) para no interferir con el entorno de trabajo principal hasta la consolidación final.
+
+---
+
+## 👁️ Directiva de IA: Visión y Constatación Soberana
+**Definición descriptiva:** "Voy a concluir los programas, pruebas y scripts no de la manera tradicional (tarea realizada). Cuando se necesite una confirmación o mensaje al usuario o se realice una prueba, yo primero tendré que crear mecanismos de visión y constatación que ciertamente el trabajo se realizó, al menos desde dos perspectivas independientes y luego, basado en eso, se condicionará el mensaje o salida de respuesta al usuario o al sistema."
+
+**Protocolo de Cierre IA:**
+- **Perspectiva 1 (Técnica):** Validación de buffers, secuencias ANSI, IDs de imagen o logs de ejecución.
+- **Perspectiva 2 (Estructural):** Verificación de integridad de archivos, importaciones y cumplimiento de la modularidad atómica.
+
+---
+
+## 🛠️ Directiva de Validación Git (Post-CRUD)
+**Obligatoriedad:** Al finalizar la edición de funcionalidades (Cambio, Eliminación, Actualización) que involucren documentos de documentación, `LEEME.md`, agendas o código, la IA **DEBE** ejecutar `git diff`.
+**Objetivo:** Constatar fehacientemente que se editó o borró exactamente lo que se debía, evitando truncamientos accidentales o pérdida de contexto histórico.
+
+---
+
+## 🤝 Protocolo de Coexistencia IA: `dont-touch-my-eggs.md`
+Para evitar colisiones cuando trabajan dos o más IAs en el mismo proyecto, es obligatorio el uso del "Cuaderno de Apartado".
+- **Ubicación:** Raíz del proyecto (`/dont-touch-my-eggs.md`).
+- **Uso:** Toda IA, antes de operar, debe leer este cuaderno y anotar su reservación de módulos o documentos (Nombre IA, Fecha, Hora, Archivos Reservados).
+- **Referencia:** Ver detalle en `LEEME.md` y el propio archivo de apartado.
+
+---
+
+## Iteración 2: Estructura base de cada skill
+
+Decisión: Cada skill sigue plantilla idéntica para que la IA prediga el formato:
+```
+# skill-[nombre]
+## Propósito
+## Cuándo usar (trigger exacto)
+## Entradas requeridas
+## Flujo de ejecución (pasos numerados)
+## Validaciones críticas
+## Outputs (JSON obligatorio)
+## Reglas de oro (límites ARES)
+## Relación con otros skills (solo referencia, no dependencia)
+```
+
+---
+
+## Iteración 3: Desarrollo completo de los 4 skills
+
+---
+
+### skill-inicializacion
+
+```markdown
+# skill-inicializacion
+
+## Propósito
+Crear estructura base de proyecto ARES con organización paranoica. Establecer documentación mínima viable para que IA pueda navegar sin desperdiciar tokens.
+
+## Cuándo usar
+- Usuario dice: "inicializa proyecto", "nuevo proyecto", "crea estructura", "empezar"
+- Directorio vacío o sin REP_STRUCTURE.md
+- Antes de cualquier código
+
+## Entradas requeridas
+- `nombre_proyecto`: string (opcional, default=basename pwd)
+- `tipo_proyecto`: "python" | "node" | "mixed" (default="python")
+
+## Flujo de ejecución
+
+1. **Validar espacio de trabajo**
+   - Verificar que no existe conflicto de nombres
+   - Confirmar permisos de escritura
+   - Si existe LEEME.md, abortar con error: "Proyecto ya inicializado"
+
+2. **Crear jerarquía paranoica**
+   ```
+   {nombre_proyecto}/
+   ├── .ai/
+   │   └── rules.md              # Límites de contexto y RAM
+   ├── bin/                      # Binarios externos (vacío inicial)
+   ├── config/                   # Configuración centralizada (vacío)
+   ├── docs/
+   │   ├── skills/               # Capabilities del proyecto
+   │   │   ├── skill-inicializacion.md  # Este archivo (copia)
+   │   │   └── INDEX.md          # Índice de skills disponibles
+   │   └── .ai/                  # Reglas específicas del proyecto
+   │       └── context.md        # Variables de entorno, modelos usados
+   ├── src/
+   │   ├── core/                 # Lógica principal (vacío)
+   │   ├── modules/              # Módulos normales (vacío)
+   │   └── api/                  # Endpoints si aplica (vacío)
+   ├── Agentes/                  # Módulos LLM con JSON output (vacío)
+   ├── papelera/                 # Código experimental no funcional (vacío)
+   ├── tests/                    # Validaciones (vacío)
+   ├── LEEME.md                  # Única fuente de verdad funcional
+   └── REP_STRUCTURE.md          # Mapa operativo para IA
+   ```
+
+3. **Generar archivos base con contenido mínimo**
+
+   **LEEME.md:**
+   ```markdown
+   # {nombre_proyecto}
+   
+   ## Estado: [INIT] {fecha}
+   ## Funcionalidades Operativas: Ninguna
+   ## Módulos en Desarrollo: Ninguno
+   ## En Papelera: Ninguno
+   
+   ---
+   ### Registro de Cambios Funcionales
+   - {fecha}: Inicialización estructura ARES
+   ```
+
+   **REP_STRUCTURE.md:**
+   ```markdown
+   # REP_STRUCTURE.md — Mapa Operativo IA
+   
+   ## Contexto Límite
+   - num_ctx: 8192 tokens
+   - RAM máxima conversación: 1GB
+   - Sliding window: últimas 5-7 interacciones
+   
+   ## Jerarquía de Lectura Obligatoria
+   1. `.ai/rules.md` → límites técnicos
+   2. `REP_STRUCTURE.md` → este archivo (mapa)
+   3. `LEEME.md` → estado real del proyecto
+   4. `docs/skills/skill-{tarea}.md` → capability específica
+   
+   ## Estructura de Carpetas
+   
+   | Ruta | Contenido | ¿Lee IA? |
+   |------|-----------|----------|
+   | `.ai/rules.md` | Restricciones hardware/contexto | Siempre primero |
+   | `docs/skills/` | Capabilities ejecutables | Bajo demanda |
+   | `src/core/` | Lógica principal | Según tarea |
+   | `src/modules/` | Módulos CLI/importables | Según tarea |
+   | `Agentes/` | Módulos LLM, JSON output | Si tarea requiere LLM |
+   | `bin/` | Binarios externos | Solo configs |
+   | `config/` | Configuración centralizada | Solo si aplica |
+   | `papelera/` | Código no funcional | No (salvo instrucción) |
+   
+   ## Reglas de Oro
+   - Nunca asumir funcionalidades no listadas en LEEME.md
+   - Cargar solo código necesario para tarea actual
+   - Máximo 3 funciones por módulo
+   - JSON estructurado para outputs de Agentes/
+   ```
+
+   **.ai/rules.md:**
+   ```markdown
+   # AI Execution Rules — {nombre_proyecto}
+   
+   ## Límites Hard
+   - num_ctx: 8192 tokens (conservador)
+   - RAM dedicada: <1GB por conversación activa
+   - num_batch: 512 (máximo)
+   
+   ## Estrategia de Memoria
+   - Contexto inmediato: últimas 5 interacciones completas (≈20K tokens)
+   - Resumen histórico: >5 interacciones condensadas a 500 tokens
+   - Documentación RAG: recuperación vectorial de 60K tokens máx
+   
+   ## Exclusiones Absolutas
+   - `node_modules/`, `.git/`, `__pycache__/`, `*.pyc`
+   - `papelera/` (salvo comando explícito "revisar papelera")
+   - Código fuente en `bin/` (solo leer configs)
+   
+   ## Formato de Output
+   - Módulos normales: código limpio, ≤3 funciones, comentarios solo en lo complejo
+   - Agentes/: JSON obligatorio con campos: estado, accion, datos
+   - Skills: según plantilla skill-{nombre}.md
+   ```
+
+   **docs/skills/INDEX.md:**
+   ```markdown
+   # Índice de Skills — {nombre_proyecto}
+   
+   | Skill | Estado | Descripción | Trigger |
+   |-------|--------|-------------|---------|
+   | inicializacion | [OK] | Crear estructura base | "inicializa", "nuevo proyecto" |
+   | desarrollo | [PENDIENTE] | Crear módulos con calidad | "nuevo módulo", "desarrolla" |
+   | mantenimiento | [PENDIENTE] | Gestionar código existente | "mantener", "a papelera", "adaptar" |
+   | produccion | [PENDIENTE] | Globalizar via ini | "producir", "globalizar", "a /usr/bin" |
+   
+   Leyenda: [OK]=Documentado y listo | [PENDIENTE]=No creado aún | [DEP]=Deprecado
+   ```
+
+4. **Actualizar LEEME.md con estado inicial**
+   - Estado: [INIT]
+   - Funcionalidades: Ninguna
+   - Registrar timestamp
+
+5. **Confirmar al usuario**
+   - Mostrar árbol de carpetas creadas (2 niveles)
+   - Indicar próximo paso sugerido: "Usar skill-desarrollo para crear primer módulo"
+
+## Validaciones críticas
+
+- [ ] No sobreescribir proyecto existente (LEEME.md presente)
+- [ ] Crear exactamente las carpetas documentadas (ni más ni menos)
+- [ ] Contenido de LEEME.md debe ser mínimo pero semántico
+- [ ] INDEX.md debe reflejar estado real (solo inicializacion como [OK])
+
+## Outputs
+
+### JSON estructurado (para Agentes/ si aplica)
+```json
+{
+  "estado": "ok",
+  "accion": "inicializacion_completa",
+  "datos": {
+    "proyecto": "{nombre_proyecto}",
+    "ruta": "{ruta_absoluta}",
+    "estructura_creada": [".ai", "bin", "config", "docs/skills", "src/core", "src/modules", "src/api", "Agentes", "papelera", "tests"],
+    "archivos_base": ["LEEME.md", "REP_STRUCTURE.md", ".ai/rules.md", "docs/skills/INDEX.md"],
+    "siguiente_paso": "skill-desarrollo para crear primer módulo"
+  }
+}
+```
+
+### Output CLI (para humano)
+```
+⚡ Proyecto '{nombre_proyecto}' inicializado en {ruta}
+Estructura ARES creada: 10 carpetas, 4 archivos base
+Estado: [INIT] — Listo para skill-desarrollo
+```
+
+## Reglas de oro ARES
+
+1. **Organización paranoica**: Todo elemento tiene ubicación explícita, nada suelto
+2. **Documentación mínima viable**: Solo lo necesario para IA con contexto limitado
+3. **LEEME.md es verdad**: Si no está ahí, no existe funcionalmente
+4. **No adelantarse**: Skills de desarrollo/mantenimiento/produccion quedan como [PENDIENTE] en INDEX.md
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Siguiente en flujo natural | Después de inicializar, se desarrolla |
+| mantenimiento | No aplica en proyecto nuevo | Sin código aún, no hay qué mantener |
+| produccion | No aplica sin código | Requiere módulos funcionales primero |
+
+**Independencia**: Este skill no carga ni depende de otros. Es punto de entrada único.
+```
+
+---
+
+### skill-desarrollo
+
+```markdown
+# skill-desarrollo
+
+## Propósito
+Crear módulos atómicos con calidad integrada desde el inicio. Desarrollo no es solo escribir código: es escribir, validar, documentar lo problemático, y descartar lo no funcional a papelera.
+
+## Cuándo usar
+- Usuario dice: "nuevo módulo", "desarrolla", "crea función para...", "implementa"
+- Existe LEEME.md (proyecto inicializado)
+- Tarea involucra código nuevo o modificación sustancial
+
+## Entradas requeridas
+- `nombre_modulo`: string (kebab-case o snake_case)
+- `tipo`: "lib" | "cli" | "hibrido" | "agente"
+- `descripcion`: string (una línea, qué hace)
+- `complejidad`: "simple" | "complejo" (default="simple")
+
+## Flujo de ejecución
+
+1. **Pre-validación del espacio**
+   - Leer LEEME.md: verificar estado proyecto, ver módulos existentes
+   - Leer REP_STRUCTURE.md: confirmar rutas válidas
+   - Verificar que `nombre_modulo` no existe en `src/modules/` ni `Agentes/`
+   - Si existe: abortar o sugerir skill-mantenimiento para modificación
+
+2. **Determinar ubicación según tipo**
+   
+   | Tipo | Ubicación | Características |
+   |------|-----------|----------------|
+   | "lib" | `src/modules/{nombre}/` | Solo importable, sin __main__ |
+   | "cli" | `src/modules/{nombre}/` | Ejecutable, argparse, ayuda interna |
+   | "hibrido" | `src/modules/{nombre}/` | Importable + ejecutable |
+   | "agente" | `Agentes/{nombre}/` + `src/modules/{nombre}/` | JSON output obligatorio, conexión LLM |
+
+3. **Crear estructura del módulo**
+
+   **Para lib/cli/hibrido:**
+   ```
+   src/modules/{nombre}/
+   ├── __init__.py          # Exports principales
+   └── funciones.py         # Lógica (máximo 3 funciones)
+   ```
+
+   **Para agente:**
+   ```
+   src/modules/{nombre}/    # Lógica reutilizable
+   ├── __init__.py
+   └── funciones.py
+   
+   Agentes/{nombre}/        # Wrapper LLM
+   ├── agente.py            # Conexión modelo, JSON output
+   └── config.yaml          # Parámetros específicos del agente
+   ```
+
+4. **Aplicar plantilla de código (regla de 3 funciones máximo)**
+
+   **Plantilla lib/hibrido:**
+   ```python
+   # Módulo: {nombre}
+   # Tipo: {tipo}
+   # Propósito: {descripcion}
+   # Creado: {fecha} via skill-desarrollo
+   
+   def funcion_principal(parametro):
+       """
+       Docstring descriptivo.
+       
+       Args:
+           parametro: tipo y descripción
+       
+       Returns:
+           tipo y descripción
+       
+       Nota: Comentar solo lo complejo o costoso de resolver.
+       """
+       pass  # TODO: Implementar lógica
+   
+   def funcion_auxiliar(dato):
+       """Docstring conciso."""
+       pass
+   
+   def utilidad_interna(valor):
+       """Docstring conciso."""
+       pass
+   
+   # Si tipo=hibrido o cli:
+   if __name__ == "__main__":
+       import sys
+       # Implementar CLI mínimo
+       funcion_principal(sys.argv[1] if len(sys.argv) > 1 else None)
+   ```
+
+   **Plantilla agente:**
+   ```python
+   # Agente: {nombre}
+   # Conexión LLM: [especificar modelo en config.yaml]
+   # Output: JSON estructurado obligatorio
+   
+   import json
+   from src.modules.{nombre} import funcion_principal
+   
+   def ejecutar_agente(entrada):
+       """
+       Procesa entrada via LLM y retorna JSON estructurado.
+       """
+       resultado = funcion_principal(entrada)
+       return {
+           "estado": "ok" if resultado else "error",
+           "accion": "{nombre}_ejecutado",
+           "datos": {
+               "entrada": entrada,
+               "resultado": resultado,
+               "timestamp": "{fecha}"
+           }
+       }
+   
+   if __name__ == "__main__":
+       import sys
+       print(json.dumps(ejecutar_agente(sys.argv[1]), indent=2))
+   ```
+
+5. **Aplicar depuración desde inicio (calidad integrada)**
+   
+   - [ ] Verificar sintaxis: `python -m py_compile` (si es Python)
+   - [ ] Verificar imports: no circular dependencies
+   - [ ] Aplicar permisos: `chmod +x` si es CLI/agente
+   - [ ] Validar que cumple regla de 3 funciones máximo
+   - [ ] Comentar SOLO lo complejo (no obvio)
+
+6. **Documentar según complejidad**
+   
+   Si `complejidad="simple"`:
+   - Solo comentarios en código
+   - Actualizar LEEME.md: `[DEV] Módulo {nombre} ({tipo}) creado`
+   
+   Si `complejidad="complejo"`:
+   - Crear `docs/{nombre}.md` con:
+     - Problema que resuelve
+     - Decisiones técnicas difíciles tomadas
+     - Errores previos evitados
+     - Cómo adaptar a otros contextos
+   - Actualizar LEEME.md: `[DEV] Módulo {nombre} ({tipo}, complejo, docs/{nombre}.md)`
+
+7. **Validación funcional mínima**
+   
+   - Ejecutar módulo con datos de prueba básicos
+   - Si falla: aplicar fix inmediato o mover a papelera/ (ver regla de oro)
+   - Si funciona: confirmar creación
+
+8. **Actualizar índices**
+   
+   - Añadir a `docs/skills/INDEX.md` si es nuevo capability
+   - Actualizar `LEEME.md` sección "Módulos en Desarrollo"
+
+## Validaciones críticas
+
+- [ ] Máximo 3 funciones principales (contar: def ...)
+- [ ] Si hay más de 3: dividir en submódulos o simplificar
+- [ ] Agente sin JSON output: rechazar, no cumple especificación ARES
+- [ ] CLI sin ayuda interna (--help): rechazar
+- [ ] Sin comentarios en código obvio (violación "solo lo complejo")
+
+## Manejo de fallos: Regla de papelera
+
+Si durante desarrollo el módulo:
+- No compila después de 3 intentos de fix
+- Excede 3 funciones y no puede simplificarse
+- Requiere dependencias externas no disponibles
+
+**Acción inmediata:**
+1. Mover directorio completo a `papelera/{nombre}_{fecha}/`
+2. Crear `papelera/{nombre}_{fecha}/NOTA.md` explicando por qué falló
+3. Actualizar LEEME.md: `[PAPELERA] {nombre}: [razón breve]`
+4. Informar usuario: "Módulo movido a papelera, ver NOTA.md para detalles"
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|papelera|error",
+  "accion": "desarrollo_modulo",
+  "datos": {
+    "nombre": "{nombre}",
+    "tipo": "{tipo}",
+    "ruta": "src/modules/{nombre}/|Agentes/{nombre}/",
+    "complejidad": "{simple|complejo}",
+    "documentacion_extra": "docs/{nombre}.md|null",
+    "funciones_count": 3,
+    "validacion": "ok|movido_a_papelera"
+  }
+}
+```
+
+### Output CLI
+```
+✅ Módulo '{nombre}' ({tipo}) creado en src/modules/{nombre}/
+   Funciones: 3/3 máximo | Complejidad: {complejidad}
+   Estado: [DEV] — Listo para pruebas o skill-produccion
+```
+
+## Reglas de oro ARES
+
+1. **Tres funciones máximo**: Si necesitas más, el módulo es demasiado grande. Dividir.
+2. **Calidad desde inicio**: No "terminaré después". Pruebas y validación ahora.
+3. **Comentarios estratégicos**: Solo donde hubo dolor, no donde es obvio.
+4. **Papelera sin vergüenza**: Mejor descartar rápido que mantener código roto.
+5. **LEEME.md actualizado**: Si no está registrado ahí, el módulo no existe.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| inicializacion | Pre-requisito | Este skill requiere proyecto inicializado |
+| mantenimiento | Alternativa | Si módulo existe, usar mantenimiento, no desarrollo |
+| produccion | Siguiente paso | Cuando módulo esté validado, pasar a produccion |
+
+**Independencia**: No carga otros skills. Solo lee archivos base (LEEME.md, REP_STRUCTURE.md).
+```
+
+---
+
+### skill-mantenimiento
+
+```markdown
+# skill-mantenimiento
+
+## Propósito
+Gestionar código existente: adaptar a nuevos contextos, mover a papelera lo no funcional, actualizar documentación, mantener índice de módulos. Mantenimiento es evolución controlada, no solo reparación.
+
+## Cuándo usar
+- Usuario dice: "mantener", "adaptar", "a papelera", "actualiza módulo", "modifica"
+- Módulo existe en LEEME.md pero requiere cambios
+- Código en `papelera/` necesita revisión o recuperación
+- Documentación desactualizada
+
+## Entradas requeridas
+- `nombre_modulo`: string (existente en proyecto)
+- `accion`: "adaptar" | "papelera" | "recuperar" | "documentar" | "dividir"
+- `contexto`: string (descripción del cambio requerido)
+
+## Flujo de ejecución
+
+1. **Localizar módulo**
+   
+   Buscar en orden:
+   1. `src/modules/{nombre}/` → módulo normal
+   2. `Agentes/{nombre}/` → agente
+   3. `papelera/{nombre}_*/` → versión anterior descartada
+   
+   Si no encuentra: error "Módulo no existe. Usar skill-desarrollo para crear nuevo."
+
+2. **Ejecutar acción específica**
+
+   **Acción: "adaptar"**
+   - Leer código actual
+   - Identificar qué cambiar según `contexto`
+   - Modificar manteniendo regla de 3 funciones
+   - Si adaptación requiere >3 funciones: sugerir acción "dividir"
+   - Actualizar docstring con nota de adaptación
+   - Si es complejo: actualizar/crear `docs/{nombre}.md`
+   - LEEME.md: `[ADAPTADO] {nombre}: {contexto breve}`
+
+   **Acción: "papelera"**
+   - Validar que no está ya en papelera
+   - Mover directorio completo: `src/modules/{nombre}/` → `papelera/{nombre}_{fecha}/`
+   - Crear `papelera/{nombre}_{fecha}/NOTA.md`:
+     ```markdown
+     # NOTA — Módulo {nombre} movido a papelera
+     Fecha: {fecha}
+     Razón: {contexto}
+     Último estado conocido: [funcional|no funcional|parcial]
+     Posible recuperación: [sí|no|requiere reescritura]
+     ```
+   - LEEME.md: `[PAPELERA] {nombre}: {contexto breve}`
+   - Si había docs/{nombre}.md: mover a papelera también
+
+   **Acción: "recuperar"**
+   - Buscar en `papelera/{nombre}_*/` (más reciente si hay varios)
+   - Leer NOTA.md para evaluar viabilidad
+   - Si NOTA.md indica "no recuperable": abortar con explicación
+   - Si recuperable: mover a `src/modules/{nombre}/` o `Agentes/{nombre}/`
+   - Validar sintaxis y dependencias
+   - LEEME.md: `[RECUPERADO] {nombre} desde papelera`
+   - Sugerir skill-desarrollo para adaptaciones necesarias
+
+   **Acción: "documentar"**
+   - Crear/actualizar `docs/{nombre}.md` con:
+     - Qué problema resuelve el módulo
+     - Decisiones técnicas difíciles tomadas
+     - Errores encontrados y cómo se evitaron
+     - Cómo adaptar a otros contextos
+     - Dependencias externas
+   - Añadir comentario en código: `# Ver docs/{nombre}.md para detalles complejos`
+   - LEEME.md: `[DOC] {nombre}: documentación especial creada`
+
+   **Acción: "dividir"**
+   - Analizar módulo: identificar funciones que pueden ser módulos independientes
+   - Crear nuevos módulos hijos: `{nombre}_{subfuncion}/`
+   - Modificar módulo original: convertir en orquestador que importa hijos
+   - Validar que cada hijo cumple ≤3 funciones
+   - Actualizar imports y dependencias
+   - LEEME.md: `[DIVIDIDO] {nombre} → {nombre}_{sub1}, {nombre}_{sub2}...`
+
+3. **Mantener índice de módulos**
+   
+   Actualizar automáticamente lista en LEEME.md o crear `docs/INDEX_MODULOS.md` si hay más de 10 módulos:
+   ```markdown
+   | Módulo | Tipo | Estado | Ubicación | Docs |
+   |--------|------|--------|-----------|------|
+   | {nombre} | lib/cli/hibrido/agente | [DEV|ADAPTADO|PAPELERA] | src/... | docs/... |
+   ```
+
+4. **Validación post-mantenimiento**
+   
+   - Si acción="adaptar" o "recuperar": validar sintaxis
+   - Si acción="dividir": validar que imports funcionan
+   - Confirmar LEEME.md refleja estado real
+
+## Validaciones críticas
+
+- [ ] Acción "papelera": verificar que módulo no está en uso por otros (grep imports)
+- [ ] Acción "recuperar": leer NOTA.md primero, no recuperar lo marcado como "no recuperable"
+- [ ] Acción "dividir": resultado debe ser módulos con ≤3 funciones cada uno
+- [ ] Siempre actualizar LEEME.md (verdad funcional)
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|error|parcial",
+  "accion": "mantenimiento_{accion}",
+  "datos": {
+    "nombre": "{nombre}",
+    "accion_ejecutada": "{adaptar|papelera|recuperar|documentar|dividir}",
+    "ruta_origen": "...",
+    "ruta_destino": "...",
+    "notas": "{contexto de la acción}"
+  }
+}
+```
+
+### Output CLI
+```
+🔧 Módulo '{nombre}': acción '{accion}' completada
+   Estado previo: [DEV] → Estado actual: [ADAPTADO|PAPELERA|RECUPERADO]
+   LEEME.md actualizado
+```
+
+## Reglas de oro ARES
+
+1. **Papelera es temporal pero documentada**: Siempre NOTA.md explicando por qué.
+2. **Recuperación consciente**: Leer NOTA.md antes de recuperar, no automático.
+3. **División preferida a complejidad**: Mejor 3 módulos simples que 1 complejo.
+4. **Documentar lo problemático**: Si costó resolver, que no se pierda el conocimiento.
+5. **Índice actualizado**: Mapa claro de qué existe y en qué estado.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Origen del código | Mantenimiento opera sobre lo que desarrollo creó |
+| produccion | Destino posible | Después de mantener/adaptar, puede ir a produccion |
+| inicializacion | No aplica | Mantenimiento requiere código existente |
+
+**Independencia**: Opera sobre estructura existente, no carga otros skills.
+```
+
+---
+
+### skill-produccion
+
+```markdown
+# skill-produccion
+
+## Propósito
+Globalizar scripts funcionales en el sistema operativo via TRON `ini`. Producción es hacer disponible globalmente lo que está validado, bajo decisión soberana del usuario.
+
+## Cuándo usar
+- Usuario dice: "producir", "globalizar", "a /usr/bin", "lanzar", "poner en producción"
+- Módulo existe en LEEME.md con estado [DEV] o [ADAPTADO]
+- Usuario decide soberanamente que está listo (IA no decide)
+
+## Entradas requeridas
+- `nombre_modulo`: string (existente y funcional)
+- `metodo`: "auto" | "manual" (default="auto")
+- `confirmar`: bool (default=false, requiere explícito true para ejecutar)
+
+## Flujo de ejecución
+
+1. **Verificación pre-producción (calidad de salida)**
+   
+   Leer LEEME.md:
+   - ¿Estado es [DEV] o [ADAPTADO]? Si [PAPELERA] o no existe: abortar.
+   - ¿Tiene documentación de complejidad si aplica?
+   
+   Verificar módulo:
+   - Sintaxis válida: `python -m py_compile`
+   - Permisos ejecutables: `chmod +x` aplicado
+   - Shebang presente: `#!/usr/bin/env python3` (o según lenguaje)
+   - Ayuda interna funciona: `--help` o `-h` (para CLI/hibrido/agente)
+   
+   Si alguna falla: abortar con lista de qué corregir. Sugerir skill-desarrollo o skill-mantenimiento.
+
+2. **Determinar método de globalización**
+
+   **Método "auto" (preferido):**
+   - Requisito: estar en directorio del proyecto con estructura detectable
+   - Ejecutar: `ini` (sin argumentos, modo automático)
+   - `ini` detecta proyecto, crea wrapper en `/usr/bin/`
+   
+   **Método "manual":**
+   - Usar cuando `ini` no detecta automáticamente
+   - Ejecutar: `ini -i` (modo interactivo)
+   - Seguir prompts de `ini` para especificar ruta y nombre
+
+3. **Validar instalación via TRON `com`**
+   
+   - Ejecutar: `com ruta {nombre_modulo}`
+   - Verificar que apunta a wrapper en `/usr/bin/` y no a código fuente
+   - Ejecutar: `com codigo {nombre_modulo}` (verificar wrapper correcto)
+   - Probar ejecución: `{nombre_modulo} --help` (debe funcionar)
+
+4. **Actualizar LEEME.md (verdad funcional)**
+   
+   ```
+   [PROD] {nombre_modulo}: Globalizado via ini ({metodo})
+   Ruta sistema: /usr/bin/{nombre_modulo}
+   Wrapper apunta a: {ruta_real}
+   Fecha producción: {fecha}
+   ```
+   
+   Mover de sección "Módulos en Desarrollo" a "Funcionalidades Operativas"
+
+5. **Confirmación final**
+   
+   Mostrar al usuario:
+   - Wrapper creado y su contenido (via `com codigo`)
+   - Cómo usar: `{nombre_modulo} [argumentos]`
+   - Cómo modificar: nunca editar `/usr/bin/`, editar fuente en `src/` y re-ejecutar `ini`
+
+## Validaciones críticas
+
+- [ ] `confirmar=true` explícito (la IA no produce sin orden clara)
+- [ ] Estado previo [DEV] o [ADAPTADO] (no [PAPELERA], no inexistente)
+- [ ] Sintaxis válida, permisos +x, shebang correcto
+- [ ] Post-instalación: `com ruta` y ejecución `--help` funcionan
+- [ ] LEEME.md actualizado con ruta real y fecha
+
+## Manejo de errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `ini` no detecta proyecto | Falta estructura reconocible | Usar `ini -i` manual o verificar estructura |
+| Wrapper no ejecuta | Permisos o shebang | `chmod +x`, verificar shebang |
+| `com ruta` no encuentra | No instalado o nombre diferente | Verificar nombre usado en `ini` |
+| Conflicto nombre existente | Otro programa usa mismo nombre | Renombrar módulo o usar `ini -i` con nombre alternativo |
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|error|pendiente_confirmacion",
+  "accion": "produccion_globalizar",
+  "datos": {
+    "nombre": "{nombre}",
+    "metodo": "auto|manual",
+    "ruta_wrapper": "/usr/bin/{nombre}",
+    "ruta_fuente": "{ruta_real}",
+    "validacion_com": "ok|fallo",
+    "estado_leeme": "[PROD]"
+  }
+}
+```
+
+### Output CLI
+```
+🚀 Módulo '{nombre}' globalizado en /usr/bin/{nombre}
+   Método: {auto|manual} | Validación: OK
+   Uso: {nombre} [argumentos]
+   Modificar: editar src/modules/{nombre}/ → re-ejecutar ini
+   LEEME.md: [PROD] registrado
+```
+
+## Reglas de oro ARES
+
+1. **Soberanía del usuario**: IA nunca decide poner en producción. Requiere confirmar=true.
+2. **Fuente en ~/tron/programas**: Nunca editar `/usr/bin/` directamente. Wrapper apunta a fuente.
+3. **Validación obligatoria**: Si `com ruta` o `--help` fallan, no está en producción real.
+4. **LEEME.md es la verdad**: Sin entrada [PROD], el módulo no existe funcionalmente para el sistema.
+5. **Reproducible**: Re-ejecutar `ini` debe actualizar wrapper si fuente cambió.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Origen | Solo se produce lo que desarrollo creó y validó |
+| mantenimiento | Preparación | Puede requerir adaptación antes de producción |
+| inicializacion | No aplica | Producción requiere código funcional, no estructura vacía |
+
+**Dependencia externa**: Requiere TRON `ini` y `com` instalados. Si no: error "Herramientas TRON no disponibles. Instalar primero."
+
+**Independencia de otros skills**: No carga skill-desarrollo ni skill-mantenimiento, solo valida su output (código existente).
+```
+
+---
+
+## Iteración 4: Verificación contra tus requisitos
+
+| Tu requisito | Verificación |
+|-------------|--------------|
+| "inicializacion ese OK" | ✓ Skill 1: inicializacion |
+| "desarrollo y calidad van en el mismo skill" | ✓ Skill 2: desarrollo (con calidad integrada: depuración desde inicio, validación, papelera si falla) |
+| "gestion cambialo a mantenimiento" | ✓ Skill 3: mantenimiento (adaptar, papelera, recuperar, documentar, dividir) |
+| "deplay con su skill pero no se llama deploy se llama produccion" | ✓ Skill 4: produccion (usa "globalizar", "/usr/bin", "ini") |
+| "no nombres raros como Bootstrap" | ✓ Nombres: inicializacion, desarrollo, mantenimiento, produccion |
+| "respecta mi forma de decir las cosas" | ✓ "globalizar", "papelera", "paranoica", "soberanía", "verdad funcional" |
+| "carga manual, no tres skills a la vez" | ✓ Cada skill es autocontenido, independiente, carga individual |
+| "flujo de trabajo de bajo tokens" | ✓ Skills no se cargan entre sí, solo leen archivos base (LEEME.md, REP_STRUCTURE.md) |
+| "usa mis palabras de la documentación" | ✓ "Organización paranoica", "Cerebro Headless", "soberanía tecnológica", "LEEME.md es verdad" |
+
+---
+
+## Resumen entregable
+
+4 skills listos para copiar a `docs/skills/`:
+
+1. **skill-inicializacion.md**
+2. **skill-desarrollo.md**
+3. **skill-mantenimiento.md**
+4. **skill-produccion.md**
+
+---
+
+## Verificación final de convergencia
+
+| Criterio | Estado |
+|----------|--------|
+| Tus palabras exactas | ✓ "inicializacion", "desarrollo", "mantenimiento", "produccion", "globalizar", "papelera", "paranoica", "soberanía", "verdad funcional" |
+| Principios ARES | ✓ ≤3 funciones, LEEME.md verdad, docs/ para complejo, comentarios solo lo complejo, num_ctx 8192, RAM <1GB |
+| Herramientas TRON | ✓ ini, com (repo y ayuda son consumo, no skills) |
+| Carga manual | ✓ Skills independientes, ninguno carga otro |
+| Sin ruido | ✓ Sin Bootstrap, sin meta, sin coordinar multi-skill |
+| Bajo tokens | ✓ Cada skill lee máximo 2 archivos base + objetivo |
+
+```
+
+## /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA/maestro.md
+
+```
+# maestro.md - Contenido de: /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA
+
+**Extensiones procesadas:** `.md`
+
+## /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA/PARA-DESARROLLAR-SKILL-sistema-trabajo-estructura.md
+
+```
+**Documentos clave que rigen este diseño:**
+- `VersionIaArquitecturadeMódulosOrientadaaIA.md`: Máximo 3 funciones/módulo, organización paranoica, papelera/, docs/ para lo problemático, LEEME.md como verdad funcional
+- `RECOMENDACIONES-OLLAMA-MODELFILE-VARIABLES-ENTORNO-POR-MODELO.md`: Contexto limitado (8K tokens), RAM <1GB, lectura selectiva
+- Tus memorias actuales: TRON tools (ini, com, repo), filosofía ARES headless, soberanía tecnológica
+
+## Metodología de Avance Empírico y Registro de Trazabilidad
+
+Para asegurar el progreso constante sin regresiones y mantener la soberanía de autoría, se establece el siguiente protocolo de obligatorio cumplimiento para la IA:
+
+1.  **Inyección Documental Previa**: Antes de proponer cambios estructurales, la IA debe leer los documentos técnicos pertinentes (ej. `COLOR_SYSTEM.md`, `VENTANA_VS_PESTANA.md`).
+2.  **Protocolo de No Borrado (Snapshotting)**:
+    - Las versiones de scripts que alcancen hitos funcionales (ej. "Abre ventana OK") deben respaldarse físicamente con nombres descriptivos (ej. `abrió-ventana-OK.py`).
+    - Estas versiones sirven como puntos de restauración inmediata en caso de fallo en la siguiente iteración.
+3.  **Validación Granular por Hitos**:
+    - No realizar validaciones de "todo o nada". 
+    - Descomponer la verificación en una batería de preguntas granulares (vía Zenity o consola) que aíslen fallos de títulos, colores, sockets y comandos.
+4.  **Registro de Logros (INDEX-TESTS.md)**:
+    - Cada experimento exitoso debe documentarse en `docs/INDEX-TESTS.md`, detallando el objetivo, los errores superados y los artefactos generados.
+    - Este registro es la base legal y operativa para comprobar la evolución del sistema y la autoría del diseño.
+5.  **Aislamiento de Sockets**: Para pruebas de orquestación, usar siempre sockets aislados (`--listen-on unix:/tmp/test_socket`) para no interferir con el entorno de trabajo principal hasta la consolidación final.
+
+---
+
+## 👁️ Directiva de IA: Visión y Constatación Soberana
+**Definición descriptiva:** "Voy a concluir los programas, pruebas y scripts no de la manera tradicional (tarea realizada). Cuando se necesite una confirmación o mensaje al usuario o se realice una prueba, yo primero tendré que crear mecanismos de visión y constatación que ciertamente el trabajo se realizó, al menos desde dos perspectivas independientes y luego, basado en eso, se condicionará el mensaje o salida de respuesta al usuario o al sistema."
+
+**Protocolo de Cierre IA:**
+- **Perspectiva 1 (Técnica):** Validación de buffers, secuencias ANSI, IDs de imagen o logs de ejecución.
+- **Perspectiva 2 (Estructural):** Verificación de integridad de archivos, importaciones y cumplimiento de la modularidad atómica.
+
+---
+
+## 🛠️ Directiva de Validación Git (Post-CRUD)
+**Obligatoriedad:** Al finalizar la edición de funcionalidades (Cambio, Eliminación, Actualización) que involucren documentos de documentación, `LEEME.md`, agendas o código, la IA **DEBE** ejecutar `git diff`.
+**Objetivo:** Constatar fehacientemente que se editó o borró exactamente lo que se debía, evitando truncamientos accidentales o pérdida de contexto histórico.
+
+---
+
+## 🤝 Protocolo de Coexistencia IA: `dont-touch-my-eggs.md`
+Para evitar colisiones cuando trabajan dos o más IAs en el mismo proyecto, es obligatorio el uso del "Cuaderno de Apartado".
+- **Ubicación:** Raíz del proyecto (`/dont-touch-my-eggs.md`).
+- **Uso:** Toda IA, antes de operar, debe leer este cuaderno y anotar su reservación de módulos o documentos (Nombre IA, Fecha, Hora, Archivos Reservados).
+- **Referencia:** Ver detalle en `LEEME.md` y el propio archivo de apartado.
+
+---
+
+## Iteración 2: Estructura base de cada skill
+
+Decisión: Cada skill sigue plantilla idéntica para que la IA prediga el formato:
+```
+# skill-[nombre]
+## Propósito
+## Cuándo usar (trigger exacto)
+## Entradas requeridas
+## Flujo de ejecución (pasos numerados)
+## Validaciones críticas
+## Outputs (JSON obligatorio)
+## Reglas de oro (límites ARES)
+## Relación con otros skills (solo referencia, no dependencia)
+```
+
+---
+
+## Iteración 3: Desarrollo completo de los 4 skills
+
+---
+
+### skill-inicializacion
+
+```markdown
+# skill-inicializacion
+
+## Propósito
+Crear estructura base de proyecto ARES con organización paranoica. Establecer documentación mínima viable para que IA pueda navegar sin desperdiciar tokens.
+
+## Cuándo usar
+- Usuario dice: "inicializa proyecto", "nuevo proyecto", "crea estructura", "empezar"
+- Directorio vacío o sin REP_STRUCTURE.md
+- Antes de cualquier código
+
+## Entradas requeridas
+- `nombre_proyecto`: string (opcional, default=basename pwd)
+- `tipo_proyecto`: "python" | "node" | "mixed" (default="python")
+
+## Flujo de ejecución
+
+1. **Validar espacio de trabajo**
+   - Verificar que no existe conflicto de nombres
+   - Confirmar permisos de escritura
+   - Si existe LEEME.md, abortar con error: "Proyecto ya inicializado"
+
+2. **Crear jerarquía paranoica**
+   ```
+   {nombre_proyecto}/
+   ├── .ai/
+   │   └── rules.md              # Límites de contexto y RAM
+   ├── bin/                      # Binarios externos (vacío inicial)
+   ├── config/                   # Configuración centralizada (vacío)
+   ├── docs/
+   │   ├── skills/               # Capabilities del proyecto
+   │   │   ├── skill-inicializacion.md  # Este archivo (copia)
+   │   │   └── INDEX.md          # Índice de skills disponibles
+   │   └── .ai/                  # Reglas específicas del proyecto
+   │       └── context.md        # Variables de entorno, modelos usados
+   ├── src/
+   │   ├── core/                 # Lógica principal (vacío)
+   │   ├── modules/              # Módulos normales (vacío)
+   │   └── api/                  # Endpoints si aplica (vacío)
+   ├── Agentes/                  # Módulos LLM con JSON output (vacío)
+   ├── papelera/                 # Código experimental no funcional (vacío)
+   ├── tests/                    # Validaciones (vacío)
+   ├── LEEME.md                  # Única fuente de verdad funcional
+   └── REP_STRUCTURE.md          # Mapa operativo para IA
+   ```
+
+3. **Generar archivos base con contenido mínimo**
+
+   **LEEME.md:**
+   ```markdown
+   # {nombre_proyecto}
+   
+   ## Estado: [INIT] {fecha}
+   ## Funcionalidades Operativas: Ninguna
+   ## Módulos en Desarrollo: Ninguno
+   ## En Papelera: Ninguno
+   
+   ---
+   ### Registro de Cambios Funcionales
+   - {fecha}: Inicialización estructura ARES
+   ```
+
+   **REP_STRUCTURE.md:**
+   ```markdown
+   # REP_STRUCTURE.md — Mapa Operativo IA
+   
+   ## Contexto Límite
+   - num_ctx: 8192 tokens
+   - RAM máxima conversación: 1GB
+   - Sliding window: últimas 5-7 interacciones
+   
+   ## Jerarquía de Lectura Obligatoria
+   1. `.ai/rules.md` → límites técnicos
+   2. `REP_STRUCTURE.md` → este archivo (mapa)
+   3. `LEEME.md` → estado real del proyecto
+   4. `docs/skills/skill-{tarea}.md` → capability específica
+   
+   ## Estructura de Carpetas
+   
+   | Ruta | Contenido | ¿Lee IA? |
+   |------|-----------|----------|
+   | `.ai/rules.md` | Restricciones hardware/contexto | Siempre primero |
+   | `docs/skills/` | Capabilities ejecutables | Bajo demanda |
+   | `src/core/` | Lógica principal | Según tarea |
+   | `src/modules/` | Módulos CLI/importables | Según tarea |
+   | `Agentes/` | Módulos LLM, JSON output | Si tarea requiere LLM |
+   | `bin/` | Binarios externos | Solo configs |
+   | `config/` | Configuración centralizada | Solo si aplica |
+   | `papelera/` | Código no funcional | No (salvo instrucción) |
+   
+   ## Reglas de Oro
+   - Nunca asumir funcionalidades no listadas en LEEME.md
+   - Cargar solo código necesario para tarea actual
+   - Máximo 3 funciones por módulo
+   - JSON estructurado para outputs de Agentes/
+   ```
+
+   **.ai/rules.md:**
+   ```markdown
+   # AI Execution Rules — {nombre_proyecto}
+   
+   ## Límites Hard
+   - num_ctx: 8192 tokens (conservador)
+   - RAM dedicada: <1GB por conversación activa
+   - num_batch: 512 (máximo)
+   
+   ## Estrategia de Memoria
+   - Contexto inmediato: últimas 5 interacciones completas (≈20K tokens)
+   - Resumen histórico: >5 interacciones condensadas a 500 tokens
+   - Documentación RAG: recuperación vectorial de 60K tokens máx
+   
+   ## Exclusiones Absolutas
+   - `node_modules/`, `.git/`, `__pycache__/`, `*.pyc`
+   - `papelera/` (salvo comando explícito "revisar papelera")
+   - Código fuente en `bin/` (solo leer configs)
+   
+   ## Formato de Output
+   - Módulos normales: código limpio, ≤3 funciones, comentarios solo en lo complejo
+   - Agentes/: JSON obligatorio con campos: estado, accion, datos
+   - Skills: según plantilla skill-{nombre}.md
+   ```
+
+   **docs/skills/INDEX.md:**
+   ```markdown
+   # Índice de Skills — {nombre_proyecto}
+   
+   | Skill | Estado | Descripción | Trigger |
+   |-------|--------|-------------|---------|
+   | inicializacion | [OK] | Crear estructura base | "inicializa", "nuevo proyecto" |
+   | desarrollo | [PENDIENTE] | Crear módulos con calidad | "nuevo módulo", "desarrolla" |
+   | mantenimiento | [PENDIENTE] | Gestionar código existente | "mantener", "a papelera", "adaptar" |
+   | produccion | [PENDIENTE] | Globalizar via ini | "producir", "globalizar", "a /usr/bin" |
+   
+   Leyenda: [OK]=Documentado y listo | [PENDIENTE]=No creado aún | [DEP]=Deprecado
+   ```
+
+4. **Actualizar LEEME.md con estado inicial**
+   - Estado: [INIT]
+   - Funcionalidades: Ninguna
+   - Registrar timestamp
+
+5. **Confirmar al usuario**
+   - Mostrar árbol de carpetas creadas (2 niveles)
+   - Indicar próximo paso sugerido: "Usar skill-desarrollo para crear primer módulo"
+
+## Validaciones críticas
+
+- [ ] No sobreescribir proyecto existente (LEEME.md presente)
+- [ ] Crear exactamente las carpetas documentadas (ni más ni menos)
+- [ ] Contenido de LEEME.md debe ser mínimo pero semántico
+- [ ] INDEX.md debe reflejar estado real (solo inicializacion como [OK])
+
+## Outputs
+
+### JSON estructurado (para Agentes/ si aplica)
+```json
+{
+  "estado": "ok",
+  "accion": "inicializacion_completa",
+  "datos": {
+    "proyecto": "{nombre_proyecto}",
+    "ruta": "{ruta_absoluta}",
+    "estructura_creada": [".ai", "bin", "config", "docs/skills", "src/core", "src/modules", "src/api", "Agentes", "papelera", "tests"],
+    "archivos_base": ["LEEME.md", "REP_STRUCTURE.md", ".ai/rules.md", "docs/skills/INDEX.md"],
+    "siguiente_paso": "skill-desarrollo para crear primer módulo"
+  }
+}
+```
+
+### Output CLI (para humano)
+```
+⚡ Proyecto '{nombre_proyecto}' inicializado en {ruta}
+Estructura ARES creada: 10 carpetas, 4 archivos base
+Estado: [INIT] — Listo para skill-desarrollo
+```
+
+## Reglas de oro ARES
+
+1. **Organización paranoica**: Todo elemento tiene ubicación explícita, nada suelto
+2. **Documentación mínima viable**: Solo lo necesario para IA con contexto limitado
+3. **LEEME.md es verdad**: Si no está ahí, no existe funcionalmente
+4. **No adelantarse**: Skills de desarrollo/mantenimiento/produccion quedan como [PENDIENTE] en INDEX.md
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Siguiente en flujo natural | Después de inicializar, se desarrolla |
+| mantenimiento | No aplica en proyecto nuevo | Sin código aún, no hay qué mantener |
+| produccion | No aplica sin código | Requiere módulos funcionales primero |
+
+**Independencia**: Este skill no carga ni depende de otros. Es punto de entrada único.
+```
+
+---
+
+### skill-desarrollo
+
+```markdown
+# skill-desarrollo
+
+## Propósito
+Crear módulos atómicos con calidad integrada desde el inicio. Desarrollo no es solo escribir código: es escribir, validar, documentar lo problemático, y descartar lo no funcional a papelera.
+
+## Cuándo usar
+- Usuario dice: "nuevo módulo", "desarrolla", "crea función para...", "implementa"
+- Existe LEEME.md (proyecto inicializado)
+- Tarea involucra código nuevo o modificación sustancial
+
+## Entradas requeridas
+- `nombre_modulo`: string (kebab-case o snake_case)
+- `tipo`: "lib" | "cli" | "hibrido" | "agente"
+- `descripcion`: string (una línea, qué hace)
+- `complejidad`: "simple" | "complejo" (default="simple")
+
+## Flujo de ejecución
+
+1. **Pre-validación del espacio**
+   - Leer LEEME.md: verificar estado proyecto, ver módulos existentes
+   - Leer REP_STRUCTURE.md: confirmar rutas válidas
+   - Verificar que `nombre_modulo` no existe en `src/modules/` ni `Agentes/`
+   - Si existe: abortar o sugerir skill-mantenimiento para modificación
+
+2. **Determinar ubicación según tipo**
+   
+   | Tipo | Ubicación | Características |
+   |------|-----------|----------------|
+   | "lib" | `src/modules/{nombre}/` | Solo importable, sin __main__ |
+   | "cli" | `src/modules/{nombre}/` | Ejecutable, argparse, ayuda interna |
+   | "hibrido" | `src/modules/{nombre}/` | Importable + ejecutable |
+   | "agente" | `Agentes/{nombre}/` + `src/modules/{nombre}/` | JSON output obligatorio, conexión LLM |
+
+3. **Crear estructura del módulo**
+
+   **Para lib/cli/hibrido:**
+   ```
+   src/modules/{nombre}/
+   ├── __init__.py          # Exports principales
+   └── funciones.py         # Lógica (máximo 3 funciones)
+   ```
+
+   **Para agente:**
+   ```
+   src/modules/{nombre}/    # Lógica reutilizable
+   ├── __init__.py
+   └── funciones.py
+   
+   Agentes/{nombre}/        # Wrapper LLM
+   ├── agente.py            # Conexión modelo, JSON output
+   └── config.yaml          # Parámetros específicos del agente
+   ```
+
+4. **Aplicar plantilla de código (regla de 3 funciones máximo)**
+
+   **Plantilla lib/hibrido:**
+   ```python
+   # Módulo: {nombre}
+   # Tipo: {tipo}
+   # Propósito: {descripcion}
+   # Creado: {fecha} via skill-desarrollo
+   
+   def funcion_principal(parametro):
+       """
+       Docstring descriptivo.
+       
+       Args:
+           parametro: tipo y descripción
+       
+       Returns:
+           tipo y descripción
+       
+       Nota: Comentar solo lo complejo o costoso de resolver.
+       """
+       pass  # TODO: Implementar lógica
+   
+   def funcion_auxiliar(dato):
+       """Docstring conciso."""
+       pass
+   
+   def utilidad_interna(valor):
+       """Docstring conciso."""
+       pass
+   
+   # Si tipo=hibrido o cli:
+   if __name__ == "__main__":
+       import sys
+       # Implementar CLI mínimo
+       funcion_principal(sys.argv[1] if len(sys.argv) > 1 else None)
+   ```
+
+   **Plantilla agente:**
+   ```python
+   # Agente: {nombre}
+   # Conexión LLM: [especificar modelo en config.yaml]
+   # Output: JSON estructurado obligatorio
+   
+   import json
+   from src.modules.{nombre} import funcion_principal
+   
+   def ejecutar_agente(entrada):
+       """
+       Procesa entrada via LLM y retorna JSON estructurado.
+       """
+       resultado = funcion_principal(entrada)
+       return {
+           "estado": "ok" if resultado else "error",
+           "accion": "{nombre}_ejecutado",
+           "datos": {
+               "entrada": entrada,
+               "resultado": resultado,
+               "timestamp": "{fecha}"
+           }
+       }
+   
+   if __name__ == "__main__":
+       import sys
+       print(json.dumps(ejecutar_agente(sys.argv[1]), indent=2))
+   ```
+
+5. **Aplicar depuración desde inicio (calidad integrada)**
+   
+   - [ ] Verificar sintaxis: `python -m py_compile` (si es Python)
+   - [ ] Verificar imports: no circular dependencies
+   - [ ] Aplicar permisos: `chmod +x` si es CLI/agente
+   - [ ] Validar que cumple regla de 3 funciones máximo
+   - [ ] Comentar SOLO lo complejo (no obvio)
+
+6. **Documentar según complejidad**
+   
+   Si `complejidad="simple"`:
+   - Solo comentarios en código
+   - Actualizar LEEME.md: `[DEV] Módulo {nombre} ({tipo}) creado`
+   
+   Si `complejidad="complejo"`:
+   - Crear `docs/{nombre}.md` con:
+     - Problema que resuelve
+     - Decisiones técnicas difíciles tomadas
+     - Errores previos evitados
+     - Cómo adaptar a otros contextos
+   - Actualizar LEEME.md: `[DEV] Módulo {nombre} ({tipo}, complejo, docs/{nombre}.md)`
+
+7. **Validación funcional mínima**
+   
+   - Ejecutar módulo con datos de prueba básicos
+   - Si falla: aplicar fix inmediato o mover a papelera/ (ver regla de oro)
+   - Si funciona: confirmar creación
+
+8. **Actualizar índices**
+   
+   - Añadir a `docs/skills/INDEX.md` si es nuevo capability
+   - Actualizar `LEEME.md` sección "Módulos en Desarrollo"
+
+## Validaciones críticas
+
+- [ ] Máximo 3 funciones principales (contar: def ...)
+- [ ] Si hay más de 3: dividir en submódulos o simplificar
+- [ ] Agente sin JSON output: rechazar, no cumple especificación ARES
+- [ ] CLI sin ayuda interna (--help): rechazar
+- [ ] Sin comentarios en código obvio (violación "solo lo complejo")
+
+## Manejo de fallos: Regla de papelera
+
+Si durante desarrollo el módulo:
+- No compila después de 3 intentos de fix
+- Excede 3 funciones y no puede simplificarse
+- Requiere dependencias externas no disponibles
+
+**Acción inmediata:**
+1. Mover directorio completo a `papelera/{nombre}_{fecha}/`
+2. Crear `papelera/{nombre}_{fecha}/NOTA.md` explicando por qué falló
+3. Actualizar LEEME.md: `[PAPELERA] {nombre}: [razón breve]`
+4. Informar usuario: "Módulo movido a papelera, ver NOTA.md para detalles"
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|papelera|error",
+  "accion": "desarrollo_modulo",
+  "datos": {
+    "nombre": "{nombre}",
+    "tipo": "{tipo}",
+    "ruta": "src/modules/{nombre}/|Agentes/{nombre}/",
+    "complejidad": "{simple|complejo}",
+    "documentacion_extra": "docs/{nombre}.md|null",
+    "funciones_count": 3,
+    "validacion": "ok|movido_a_papelera"
+  }
+}
+```
+
+### Output CLI
+```
+✅ Módulo '{nombre}' ({tipo}) creado en src/modules/{nombre}/
+   Funciones: 3/3 máximo | Complejidad: {complejidad}
+   Estado: [DEV] — Listo para pruebas o skill-produccion
+```
+
+## Reglas de oro ARES
+
+1. **Tres funciones máximo**: Si necesitas más, el módulo es demasiado grande. Dividir.
+2. **Calidad desde inicio**: No "terminaré después". Pruebas y validación ahora.
+3. **Comentarios estratégicos**: Solo donde hubo dolor, no donde es obvio.
+4. **Papelera sin vergüenza**: Mejor descartar rápido que mantener código roto.
+5. **LEEME.md actualizado**: Si no está registrado ahí, el módulo no existe.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| inicializacion | Pre-requisito | Este skill requiere proyecto inicializado |
+| mantenimiento | Alternativa | Si módulo existe, usar mantenimiento, no desarrollo |
+| produccion | Siguiente paso | Cuando módulo esté validado, pasar a produccion |
+
+**Independencia**: No carga otros skills. Solo lee archivos base (LEEME.md, REP_STRUCTURE.md).
+```
+
+---
+
+### skill-mantenimiento
+
+```markdown
+# skill-mantenimiento
+
+## Propósito
+Gestionar código existente: adaptar a nuevos contextos, mover a papelera lo no funcional, actualizar documentación, mantener índice de módulos. Mantenimiento es evolución controlada, no solo reparación.
+
+## Cuándo usar
+- Usuario dice: "mantener", "adaptar", "a papelera", "actualiza módulo", "modifica"
+- Módulo existe en LEEME.md pero requiere cambios
+- Código en `papelera/` necesita revisión o recuperación
+- Documentación desactualizada
+
+## Entradas requeridas
+- `nombre_modulo`: string (existente en proyecto)
+- `accion`: "adaptar" | "papelera" | "recuperar" | "documentar" | "dividir"
+- `contexto`: string (descripción del cambio requerido)
+
+## Flujo de ejecución
+
+1. **Localizar módulo**
+   
+   Buscar en orden:
+   1. `src/modules/{nombre}/` → módulo normal
+   2. `Agentes/{nombre}/` → agente
+   3. `papelera/{nombre}_*/` → versión anterior descartada
+   
+   Si no encuentra: error "Módulo no existe. Usar skill-desarrollo para crear nuevo."
+
+2. **Ejecutar acción específica**
+
+   **Acción: "adaptar"**
+   - Leer código actual
+   - Identificar qué cambiar según `contexto`
+   - Modificar manteniendo regla de 3 funciones
+   - Si adaptación requiere >3 funciones: sugerir acción "dividir"
+   - Actualizar docstring con nota de adaptación
+   - Si es complejo: actualizar/crear `docs/{nombre}.md`
+   - LEEME.md: `[ADAPTADO] {nombre}: {contexto breve}`
+
+   **Acción: "papelera"**
+   - Validar que no está ya en papelera
+   - Mover directorio completo: `src/modules/{nombre}/` → `papelera/{nombre}_{fecha}/`
+   - Crear `papelera/{nombre}_{fecha}/NOTA.md`:
+     ```markdown
+     # NOTA — Módulo {nombre} movido a papelera
+     Fecha: {fecha}
+     Razón: {contexto}
+     Último estado conocido: [funcional|no funcional|parcial]
+     Posible recuperación: [sí|no|requiere reescritura]
+     ```
+   - LEEME.md: `[PAPELERA] {nombre}: {contexto breve}`
+   - Si había docs/{nombre}.md: mover a papelera también
+
+   **Acción: "recuperar"**
+   - Buscar en `papelera/{nombre}_*/` (más reciente si hay varios)
+   - Leer NOTA.md para evaluar viabilidad
+   - Si NOTA.md indica "no recuperable": abortar con explicación
+   - Si recuperable: mover a `src/modules/{nombre}/` o `Agentes/{nombre}/`
+   - Validar sintaxis y dependencias
+   - LEEME.md: `[RECUPERADO] {nombre} desde papelera`
+   - Sugerir skill-desarrollo para adaptaciones necesarias
+
+   **Acción: "documentar"**
+   - Crear/actualizar `docs/{nombre}.md` con:
+     - Qué problema resuelve el módulo
+     - Decisiones técnicas difíciles tomadas
+     - Errores encontrados y cómo se evitaron
+     - Cómo adaptar a otros contextos
+     - Dependencias externas
+   - Añadir comentario en código: `# Ver docs/{nombre}.md para detalles complejos`
+   - LEEME.md: `[DOC] {nombre}: documentación especial creada`
+
+   **Acción: "dividir"**
+   - Analizar módulo: identificar funciones que pueden ser módulos independientes
+   - Crear nuevos módulos hijos: `{nombre}_{subfuncion}/`
+   - Modificar módulo original: convertir en orquestador que importa hijos
+   - Validar que cada hijo cumple ≤3 funciones
+   - Actualizar imports y dependencias
+   - LEEME.md: `[DIVIDIDO] {nombre} → {nombre}_{sub1}, {nombre}_{sub2}...`
+
+3. **Mantener índice de módulos**
+   
+   Actualizar automáticamente lista en LEEME.md o crear `docs/INDEX_MODULOS.md` si hay más de 10 módulos:
+   ```markdown
+   | Módulo | Tipo | Estado | Ubicación | Docs |
+   |--------|------|--------|-----------|------|
+   | {nombre} | lib/cli/hibrido/agente | [DEV|ADAPTADO|PAPELERA] | src/... | docs/... |
+   ```
+
+4. **Validación post-mantenimiento**
+   
+   - Si acción="adaptar" o "recuperar": validar sintaxis
+   - Si acción="dividir": validar que imports funcionan
+   - Confirmar LEEME.md refleja estado real
+
+## Validaciones críticas
+
+- [ ] Acción "papelera": verificar que módulo no está en uso por otros (grep imports)
+- [ ] Acción "recuperar": leer NOTA.md primero, no recuperar lo marcado como "no recuperable"
+- [ ] Acción "dividir": resultado debe ser módulos con ≤3 funciones cada uno
+- [ ] Siempre actualizar LEEME.md (verdad funcional)
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|error|parcial",
+  "accion": "mantenimiento_{accion}",
+  "datos": {
+    "nombre": "{nombre}",
+    "accion_ejecutada": "{adaptar|papelera|recuperar|documentar|dividir}",
+    "ruta_origen": "...",
+    "ruta_destino": "...",
+    "notas": "{contexto de la acción}"
+  }
+}
+```
+
+### Output CLI
+```
+🔧 Módulo '{nombre}': acción '{accion}' completada
+   Estado previo: [DEV] → Estado actual: [ADAPTADO|PAPELERA|RECUPERADO]
+   LEEME.md actualizado
+```
+
+## Reglas de oro ARES
+
+1. **Papelera es temporal pero documentada**: Siempre NOTA.md explicando por qué.
+2. **Recuperación consciente**: Leer NOTA.md antes de recuperar, no automático.
+3. **División preferida a complejidad**: Mejor 3 módulos simples que 1 complejo.
+4. **Documentar lo problemático**: Si costó resolver, que no se pierda el conocimiento.
+5. **Índice actualizado**: Mapa claro de qué existe y en qué estado.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Origen del código | Mantenimiento opera sobre lo que desarrollo creó |
+| produccion | Destino posible | Después de mantener/adaptar, puede ir a produccion |
+| inicializacion | No aplica | Mantenimiento requiere código existente |
+
+**Independencia**: Opera sobre estructura existente, no carga otros skills.
+```
+
+---
+
+### skill-produccion
+
+```markdown
+# skill-produccion
+
+## Propósito
+Globalizar scripts funcionales en el sistema operativo via TRON `ini`. Producción es hacer disponible globalmente lo que está validado, bajo decisión soberana del usuario.
+
+## Cuándo usar
+- Usuario dice: "producir", "globalizar", "a /usr/bin", "lanzar", "poner en producción"
+- Módulo existe en LEEME.md con estado [DEV] o [ADAPTADO]
+- Usuario decide soberanamente que está listo (IA no decide)
+
+## Entradas requeridas
+- `nombre_modulo`: string (existente y funcional)
+- `metodo`: "auto" | "manual" (default="auto")
+- `confirmar`: bool (default=false, requiere explícito true para ejecutar)
+
+## Flujo de ejecución
+
+1. **Verificación pre-producción (calidad de salida)**
+   
+   Leer LEEME.md:
+   - ¿Estado es [DEV] o [ADAPTADO]? Si [PAPELERA] o no existe: abortar.
+   - ¿Tiene documentación de complejidad si aplica?
+   
+   Verificar módulo:
+   - Sintaxis válida: `python -m py_compile`
+   - Permisos ejecutables: `chmod +x` aplicado
+   - Shebang presente: `#!/usr/bin/env python3` (o según lenguaje)
+   - Ayuda interna funciona: `--help` o `-h` (para CLI/hibrido/agente)
+   
+   Si alguna falla: abortar con lista de qué corregir. Sugerir skill-desarrollo o skill-mantenimiento.
+
+2. **Determinar método de globalización**
+
+   **Método "auto" (preferido):**
+   - Requisito: estar en directorio del proyecto con estructura detectable
+   - Ejecutar: `ini` (sin argumentos, modo automático)
+   - `ini` detecta proyecto, crea wrapper en `/usr/bin/`
+   
+   **Método "manual":**
+   - Usar cuando `ini` no detecta automáticamente
+   - Ejecutar: `ini -i` (modo interactivo)
+   - Seguir prompts de `ini` para especificar ruta y nombre
+
+3. **Validar instalación via TRON `com`**
+   
+   - Ejecutar: `com ruta {nombre_modulo}`
+   - Verificar que apunta a wrapper en `/usr/bin/` y no a código fuente
+   - Ejecutar: `com codigo {nombre_modulo}` (verificar wrapper correcto)
+   - Probar ejecución: `{nombre_modulo} --help` (debe funcionar)
+
+4. **Actualizar LEEME.md (verdad funcional)**
+   
+   ```
+   [PROD] {nombre_modulo}: Globalizado via ini ({metodo})
+   Ruta sistema: /usr/bin/{nombre_modulo}
+   Wrapper apunta a: {ruta_real}
+   Fecha producción: {fecha}
+   ```
+   
+   Mover de sección "Módulos en Desarrollo" a "Funcionalidades Operativas"
+
+5. **Confirmación final**
+   
+   Mostrar al usuario:
+   - Wrapper creado y su contenido (via `com codigo`)
+   - Cómo usar: `{nombre_modulo} [argumentos]`
+   - Cómo modificar: nunca editar `/usr/bin/`, editar fuente en `src/` y re-ejecutar `ini`
+
+## Validaciones críticas
+
+- [ ] `confirmar=true` explícito (la IA no produce sin orden clara)
+- [ ] Estado previo [DEV] o [ADAPTADO] (no [PAPELERA], no inexistente)
+- [ ] Sintaxis válida, permisos +x, shebang correcto
+- [ ] Post-instalación: `com ruta` y ejecución `--help` funcionan
+- [ ] LEEME.md actualizado con ruta real y fecha
+
+## Manejo de errores comunes
+
+| Error | Causa | Solución |
+|-------|-------|----------|
+| `ini` no detecta proyecto | Falta estructura reconocible | Usar `ini -i` manual o verificar estructura |
+| Wrapper no ejecuta | Permisos o shebang | `chmod +x`, verificar shebang |
+| `com ruta` no encuentra | No instalado o nombre diferente | Verificar nombre usado en `ini` |
+| Conflicto nombre existente | Otro programa usa mismo nombre | Renombrar módulo o usar `ini -i` con nombre alternativo |
+
+## Outputs
+
+### JSON estructurado
+```json
+{
+  "estado": "ok|error|pendiente_confirmacion",
+  "accion": "produccion_globalizar",
+  "datos": {
+    "nombre": "{nombre}",
+    "metodo": "auto|manual",
+    "ruta_wrapper": "/usr/bin/{nombre}",
+    "ruta_fuente": "{ruta_real}",
+    "validacion_com": "ok|fallo",
+    "estado_leeme": "[PROD]"
+  }
+}
+```
+
+### Output CLI
+```
+🚀 Módulo '{nombre}' globalizado en /usr/bin/{nombre}
+   Método: {auto|manual} | Validación: OK
+   Uso: {nombre} [argumentos]
+   Modificar: editar src/modules/{nombre}/ → re-ejecutar ini
+   LEEME.md: [PROD] registrado
+```
+
+## Reglas de oro ARES
+
+1. **Soberanía del usuario**: IA nunca decide poner en producción. Requiere confirmar=true.
+2. **Fuente en ~/tron/programas**: Nunca editar `/usr/bin/` directamente. Wrapper apunta a fuente.
+3. **Validación obligatoria**: Si `com ruta` o `--help` fallan, no está en producción real.
+4. **LEEME.md es la verdad**: Sin entrada [PROD], el módulo no existe funcionalmente para el sistema.
+5. **Reproducible**: Re-ejecutar `ini` debe actualizar wrapper si fuente cambió.
+
+## Relación con otros skills
+
+| Skill | Relación | Nota |
+|-------|----------|------|
+| desarrollo | Origen | Solo se produce lo que desarrollo creó y validó |
+| mantenimiento | Preparación | Puede requerir adaptación antes de producción |
+| inicializacion | No aplica | Producción requiere código funcional, no estructura vacía |
+
+**Dependencia externa**: Requiere TRON `ini` y `com` instalados. Si no: error "Herramientas TRON no disponibles. Instalar primero."
+
+**Independencia de otros skills**: No carga skill-desarrollo ni skill-mantenimiento, solo valida su output (código existente).
+```
+
+---
+
+## Iteración 4: Verificación contra tus requisitos
+
+| Tu requisito | Verificación |
+|-------------|--------------|
+| "inicializacion ese OK" | ✓ Skill 1: inicializacion |
+| "desarrollo y calidad van en el mismo skill" | ✓ Skill 2: desarrollo (con calidad integrada: depuración desde inicio, validación, papelera si falla) |
+| "gestion cambialo a mantenimiento" | ✓ Skill 3: mantenimiento (adaptar, papelera, recuperar, documentar, dividir) |
+| "deplay con su skill pero no se llama deploy se llama produccion" | ✓ Skill 4: produccion (usa "globalizar", "/usr/bin", "ini") |
+| "no nombres raros como Bootstrap" | ✓ Nombres: inicializacion, desarrollo, mantenimiento, produccion |
+| "respecta mi forma de decir las cosas" | ✓ "globalizar", "papelera", "paranoica", "soberanía", "verdad funcional" |
+| "carga manual, no tres skills a la vez" | ✓ Cada skill es autocontenido, independiente, carga individual |
+| "flujo de trabajo de bajo tokens" | ✓ Skills no se cargan entre sí, solo leen archivos base (LEEME.md, REP_STRUCTURE.md) |
+| "usa mis palabras de la documentación" | ✓ "Organización paranoica", "Cerebro Headless", "soberanía tecnológica", "LEEME.md es verdad" |
+
+---
+
+## Resumen entregable
+
+4 skills listos para copiar a `docs/skills/`:
+
+1. **skill-inicializacion.md**
+2. **skill-desarrollo.md**
+3. **skill-mantenimiento.md**
+4. **skill-produccion.md**
+
+---
+
+## Verificación final de convergencia
+
+| Criterio | Estado |
+|----------|--------|
+| Tus palabras exactas | ✓ "inicializacion", "desarrollo", "mantenimiento", "produccion", "globalizar", "papelera", "paranoica", "soberanía", "verdad funcional" |
+| Principios ARES | ✓ ≤3 funciones, LEEME.md verdad, docs/ para complejo, comentarios solo lo complejo, num_ctx 8192, RAM <1GB |
+| Herramientas TRON | ✓ ini, com (repo y ayuda son consumo, no skills) |
+| Carga manual | ✓ Skills independientes, ninguno carga otro |
+| Sin ruido | ✓ Sin Bootstrap, sin meta, sin coordinar multi-skill |
+| Bajo tokens | ✓ Cada skill lee máximo 2 archivos base + objetivo |
+
+
+```
+
+## /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA/ArquitecturadeMódulosOrientadaaIA.md
+
+```
+
+# Arquitectura de Módulos Orientada a IA
+
+## Diseño modular para sistemas compatibles con LLMs
+
+### Propósito
+
+El sistema de módulos está diseñado para mejorar la **comprensión del código por parte de modelos de inteligencia artificial con ventana de contexto limitada**, así como para facilitar la reutilización, mantenimiento y evolución del sistema.
+
+Los módulos no deben entenderse únicamente como componentes técnicos del código, sino como **unidades funcionales reutilizables y operativas** dentro del ecosistema del proyecto.
+
+---
+
+# Naturaleza de un módulo
+
+Un módulo puede cumplir simultáneamente tres funciones:
+
+**A. Soporte de desarrollo**
+Servir como ayuda para la construcción de otros programas.
+
+**B. Herramienta CLI**
+Actuar como herramienta o comando utilizable directamente por el usuario en la consola.
+
+**C. Unidad reutilizable de código**
+Ser código empaquetado intencionalmente para ser reutilizable en múltiples escenarios.
+
+---
+
+# Integración programática
+
+Todo módulo debe poder integrarse programáticamente dentro de otros programas mediante importación directa.
+
+Ejemplo conceptual:
+
+```python
+import modulo
+```
+
+También debe permitir la importación granular de sus elementos internos:
+
+* clases
+* funciones
+* subfunciones
+* entidades de agrupación de código
+
+Esto permite que el módulo funcione tanto en **paradigmas tradicionales como en paradigmas mixtos de programación**.
+
+---
+
+# Uso como herramienta CLI
+
+Todo módulo debe poder ejecutarse como herramienta CLI.
+
+Para ello debe:
+
+* aceptar **parámetros posicionales**
+* ofrecer **ayuda interna**
+* proporcionar **documentación accesible desde la consola**
+
+Esto permite que el mismo módulo funcione tanto como **biblioteca de código** como **herramienta operativa para el usuario**.
+
+---
+
+# Importancia de los comentarios de código
+
+Los comentarios dentro del código son críticos, especialmente cuando el sistema es utilizado o analizado por IA.
+
+Los comentarios ayudan a:
+
+* evitar la repetición de errores ya resueltos
+* transmitir decisiones técnicas pasadas
+* mejorar la interpretación del código por modelos de IA
+
+Por esta razón, **es importante enfatizar en comentarios aquello que fue complejo o costoso de resolver**.
+
+---
+
+# Documentación especial de módulos complejos
+
+Cuando un módulo:
+
+* tiene gran importancia en el sistema
+* ha requerido un esfuerzo considerable para su creación
+* ha implicado resolver problemas difíciles
+
+entonces debe contar con **documentación especial dentro de la carpeta `docs`**.
+
+Esta documentación permite:
+
+* modificar el módulo con mayor seguridad
+* adaptarlo a nuevos contextos
+* exportarlo a otros proyectos
+* actualizarlo sin repetir errores del pasado
+* evitar depender de documentación externa
+
+---
+
+# Índice de módulos
+
+El índice de módulos tiene la responsabilidad de ofrecer un **mapa claro del sistema modular**.
+
+Debe incluir:
+
+* descripción del módulo
+* función operativa
+* casos de uso
+* nivel de granularidad
+* rutas dentro del proyecto
+* referencia a documentación especial si existe
+
+El índice debe ser:
+
+* claro
+* conciso
+* preciso
+* operativo
+* descriptivo
+* orientado a casos de uso
+
+---
+
+# Niveles de documentación de un módulo
+
+Dependiendo de la complejidad del módulo, se requieren distintos niveles de documentación.
+
+## Módulo simple
+
+Requiere:
+
+* índice de módulos
+* lectura directa del módulo
+
+Esto suele ser suficiente para comprender su funcionamiento.
+
+---
+
+## Módulo complejo o problemático
+
+Si el módulo:
+
+* ha dado problemas ("ha dado guerra")
+* es muy complejo
+* tiene documentación difícil o dispersa
+
+entonces se requiere:
+
+1. índice de módulos
+2. documentación especial en `docs`
+3. lectura directa del módulo
+
+---
+
+# Rol del README
+
+El archivo `README` contiene información orientada principalmente al usuario.
+
+Debe incluir:
+
+* descripción general del sistema
+* ubicación de los módulos principales
+* importancia de cada componente
+* explicación del sistema de documentación
+* guía de navegación del repositorio
+
+El README explica **cómo se estructura y cómo se consulta la documentación del proyecto**.
+
+---
+
+# Diseño orientado a IA con ventana limitada
+
+El sistema modular está diseñado específicamente para **IA con ventana de contexto limitada**.
+
+Por esta razón:
+
+* los módulos deben ser **pequeños**
+* deben contener **funciones claramente agrupadas**
+* deben ser **fáciles de cargar en contexto**
+
+Regla principal:
+
+Un módulo no debe contener **más de tres funciones principales** o su equivalente en otros paradigmas (por ejemplo clases).
+
+---
+
+# Restricciones de contexto para modelos locales
+
+En entornos con modelos locales como **Ollama**, la ventana de contexto es más limitada.
+
+Configuración base conservadora:
+
+```
+Default Ollama: 2048 tokens
+```
+
+Por esta razón, los módulos deben diseñarse para **no superar la capacidad de contexto del modelo utilizado**.
+
+También se debe evitar que la carga de contexto implique **más de 1 GB de memoria dedicada al proceso de conversación activa**.
+
+---
+
+# Configuración experimental de contexto
+
+A medida que se realizan pruebas, se puede aumentar el contexto del modelo.
+
+Ejemplo de configuración:
+
+```
+PARAMETER num_ctx 8192
+PARAMETER kv_cache_type q4_0
+
+PARAMETER flash_attn true
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.15
+PARAMETER num_batch 512
+```
+
+Estos parámetros permiten mejorar el rendimiento técnico del modelo dependiendo de:
+
+* el modelo utilizado
+* la capacidad de la máquina
+* el tipo de proceso ejecutado
+
+---
+
+# Adaptación a modelos con mayor ventana
+
+Cuando se utilizan modelos con mayor capacidad de contexto, como:
+
+* DeepSeek
+* modelos de proveedores externos
+* modelos accesibles vía OpenRouter
+
+entonces el sistema puede adaptarse y permitir **módulos más grandes o mayor número de módulos cargados simultáneamente**.
+
+En proyectos como **Ares**, la arquitectura modular puede adaptarse dinámicamente según:
+
+* tecnología proveedora (Google, Anthropic, DeepSeek, OpenRouter)
+* capacidad de la máquina
+* recursos dedicados al proceso
+
+---
+
+# Organización de módulos
+
+Los módulos se organizan siguiendo principios de afinidad funcional.
+
+Cada módulo agrupa **funciones naturalmente relacionadas**.
+
+A su vez:
+
+* los módulos se agrupan en **carpetas**
+* las carpetas agrupan **módulos con funciones similares o afines**
+
+Esto permite mantener coherencia estructural en todo el sistema.
+
+---
+
+# Organización de la documentación
+
+La documentación debe seguir la misma lógica estructural que el código.
+
+Por esta razón:
+
+* toda la documentación debe organizarse en carpetas
+* cada documento debe tener una ubicación clara dentro del proyecto
+* el `README` debe apuntar correctamente a los documentos clave
+
+---
+
+# Principio de depuración
+
+Cada módulo debe ser creado con **depuración máxima desde el inicio**.
+
+Esto implica:
+
+* pruebas tempranas
+* validación funcional
+* claridad en comentarios
+* estructura limpia
+
+El mismo principio aplica a los programas que utilizan los módulos.
+
+---
+
+# Principio general del sistema
+
+El sistema modular existe para lograr tres objetivos principales:
+
+1. mejorar la comprensión del código por parte de IA
+2. facilitar la reutilización de código
+3. reducir errores repetidos en el desarrollo
+
+El diseño modular es por lo tanto **una decisión arquitectónica orientada tanto a humanos como a inteligencia artificial**.
+
+
+
+# ANEXO
+
+# Integración de Binarios Externos, Organización del Proyecto y Módulos Agente
+
+
+
+## 1. Integración de binarios externos y repositorios de terceros
+
+En muchos proyectos es necesario utilizar herramientas externas, binarios ya compilados o repositorios de terceros. Ejemplos típicos pueden ser herramientas como:
+
+* terminales avanzados
+* exploradores de archivos
+* utilidades CLI
+* herramientas de análisis o automatización
+
+Cuando esto ocurre, el proyecto debe intentar **integrar estos recursos de forma organizada y controlada**.
+
+Siempre que sea posible:
+
+* el **binario debe copiarse o instalarse dentro de la carpeta `bin` del proyecto**
+* la **configuración debe centralizarse dentro de la carpeta `config` del proyecto**
+
+Esto permite que el proyecto mantenga **autonomía operativa**, evitando depender de configuraciones dispersas en el sistema.
+
+---
+
+## 2. Organización de configuración de herramientas externas
+
+Cada binario externo o repositorio integrado debe tener **su propia carpeta de configuración dentro de `config`**.
+
+Ejemplo conceptual:
+
+```
+project/
+│
+├─ bin/
+│   ├─ herramienta1
+│   ├─ herramienta2
+│
+├─ config/
+│   ├─ herramienta1/
+│   │   └─ config
+│   ├─ herramienta2/
+│   │   └─ config
+```
+
+Esto permite:
+
+* aislar configuraciones
+* facilitar mantenimiento
+* evitar conflictos entre herramientas
+
+---
+
+## 3. Organización paranoica del proyecto
+
+Todo el proyecto debe organizarse de manera **extremadamente ordenada**.
+
+Esto implica:
+
+* uso sistemático de carpetas
+* separación clara de responsabilidades
+* organización en subcarpetas cuando sea necesario
+
+El principio es simple:
+
+**todo elemento del proyecto debe tener una ubicación lógica y explícita**.
+
+Esta organización facilita:
+
+* mantenimiento
+* navegación del repositorio
+* comprensión del sistema por humanos y por IA
+
+---
+
+## 4. Manejo de código que no funciona
+
+El código que no está funcionando no debe eliminarse inmediatamente.
+
+En su lugar debe moverse a una carpeta interna del proyecto llamada:
+
+```
+papelera/
+```
+
+Esto permite:
+
+* conservar trabajo previo
+* recuperar soluciones parciales
+* evitar pérdida de experimentos útiles
+
+La carpeta papelera actúa como **zona de descarte temporal dentro del proyecto**.
+
+---
+
+## 5. Módulos que funcionan como herramientas o agentes
+
+Como se explicó en el documento principal, los módulos pueden cumplir distintos roles:
+
+* biblioteca reutilizable
+* herramienta CLI
+* componente importable
+
+Sin embargo, existe una categoría especial de módulos.
+
+Cuando un módulo:
+
+* tiene acceso a un modelo LLM
+* puede procesar tareas de forma autónoma
+* puede devolver resultados estructurados
+
+entonces ese módulo puede funcionar como **subagente del sistema**.
+
+---
+
+## 6. Módulos con salida estructurada para IA
+
+Para que un módulo pueda funcionar como herramienta de IA o subagente, debe poder devolver resultados en un formato estructurado.
+
+El formato recomendado es:
+
+```
+JSON estructurado
+```
+
+Este JSON debe ser:
+
+* claro
+* consistente
+* fácil de interpretar por otros módulos o por sistemas de orquestación.
+
+Esto permite que el módulo pueda ser utilizado dentro de:
+
+* pipelines de IA
+* agentes
+* automatizaciones complejas.
+
+---
+
+## 7. Carpeta de agentes
+
+Los módulos que cumplen funciones de agente o subagente deben ubicarse en una carpeta específica del proyecto.
+
+```
+Agentes/
+```
+
+Esta carpeta contiene módulos que:
+
+* interactúan con modelos de lenguaje
+* generan respuestas estructuradas
+* actúan como herramientas inteligentes dentro del sistema.
+
+---
+
+## 8. Relación entre módulos y agentes
+
+Un módulo puede evolucionar en el tiempo.
+
+Por ejemplo:
+
+módulo simple → herramienta CLI → módulo reutilizable → agente
+
+Si un módulo adquiere capacidades de agente, entonces puede ser **reubicado o duplicado dentro de la carpeta `Agentes`**.
+
+Esto permite mantener clara la arquitectura del sistema.
+
+---
+
+## 9. Documentación en el índice de módulos
+
+Todo lo anterior debe reflejarse en el **índice de módulos del proyecto**.
+
+El índice debe indicar para cada módulo:
+
+* función principal
+* tipo de módulo
+* ubicación en el proyecto
+* si es herramienta CLI
+* si es módulo importable
+* si funciona como agente o subagente
+* si tiene salida JSON estructurada
+* si depende de un LLM
+
+Esto convierte al índice en **un mapa operativo completo del sistema modular**.
+
+
+
+```
+
+## /home/daniel/tron/programas/TR/docs/ArquitecturadeModulosOrientadaaIA/VersionIaArquitecturadeMódulosOrientadaaIA.md
+
+```
+
+# Arquitectura de Módulos Orientada a IA
+
+## Diseño modular para sistemas compatibles con LLMs
+
+### Propósito
+
+El sistema de módulos está diseñado para mejorar la **comprensión del código por parte de modelos de inteligencia artificial con ventana de contexto limitada**, así como para facilitar la reutilización, mantenimiento y evolución del sistema.
+
+Los módulos no deben entenderse únicamente como componentes técnicos del código, sino como **unidades funcionales reutilizables y operativas** dentro del ecosistema del proyecto.
+
+---
+
+# Naturaleza de un módulo
+
+Un módulo puede cumplir simultáneamente tres funciones:
+
+**A. Soporte de desarrollo**
+Servir como ayuda para la construcción de otros programas.
+
+**B. Herramienta CLI**
+Actuar como herramienta o comando utilizable directamente por el usuario en la consola.
+
+**C. Unidad reutilizable de código**
+Ser código empaquetado intencionalmente para ser reutilizable en múltiples escenarios.
+
+---
+
+# Integración programática
+
+Todo módulo debe poder integrarse programáticamente dentro de otros programas mediante importación directa.
+
+Ejemplo conceptual:
+
+```python
+import modulo
+```
+
+También debe permitir la importación granular de sus elementos internos:
+
+* clases
+* funciones
+* subfunciones
+* entidades de agrupación de código
+
+Esto permite que el módulo funcione tanto en **paradigmas tradicionales como en paradigmas mixtos de programación**.
+
+---
+
+# Uso como herramienta CLI
+
+Todo módulo debe poder ejecutarse como herramienta CLI.
+
+Para ello debe:
+
+* aceptar **parámetros posicionales**
+* ofrecer **ayuda interna**
+* proporcionar **documentación accesible desde la consola**
+
+Esto permite que el mismo módulo funcione tanto como **biblioteca de código** como **herramienta operativa para el usuario**.
+
+---
+
+# Importancia de los comentarios de código
+
+Los comentarios dentro del código son críticos, especialmente cuando el sistema es utilizado o analizado por IA.
+
+Los comentarios ayudan a:
+
+* evitar la repetición de errores ya resueltos
+* transmitir decisiones técnicas pasadas
+* mejorar la interpretación del código por modelos de IA
+
+Por esta razón, **es importante enfatizar en comentarios aquello que fue complejo o costoso de resolver**.
+
+---
+
+# Documentación especial de módulos complejos
+
+Cuando un módulo:
+
+* tiene gran importancia en el sistema
+* ha requerido un esfuerzo considerable para su creación
+* ha implicado resolver problemas difíciles
+
+entonces debe contar con **documentación especial dentro de la carpeta `docs`**.
+
+Esta documentación permite:
+
+* modificar el módulo con mayor seguridad
+* adaptarlo a nuevos contextos
+* exportarlo a otros proyectos
+* actualizarlo sin repetir errores del pasado
+* evitar depender de documentación externa
+
+---
+
+# Índice de módulos
+
+El índice de módulos tiene la responsabilidad de ofrecer un **mapa claro del sistema modular**.
+
+Debe incluir:
+
+* descripción del módulo
+* función operativa
+* casos de uso
+* nivel de granularidad
+* rutas dentro del proyecto
+* referencia a documentación especial si existe
+
+El índice debe ser:
+
+* claro
+* conciso
+* preciso
+* operativo
+* descriptivo
+* orientado a casos de uso
+
+---
+
+# Niveles de documentación de un módulo
+
+Dependiendo de la complejidad del módulo, se requieren distintos niveles de documentación.
+
+## Módulo simple
+
+Requiere:
+
+* índice de módulos
+* lectura directa del módulo
+
+Esto suele ser suficiente para comprender su funcionamiento.
+
+---
+
+## Módulo complejo o problemático
+
+Si el módulo:
+
+* ha dado problemas ("ha dado guerra")
+* es muy complejo
+* tiene documentación difícil o dispersa
+
+entonces se requiere:
+
+1. índice de módulos
+2. documentación especial en `docs`
+3. lectura directa del módulo
+
+---
+
+# Rol del README
+
+El archivo `README` contiene información orientada principalmente al usuario.
+
+Debe incluir:
+
+* descripción general del sistema
+* ubicación de los módulos principales
+* importancia de cada componente
+* explicación del sistema de documentación
+* guía de navegación del repositorio
+
+El README explica **cómo se estructura y cómo se consulta la documentación del proyecto**.
+
+---
+
+# Diseño orientado a IA con ventana limitada
+
+El sistema modular está diseñado específicamente para **IA con ventana de contexto limitada**.
+
+Por esta razón:
+
+* los módulos deben ser **pequeños**
+* deben contener **funciones claramente agrupadas**
+* deben ser **fáciles de cargar en contexto**
+
+Regla principal:
+
+Un módulo no debe contener **más de tres funciones principales** o su equivalente en otros paradigmas (por ejemplo clases).
+
+---
+
+# Restricciones de contexto para modelos locales
+
+En entornos con modelos locales como **Ollama**, la ventana de contexto es más limitada.
+
+Configuración base conservadora:
+
+```
+Default Ollama: 2048 tokens
+```
+
+Por esta razón, los módulos deben diseñarse para **no superar la capacidad de contexto del modelo utilizado**.
+
+También se debe evitar que la carga de contexto implique **más de 1 GB de memoria dedicada al proceso de conversación activa**.
+
+---
+
+# Configuración experimental de contexto
+
+A medida que se realizan pruebas, se puede aumentar el contexto del modelo.
+
+Ejemplo de configuración:
+
+```
+PARAMETER num_ctx 8192
+PARAMETER kv_cache_type q4_0
+
+PARAMETER flash_attn true
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.15
+PARAMETER num_batch 512
+```
+
+Estos parámetros permiten mejorar el rendimiento técnico del modelo dependiendo de:
+
+* el modelo utilizado
+* la capacidad de la máquina
+* el tipo de proceso ejecutado
+
+---
+
+# Adaptación a modelos con mayor ventana
+
+Cuando se utilizan modelos con mayor capacidad de contexto, como:
+
+* DeepSeek
+* modelos de proveedores externos
+* modelos accesibles vía OpenRouter
+
+entonces el sistema puede adaptarse y permitir **módulos más grandes o mayor número de módulos cargados simultáneamente**.
+
+En proyectos como **Ares**, la arquitectura modular puede adaptarse dinámicamente según:
+
+* tecnología proveedora (Google, Anthropic, DeepSeek, OpenRouter)
+* capacidad de la máquina
+* recursos dedicados al proceso
+
+---
+
+# Organización de módulos
+
+Los módulos se organizan siguiendo principios de afinidad funcional.
+
+Cada módulo agrupa **funciones naturalmente relacionadas**.
+
+A su vez:
+
+* los módulos se agrupan en **carpetas**
+* las carpetas agrupan **módulos con funciones similares o afines**
+
+Esto permite mantener coherencia estructural en todo el sistema.
+
+---
+
+# Organización de la documentación
+
+La documentación debe seguir la misma lógica estructural que el código.
+
+Por esta razón:
+
+* toda la documentación debe organizarse en carpetas
+* cada documento debe tener una ubicación clara dentro del proyecto
+* el `README` debe apuntar correctamente a los documentos clave
+
+---
+
+# Principio de depuración
+
+Cada módulo debe ser creado con **depuración máxima desde el inicio**.
+
+Esto implica:
+
+* pruebas tempranas
+* validación funcional
+* claridad en comentarios
+* estructura limpia
+
+El mismo principio aplica a los programas que utilizan los módulos.
+
+---
+
+# Principio general del sistema
+
+El sistema modular existe para lograr tres objetivos principales:
+
+1. mejorar la comprensión del código por parte de IA
+2. facilitar la reutilización de código
+3. reducir errores repetidos en el desarrollo
+
+El diseño modular es por lo tanto **una decisión arquitectónica orientada tanto a humanos como a inteligencia artificial**.
+
+---
+
+
+
+
+
+## 10. Soberanía del Entorno y Precedencia del $PATH
+
+Es crítico entender cómo el sistema operativo resuelve los comandos para evitar errores de dependencias (ej. `ModuleNotFoundError`).
+
+### El Problema de la Precedencia
+Si un proyecto tiene su carpeta `bin/` dentro del `$PATH` del usuario y esta aparece **antes** que `/usr/bin/`, el sistema ejecutará el script local. 
+* Si el script local es un archivo Python puro con shebang `#!/usr/bin/env python3`, este usará el intérprete global si el entorno virtual no está activo, fallando al no encontrar las librerías del proyecto (como `click`).
+
+### La Solución: Bash Wrappers Universales
+Para garantizar la soberanía del entorno, **todo ejecutable en `bin/` (local) o `/usr/bin/` (producción) debe ser un Bash Wrapper** que utilice `uv run`.
+
+#### Estándar de Wrapper Local (bin/):
+Usa rutas relativas para mantener la portabilidad del repositorio.
+```bash
+#!/bin/bash
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+exec uv run --project "$PROJECT_DIR" python "$PROJECT_DIR/src/main.py" "$@"
+```
+
+#### Estándar de Wrapper Global (/usr/bin/):
+Gestionado automáticamente por `ini v2.1`.
+```bash
+#!/bin/bash
+export TR_PROJECT_ROOT="/ruta/absoluta/al/proyecto"
+exec uv run --project "$TR_PROJECT_ROOT" python "$TR_PROJECT_ROOT/src/main.py" "$@"
+```
+
+Esta estructura asegura que el comando funcione correctamente **desde cualquier ubicación**, respetando el directorio de trabajo del usuario y garantizando el aislamiento del entorno virtual.
+
+## 11. Preservación de Evidencias y Carpeta OLD (Jamas Borramos)
+
+En el ecosistema TRON, **la información es el activo más valioso**. Por lo tanto, rige la norma de **NO BORRAR NADA**.
+
+*   **Evidencias Temporales:** Scripts de prueba, borradores o investigaciones (`test/`, scripts sueltos) nunca se eliminan.
+*   **Organización:** Si un archivo molesta o ya no es útil para la rama principal, se mueve a una subcarpeta llamada `OLD/` dentro de su directorio actual, o a la carpeta raíz `papelera/`.
+*   **Puntero de Borrado:** La carpeta `papelera/` se considera un "puntero a borrar", pero su limpieza es una decisión humana soberana, nunca automática por parte de una IA.
+
+## 12. Gestión de TODO por Fases (Eficiencia de Contexto)
+
+Para optimizar el uso de tokens y la memoria de la IA, el seguimiento de tareas se organiza por **Fases de Naturaleza Común**.
+
+*   **Agrupación:** Las tareas atómicas se agrupan en fases (ej. "Fase 1: Infraestructura Core").
+*   **Estado:** La IA actualiza el estado de la **Fase** completa, resumiendo el progreso para mantener el `TODO.md` compacto y altamente semántico.
+*   **Atomicidad:** Las tareas dentro de la fase deben ser claras, precisas, granulares, descriptivas y ordenadas con una temporalidad lógica.
+
+## 13. Skills (Librería de Kung-Fu para IAs)
+
+Las Skills son módulos de conocimiento procedimental que permiten a las IAs adquirir capacidades específicas ("Kung-Fu") sin saturar el contexto principal.
+
+*   **Ubicación:** `docs/skills/`.
+*   **Formato:** `SKILL.md` con Frontmatter YAML (name, description) y cuerpo Markdown.
+*   **Indización:** Existe un `INDEX.md` en la carpeta de skills que sirve como punto de entrada único.
+*   **Referencia:** Los archivos de contexto de IA (`GEMINI.cli`, `QWEN.md`) deben apuntar a este índice.
+
+---
+
+# ANEXO
+
+# Integración de Binarios Externos, Organización del Proyecto y Módulos Agente
+
+
+## 1. Integración de binarios externos y repositorios de terceros
+
+En muchos proyectos es necesario utilizar herramientas externas, binarios ya compilados o repositorios de terceros. Ejemplos típicos pueden ser herramientas como:
+
+* terminales avanzados
+* exploradores de archivos
+* utilidades CLI
+* herramientas de análisis o automatización
+
+Cuando esto ocurre, el proyecto debe intentar **integrar estos recursos de forma organizada y controlada**.
+
+Siempre que sea posible:
+
+* el **binario debe copiarse o instalarse dentro de la carpeta `bin` del proyecto**
+* la **configuración debe centralizarse dentro de la carpeta `config` del proyecto**
+
+Esto permite que el proyecto mantenga **autonomía operativa**, evitando depender de configuraciones dispersas en el sistema.
+
+---
+
+## 2. Organización de configuración de herramientas externas
+
+Cada binario externo o repositorio integrado debe tener **su propia carpeta de configuración dentro de `config`**.
+
+Ejemplo conceptual:
+
+```
+project/
+│
+├─ bin/
+│   ├─ herramienta1
+│   ├─ herramienta2
+│
+├─ config/
+│   ├─ herramienta1/
+│   │   └─ config
+│   ├─ herramienta2/
+│   │   └─ config
+```
+
+Esto permite:
+
+* aislar configuraciones
+* facilitar mantenimiento
+* evitar conflictos entre herramientas
+
+---
+
+## 3. Organización paranoica del proyecto
+
+Todo el proyecto debe organizarse de manera **extremadamente ordenada**.
+
+Esto implica:
+
+* uso sistemático de carpetas
+* separación clara de responsabilidades
+* organización en subcarpetas cuando sea necesario
+
+El principio es simple:
+
+**todo elemento del proyecto debe tener una ubicación lógica y explícita**.
+
+Esta organización facilita:
+
+* mantenimiento
+* navegación del repositorio
+* comprensión del sistema por humanos y por IA
+
+---
+
+## 4. Manejo de código que no funciona
+
+El código que no está funcionando no debe eliminarse inmediatamente.
+
+En su lugar debe moverse a una carpeta interna del proyecto llamada:
+
+```
+papelera/
+```
+
+Esto permite:
+
+* conservar trabajo previo
+* recuperar soluciones parciales
+* evitar pérdida de experimentos útiles
+
+La carpeta papelera actúa como **zona de descarte temporal dentro del proyecto**.
+
+---
+
+## 5. Módulos que funcionan como herramientas o agentes
+
+Como se explicó en el documento principal, los módulos pueden cumplir distintos roles:
+
+* biblioteca reutilizable
+* herramienta CLI
+* componente importable
+
+Sin embargo, existe una categoría especial de módulos.
+
+Cuando un módulo:
+
+* tiene acceso a un modelo LLM
+* puede procesar tareas de forma autónoma
+* puede devolver resultados estructurados
+
+entonces ese módulo puede funcionar como **subagente del sistema**.
+
+---
+
+## 6. Módulos con salida estructurada para IA
+
+Para que un módulo pueda funcionar como herramienta de IA o subagente, debe poder devolver resultados en un formato estructurado.
+
+El formato recomendado es:
+
+```
+JSON estructurado
+```
+
+Este JSON debe ser:
+
+* claro
+* consistente
+* fácil de interpretar por otros módulos o por sistemas de orquestación.
+
+Esto permite que el módulo pueda ser utilizado dentro de:
+
+* pipelines de IA
+* agentes
+* automatizaciones complejas.
+
+---
+
+## 7. Carpeta de agentes
+
+Los módulos que cumplen funciones de agente o subagente deben ubicarse en una carpeta específica del proyecto.
+
+```
+Agentes/
+```
+
+Esta carpeta contiene módulos que:
+
+* interactúan con modelos de lenguaje
+* generan respuestas estructuradas
+* actúan como herramientas inteligentes dentro del sistema.
+
+---
+
+## 8. Relación entre módulos y agentes
+
+Un módulo puede evolucionar en el tiempo.
+
+Por ejemplo:
+
+módulo simple → herramienta CLI → módulo reutilizable → agente
+
+Si un módulo adquiere capacidades de agente, entonces puede ser **reubicado o duplicado dentro de la carpeta `Agentes`**.
+
+Esto permite mantener clara la arquitectura del sistema.
+
+---
+
+## 9. Documentación en el índice de módulos
+
+Todo lo anterior debe reflejarse en el **índice de módulos del proyecto**.
+
+El índice debe indicar para cada módulo:
+
+* función principal
+* tipo de módulo
+* ubicación en el proyecto
+* si es herramienta CLI
+* si es módulo importable
+* si funciona como agente o subagente
+* si tiene salida JSON estructurada
+* si depende de un LLM
+
+Esto convierte al índice en **un mapa operativo completo del sistema modular**.
+
+---
+
+# Versión IA-Friendly (Optimizada para LLMs)
+
+## Objetivo del anexo
+
+Definir reglas de organización del proyecto para:
+
+* integración de herramientas externas
+* manejo de código experimental
+* clasificación avanzada de módulos
+* creación de módulos-agente compatibles con IA.
+
+---
+
+## 1. Integración de herramientas externas
+
+Regla principal:
+
+Si el proyecto utiliza herramientas externas o binarios de terceros:
+
+```
+binarios → carpeta /bin
+configuración → carpeta /config
+```
+
+Ejemplo:
+
+```
+project/
+ ├─ bin/
+ │   └─ herramienta_externa
+ │
+ ├─ config/
+ │   └─ herramienta_externa/
+ │        └─ configuración
+```
+
+Beneficios:
+
+* reproducibilidad del entorno
+* control total del proyecto
+* independencia del sistema host.
+
+---
+
+## 2. Regla de organización paranoica
+
+Todo el proyecto debe seguir el principio:
+
+```
+Todo debe estar en una carpeta específica.
+Nada debe quedar suelto.
+```
+
+Esto implica:
+
+* uso intensivo de subcarpetas
+* separación clara de responsabilidades
+* organización consistente del repositorio.
+
+---
+
+## 3. Código no funcional
+
+El código experimental o no funcional no debe eliminarse.
+
+Debe moverse a:
+
+```
+papelera/
+```
+
+Propósito:
+
+* conservar experimentos
+* evitar pérdida de soluciones parciales
+* mantener el repositorio principal limpio.
+
+---
+
+## 4. Tipos de módulos en el sistema
+
+Un módulo puede ser:
+
+### Tipo 1 — Biblioteca reutilizable
+
+Importable desde otros módulos.
+
+### Tipo 2 — Herramienta CLI
+
+Ejecutable desde la consola.
+
+### Tipo 3 — Módulo híbrido
+
+Importable y ejecutable.
+
+### Tipo 4 — Módulo-Agente
+
+Módulo con capacidades de IA.
+
+---
+
+## 5. Definición de módulo-agente
+
+Un módulo se considera agente cuando cumple:
+
+* conexión con un LLM
+* capacidad de resolver tareas
+* salida estructurada
+* integración en flujos de IA.
+
+---
+
+## 6. Salida estructurada para IA
+
+Formato recomendado:
+
+```
+JSON
+```
+
+Ejemplo conceptual:
+
+```
+{
+  "estado": "ok",
+  "accion": "resultado_procesado",
+  "datos": {...}
+}
+```
+
+Beneficios:
+
+* interoperabilidad entre módulos
+* integración con orquestadores
+* facilidad de análisis por IA.
+
+---
+
+## 7. Ubicación de agentes
+
+Los agentes deben ubicarse en:
+
+```
+Agentes/
+```
+
+Ejemplo:
+
+```
+project/
+ ├─ Agentes/
+ │   ├─ agente_codigo
+ │   ├─ agente_documentacion
+ │   └─ agente_analisis
+```
+
+---
+
+## 8. Evolución de módulos
+
+Un módulo puede evolucionar siguiendo el patrón:
+
+```
+módulo básico
+→ herramienta CLI
+→ módulo reutilizable
+→ agente IA
+```
+
+La arquitectura debe permitir esta evolución sin romper el sistema.
+
+---
+
+## 9. Reglas del índice de módulos
+
+El índice de módulos debe documentar para cada módulo:
+
+```
+nombre
+tipo
+ubicación
+función
+dependencias
+si es CLI
+si es importable
+si es agente
+si usa LLM
+si devuelve JSON estructurado
+```
+
+Esto permite que el índice funcione como **mapa operativo del sistema para humanos y para IA**.
+
+---
+
+
+
+
+# MODIFICACIÓN 1
+
+
+Vamos a generar **una versión IA-friendly de tu `REP_STRUCTURE.md`** adaptada a tu proyecto modular, organizada para que tu Ollama (u otro LLM) pueda **navegar y entender el repo sin desperdiciar tokens ni memoria**, respetando tus carpetas, módulos, agentes y binarios externos.
+El objetivo es que la IA **sepa exactamente dónde buscar, qué importar y qué ignorar**, evitando “ruido” y alucinaciones de ruta.
+
+---
+
+# REP_STRUCTURE.md — Versión IA-Friendly
+
+````markdown
+# REP_STRUCTURE.md
+# Arquitectura del Proyecto para IA
+# Generado para LLM con contexto limitado (ej. Ollama 8K tokens, 3GB RAM)
+
+## 1. Reglas Generales para la IA
+- Ignorar carpetas basura: `node_modules/`, `.git/`, `papelera/` (salvo que se indique lo contrario)
+- Leer primero los READMEs de cada carpeta para decidir relevancia
+- Los binarios externos en `/bin` no necesitan leer código fuente, solo interfase de configuración
+- Carpetas de configuración (`/config`) contienen parámetros y ajustes; leer solo si el módulo/agent depende de ellos
+- Los módulos en `/Agentes` pueden generar JSON estructurado, estos son subagentes IA
+- Solo cargar el código necesario según la tarea indicada
+- No asumir rutas que no existan
+- Respeta los límites de `num_ctx` y RAM indicados en `.ai/rules.md`
+
+---
+
+## 2. Jerarquía del proyecto
+
+```text
+mi-proyecto/
+├── .ai/
+│   ├── rules.md          # Restricciones de memoria, contextos, variables de ejecución
+│   └── architecture.md   # Mapa conceptual del proyecto
+├── REP_STRUCTURE.md      # Este archivo — mapa operativo IA
+├── bin/                  # Binarios externos integrados
+│   ├── kitty
+│   └── broot
+├── config/               # Configuración centralizada
+│   ├── kitty/
+│   └── broot/
+├── papelera/             # Código no funcional / experimental
+├── Agentes/              # Módulos IA-friendly con JSON output
+│   ├── agente_modulo1/
+│   ├── agente_modulo2/
+├── src/                  # Código principal del proyecto
+│   ├── README.md
+│   ├── core/
+│   │   └── logic.py
+│   ├── modules/          # Módulos normales (CLI, importables)
+│   │   ├── modulo1/
+│   │   │   ├── __init__.py
+│   │   │   └── funciones.py
+│   │   └── modulo2/
+│   └── api/
+│       └── routes.py
+````
+
+---
+
+## 3. Tipos de elementos y comportamiento esperado
+
+| Elemento       | Rol IA                               | Nota de lectura IA                                              |
+| -------------- | ------------------------------------ | --------------------------------------------------------------- |
+| `/bin`         | Binarios externos                    | Solo leer interfase de configuración, no código fuente          |
+| `/config`      | Configuración centralizada           | Leer solo si módulo/agent depende de él                         |
+| `/papelera`    | Código no funcional                  | Ignorar en ejecución normal                                     |
+| `/Agentes`     | Módulos IA con JSON output           | Leer y ejecutar según tarea, devuelven resultados estructurados |
+| `/src/modules` | Módulos normales (CLI / importables) | Importar según necesidad                                        |
+| `/src/core`    | Lógica principal del proyecto        | Siempre relevante, leer primero                                 |
+| `/src/api`     | Puntos de acceso / rutas API         | Leer solo si la tarea involucra endpoints                       |
+
+---
+
+## 4. Flujo de lectura IA recomendado
+
+1. Leer `.ai/rules.md` para obtener parámetros de ejecución, límites de memoria y contexto
+2. Leer `REP_STRUCTURE.md` para decidir qué módulos y agentes son relevantes
+3. Leer `src/README.md` de cada carpeta de código relevante
+4. Cargar solo módulos necesarios:
+
+   * `/Agentes` → si tarea requiere LLM + JSON
+   * `/modules` → si se necesita CLI o importación
+5. Ignorar código en `/papelera/` salvo consulta explícita de experimentos antiguos
+6. Consultar `/bin` y `/config` únicamente para parámetros operativos de binarios externos
+7. Siempre priorizar **subida de contexto mínima** y **lectura selectiva** para no desperdiciar tokens
+
+---
+
+## 5. Salida esperada de módulos-agente
+
+* Formato JSON estructurado  (ejemplo):
+ 
+ En lo posible usar estructuracion disponible nativa: ollama, openrouter, propia del proveedor, modelo sdk o tecnología
+ 
+```json
+{
+  "estado": "ok",
+  "accion": "resultado_procesado",
+  "datos": {
+      "modulo": "agente_modulo1",
+      "resultado": "...",
+      "detalles": {}
+  }
+}
+```
+
+* Toda interacción con la IA debe cumplir este estándar
+* Evita confusión de rutas y mantiene consistencia
+
+---
+
+## 6. Notas adicionales
+
+* Las carpetas y subcarpetas están organizadas de forma “paranoica” para que **nada quede fuera de lugar**
+* Cada módulo, agente o binario tiene **una ubicación explícita y documentada**
+* Toda la navegación por la IA se basa en:
+
+  1. Jerarquía clara de carpetas
+  2. Documentación markdown en cada nivel (`README.md`, `.ai/*.md`)
+  3. Índice de módulos actualizado (`REP_STRUCTURE.md`)
+
+---
+
+
+
+---
+
+
+# CORRECCION 2
+
+Reorganizar la lógica según tu intención real, respetando tu estilo, tu flujo de trabajo y la filosofía que hemos construido sobre **IA CLI trabajando con proyectos existentes y skills**. Este análisis es estratégico: no voy a proponer aún nada que copiar/pegar, sino **redefinir cómo debes estructurarlo** para tu IA y tu proyecto.
+
+---
+
+## 1️⃣ Reinterpretación de tu flujo de trabajo
+
+Tu intención principal:
+
+1. **IA como asistente interactivo, no decisor soberano:**
+
+   * Tú decides soberanamente qué hacer.
+   * La IA **asiste**, recuerda el contexto, sugiere, ejecuta procesos como “skills” bajo tu instrucción, pero no toma decisiones de publicación o producción por sí misma.
+
+2. **Skills como módulos inteligentes:**
+
+   * Cada funcionalidad ejecutable (scriptProd, depurador, agente, etc.) es una **skill**.
+   * Las skills tienen su **documentación IA** en `docs/skills/skill-nombre-descriptivo.md`.
+   * Cuando llamas a una skill, la IA sabe **qué hacer**, cómo inicializarla y cómo integrarla en el flujo del proyecto.
+
+3. **Leeme como fuente de verdad funcional:**
+
+   * Todo lo que está **operativo o probado** se refleja en el `LEEME.md`.
+   * La IA **lee el LEEME** para saber qué funcionalidades realmente existen y cuáles no.
+   * Esto evita “cerrar” un módulo antes de que esté funcional: no hay cierres automáticos, solo avances que se reflejan en la documentación funcional.
+
+4. **JSON como interfaz teórica de salida de agentes:**
+
+   * Cuando hablamos de JSON, es **la salida de un módulo/skill/agent**, no parámetros de ejecución del script.
+   * La IA usa esto como referencia de **estado y resultados**, no como flujo de producción directo.
+
+5. **Inicialización como primer paso universal:**
+
+   * La IA debe siempre tener presente el proceso de **inicializar un proyecto**, crear carpetas base, colocar documentación centralizada, configurar módulos, agentes y binarios.
+   * Esto se refleja en una **skill “inicialización”**: `docs/skills/skill-inicializacion.md`.
+
+6. **Producción funcional:**
+
+   * Poner un proyecto o módulo a producción es una **acción de skill**, pero no es algo que la IA decida sola.
+   * La IA sabe cómo ejecutar la skill `scriptProd`, leer su documentación y aplicarla si tú lo ordenas.
+   * Esto garantiza que la IA **aprende kung-fu**, es decir, adquiere la capacidad de ejecutar skills sin dispersar la documentación.
+
+---
+
+## 2️⃣ Arquitectura de skills para la IA
+
+Con base en tu intención:
+
+```text
+docs/
+ ├─ skills/
+ │   ├─ skill-inicializacion.md      # Crear proyecto, carpetas base, docs y bin
+ │   ├─ skill-scriptProd.md          # Publicar proyecto en /usr/bin
+ │   ├─ skill-agenteX.md             # Cada módulo o agente como skill independiente
+ │   └─ skill-color-engine.md        # Ejemplo: skill de un módulo específico
+ ├─ .ai/
+ │   └─ rules.md                     # Reglas de ejecución y contexto para la IA
+ ├─ REP_STRUCTURE.md                 # Mapa del proyecto
+ └─ LEEME.md                          # Fuente de verdad funcional
+```
+
+* **docs/skills/**: Cada skill tiene un documento que describe:
+
+  * Qué hace
+  * Qué archivos o módulos afecta
+  * Cómo inicializarlo
+  * Cómo interactuar con la IA (JSON outputs, logs)
+
+* **docs/.ai/rules.md**: La IA siempre lo consulta antes de actuar: límites de contexto, memoria, exclusiones, flujo de módulos y agentes.
+
+* **REP_STRUCTURE.md**: Guía de relaciones entre módulos, agentes y skills.
+
+* **LEEME.md**: Solo contiene lo que **está funcional y probado**, para que la IA no “alucine” funcionalidades.
+
+---
+
+## 3️⃣ Flujo conceptual de interacción IA CLI
+
+1. **Inicializar proyecto:**
+
+   * `skill-inicializacion.md` → crea carpetas base, bin, config, docs/skills.
+   * Todo queda centralizado, sin dispersión de documentación.
+
+2. **Agregar skill:**
+
+   * Cada skill documentada en `docs/skills/skill-nombre.md`.
+   * La IA puede ejecutar la skill cuando tú se lo ordenes.
+   * La IA aprende a usarla (kung-fu) leyendo su documentación.
+
+3. **Ejecutar skill (ej. scriptProd):**
+
+   * La IA sabe qué hace la skill.
+   * Puede generar outputs teóricos en JSON si se requiere, para agentes o procesos automatizados.
+   * **No decide**; tú ejecutas la skill.
+
+4. **Actualizar LEEME y REP_STRUCTURE:**
+
+   * Cada acción funcional se refleja en el LEEME.
+   * La IA usa el LEEME como fuente de verdad para próximos pasos.
+
+5. **Iterar:**
+
+   * Módulos se crean, prueban, documentan en skills y LEEME.
+   * La IA mantiene todo el contexto actualizado según reglas en `.ai/rules.md`.
+
+---
+
+## 4️⃣ Principios clave para la IA
+
+1. **No dispersión de documentación:** Todo centralizado en `docs/skills` y `docs/.ai`.
+2. **Funcionalidad real = LEEME:** No actuar sobre lo que no está operativo.
+3. **JSON = salida de skills/agents:** Referencia, no parámetros de ejecución.
+4. **Skills = módulos ejecutables por instrucción humana:** IA aprende kung-fu leyendo su doc.
+5. **Inicialización = primer skill obligatorio:** La IA siempre conoce cómo empezar.
+
+---
+
+✅ Resultado conceptual:
+
+* La IA tiene un **mapa mental claro**:
+
+  * Skills → docs/skills
+  * Reglas → docs/.ai/rules.md
+  * Estado funcional → LEEME.md
+  * Relaciones → REP_STRUCTURE.md
+
+* Tú mantienes **control soberano**: decides cuándo ejecutar qué skill.
+
+* La IA mantiene **contexto, aprendizaje y navegación de skills**.
+
+---
+
+## Contenido de  /home/daniel/tron/programas/TR/LEEME.md
+
+
+# 🛰 ARES - Adaptive Reasoning Enterprise Strategist
+
+ARES (Adaptive Reasoning Enterprise Strategist) es un sistema de orquestación cognitiva adaptativa diseñado para operar como núcleo estratégico y operativo de productividad aumentada.
+Funciona como un cerebro digital basado en agentes inteligentes, capaz de coordinar flujos de trabajo, procesos y decisiones en múltiples dominios (tecnológico, comercial, investigativo y educativo).
+ARES se estructura en módulos funcionales que integran:
+
+- Orquestación de agentes especializados
+- Gestión de contexto y memoria semántica relacional cognitiva
+- Automatización de tareas y ejecución de acciones
+- Optimización continua basada en aprendizaje
+
+Su propósito es:
+
+- Modernizar y amplificar el trabajo humano
+- Coordinar sistemas, herramientas y procesos
+- Transformar actividad digital en valor económico
+
+Incluye un subsistema de:
+
+Presence Management Capital
+Encargado de la gestión y capitalización de la presencia digital, mediante estrategias de optimización multicanal (búsqueda, contenido, plataformas y motores generativos), orientadas a maximizar visibilidad, autoridad y conversión.
+
+ARES actúa como:
+
+- Orquestador de operaciones
+- Motor de decisiones estratégicas
+- Interfaz inteligente entre usuario, datos y ejecución
+
+Su diseño permite ser utilizado como:
+
+- Estación de trabajo cognitiva
+- Sistema de automatización empresarial
+- Plataforma de expansión digital y productiva
+
+ARES opera bajo un modelo de decisión basado en inferencia contextual, planificación dinámica y ejecución dirigida por objetivos (goal-oriented architecture).
+
+el creador de Ares es Daniel Hung.
+---
+
+## 🚀 RESUMEN EJECUTIVO
+
+### ¿Qué es ARES?
+ARES es el **cerebro** que controla la terminal ares para crear flujos de trabajo de vanguardia.
+
+### Comandos Maestros
+
+| Comando | Descripción |
+|---------|-------------|
+| `ares` | Abre ARES Hub en **~** con título "Ares por Daniel Hung" |
+| `ares p "pregunta"` | Consulta a la IA ARES (Gemma 3 / DeepSeek) |
+| `ares p "pregunta" --model gemma` | Usar modelo Gemma específico |
+| `ares p "pregunta" --template code` | Usar plantilla YAML para código |
+| `ares p "pregunta" --rag docs` | Consulta con RAG (dataset: docs, skills, codigo, config) |
+| `ares p "pregunta" --think` | Usa modelo pensante (ares-think:latest) |
+| `ares i` | Modo interactivo REPL (con /think, /model, /rag, /clear, /help) |
+| `ares i --rag docs` | Interactivo con RAG activado |
+| `ares i --think` | Interactivo con modo pensante |
+| `ares plan` | Despliegue táctico: 4 pestañas coloreadas Hacker Neon |
+| `ares zshplan` | Hacker AI Session (ZSH) |
+| `ares mcat-demo` | Demo táctico: 4 pestañas de capacidades Mcat |
+| `ares gs [nombre]` | Guardar sesión actual de Kitty |
+| `ares gs list` | Listar sesiones guardadas en la base de datos |
+| `ares gs restore [nombre]` | Restaurar una sesión guardada |
+| `ares gs com "[pestaña]" "[comando]"` | Ejecutar comando en una pestaña específica |
+| `ares status` | Diagnóstico del socket Kitty y estado del sistema |
+| `ares config` | Ver/Inspeccionar configuración de IA y entorno |
+| `ares init` | Gestión de infraestructura y enlaces simbólicos |
+| `ares model` | Mostrar modelo predeterminado actual |
+| `ares model --list` | Listar todos los modelos Ollama disponibles (mistral, qwen, deepseek-r1, etc.) |
+| `ares model <nombre> --set-default` | Establecer modelo predeterminado (ej: `mistral:7b`) |
+| `ares models` | Listar modelos por provider (Ollama + Cloud) |
+| `ares templates` | Listar plantillas YAML de comportamiento |
+| `ares tools` | Listar herramientas (function calling) disponibles |
+| `ares video <archivo>` | Reproduce video en terminal (mpv + protocolo gráfico) |
+| `ares image <archivo>` | Muestra imagen en terminal (icat) |
+| `ares help` | Abre documentación navegable con Broot |
+| `ares apollo ingest <archivo>` | Ingerir documento al sistema RAG |
+| `ares apollo ingest <archivo> --extract` | Ingerir con extracción de entidades |
+| `ares model-creator list` | Listar modelos Ollama disponibles |
+| `ares model-creator create <name> --from <parent>` | Crear modelo desde padre |
+| `ares model-creator update <name> --params` | Actualizar parámetros de modelo |
+| `ares model-creator delete <name>` | Eliminar modelo de Ollama |
+| `ares modelfile-creator create <name>` | Crear Modelfile YAML |
+| `ares modelfile-creator list` | Listar Modelfiles guardados |
+| **`ares agente [nombre]`** | **🤖 Despachador de Sub-Agentes Standalone** |
+
+### Sub-Agentes Disponibles
+
+| Sub-Agente | Comando | Descripción |
+|------------|---------|-------------|
+| **AgenteDeCambio** | `ares agente AgenteDeCambio [accion]` | 🤖 Interfaz TUI híbrida (90% Textual + 10% Ratatui) para extracción cognitiva con prompts vivos y métricas de deriva |
+| **sherlok** | `ares agente sherlok` | 🔍 Auditor de código con ADN Técnico Industrial usando LLM local |
+
+**Acciones de AgenteDeCambio:**
+- `run` (default) - Ejecutar interfaz TUI completa
+- `test` - Test de componentes Rust/Textual
+- `install` - Instalar componentes Rust (Ratatui)
+- `status` - Verificar estado de instalación
+
+### Herramientas Especializadas
+
+| Herramienta | Propósito |
+|-------------|-----------|
+| `tr-color <ruta>` | Aplica color Hacker Neon a pestaña Kitty según tipo de archivo |
+| `tr-investigador buscar <query>` | Búsqueda en Google con resultados estructurados |
+| `tr-investigador otear <URLs>` | Exploración profunda de páginas web |
+| `tr-investigador docs [tema]` | Consulta documentación interna |
+| `tr-kitty-init` | Inicialización y configuración de terminal Kitty |
+
+---
+
+## 🏛 FILOSOFÍA DE MODULARIDAD ATÓMICA
+
+### 🤝 COEXISTENCIA IA (MULTI-AGENTES)
+Para evitar colisiones entre múltiples IAs operando simultáneamente, es obligatorio registrarse en el cuaderno de apartado:
+👉 **[`dont-touch-my-eggs.md`](/dont-touch-my-eggs.md)**
+
+---
+
+### ⚡ Regla de Oro: Máximo 3 Funciones por Módulo
+Cada componente de ARES debe ser quirúrgico. Esto permite:
+- ✅ **Determinismo**: Resultados predecibles en cada comando.
+- ✅ **Encapsulamiento**: Funcionamiento autónomo sin dependencias globales.
+- ✅ **Vibe Coding**: Desarrollo acelerado sin pérdida de contexto.
+
+### Herramientas de Ecosistema (Soberanía TRON)
+
+ARES no actúa solo; se integra con herramientas globales diseñadas para la precisión quirúrgica y la soberanía del entorno:
+
+- **`ini` (v2.0):** Orquestador de ciclo de vida.
+    - `ini venv`: Inicialización profesional de entornos (uv/npm).
+    - `ini prod`: Publicación en `/usr/bin` con **Soberanía del CWD** (ARES respeta tu ubicación actual en la terminal).
+- **`repo` (v5.0):** Auditor táctico de Git.
+    - `repo status`: Auditoría rápida de cambios para humanos e IA.
+    - `repo audit <modulo>`: Verifica que los cambios realizados por una IA estén contenidos dentro del alcance del módulo correspondiente.
+- **`aviso` (v1.0):** Sistema de recordatorios y alarmas con lenguaje natural.
+    - `aviso en 10min "mensaje"`: Recordatorio rápido.
+    - `aviso el 25/12 "mensaje"`: Fecha específica.
+    - `aviso comando "script.sh" a las 8am`: Ejecución programada.
+    - Daemon integrado: Se ejecuta al inicio de sesión vía XDG autostart.
+
+## 🧩 Arquitectura Orquestador-Módulo
+
+1. **Orquestador (`src/main.py`):** Director de orquesta. Delegación pura de comandos a especialistas.
+2. **Módulos (`modules/`):** Especialistas atómicos (máx. 3 funciones por módulo).
+3. **Agentes (`Agentes/`):** Módulos inteligentes con salida JSON estructurada para integración con LLMs.
+
+---
+
+### 🧩 Organización por Naturaleza
+Los módulos están agrupados jerárárquicamente en `modules/`:
+- **admon/**: Salud y configuración del sistema.
+- **ia/**: Inteligencia y búsqueda avanzada (multi-provider).
+- **color/**: Identidad visual dinámica para pestañas Kitty.
+- **multimedia/**: Puppeteering de video, imagen y audio.
+- **tactico/**: Despliegue de flujos de trabajo complejos.
+- **ui/**: Estética neón y manuales dinámicos.
+- **whatsapp/**: Integración con WhatsApp.
+- **investigador/**: Exploración web e inteligencia (búsqueda, oteo).
+
+### 🕵️ Sub-Agentes (AGENTES/)
+- **sherlok/**: Auditor de código con "ADN Técnico Industrial" usando LLM local.
+  - Modelos: codellama:7b, qwen2.5-coder:7b-instruct, deepseek-r1:8b
+  - Componentes: brain.py (análisis), scanner.py (exploración), persistence.py (SQLite)
+  - Ubicación: `AGENTES/sub-agentes/sherlok/`
+
+---
+
+## 🤖 SISTEMA DE IA MULTI-PROVIDER
+
+### Providers Disponibles
+
+| Provider | Modelos | Tipo |
+|----------|---------|------|
+| **Gemma/Ollama** | Todos los modelos Ollama (mistral, qwen, llama, phi, ares, smol, etc.) | Local |
+| **DeepSeek** | deepseek-chat, deepseek-coder | API Cloud |
+| **OpenRouter** | Múltiples modelos | API Cloud (placeholder) |
+
+### Gestión de Modelos
+
+```bash
+# Listar todos los modelos disponibles en Ollama
+ares model --list
+
+# Establecer modelo predeterminado
+ares model mistral:7b --set-default
+
+# Ver modelo actual
+ares model
+
+# Listar modelos por provider
+ares models
+```
+
+### Modo Interactivo con Streaming
+
+El modo interactivo `ares i` ahora soporta **streaming en tiempo real** con filtrado inteligente de etiquetas think:
+
+```bash
+# Iniciar modo interactivo
+ares i
+
+# Comandos disponibles:
+# /model, /m       - Listar y cambiar modelo
+# /think           - Activar/desactivar modo pensante
+# /rag             - Activar/desactivar RAG
+# /clear, /c       - Limpiar pantalla
+# /help, /h        - Mostrar ayuda
+# /quit, /exit     - Salir
+```
+
+**Streaming con filtro think:**
+- `ares:latest` (no pensante): Filtra automáticamente etiquetas `<think></think>` vacías
+- `ares-think:latest` (pensante): Muestra proceso de razonamiento completo
+
+###Aliases de Modelos
+
+```bash
+ares p "pregunta" --model gemma      # gemma3:4b (default)
+ares p "pregunta" --model gemma12b   # gemma3:12b
+ares p "pregunta" --model deepseek   # deepseek-chat
+```
+
+### Plantillas YAML
+
+```bash
+ares p "prompt" --template default   # Consultas generales
+ares p "prompt" --template chat      # Conversaciones
+ares p "prompt" --template code      # Programación
+ares p "prompt" --template tools     # Function calling
+```
+
+### Function Calling (Herramientas)
+
+ARES soporta herramientas para acciones del mundo real:
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| `google_search` | Búsqueda en tiempo real |
+| `translate_text` | Traducción de texto |
+| `get_weather` | Clima actual |
+| `execute_shell` | Ejecutar comando shell |
+| `read_file` | Leer archivo |
+| `write_file` | Escribir archivo |
+
+---
+
+## 🎬 PUPPETEERING MULTIMEDIA
+ARES permite la manipulación de medios visuales directamente en el espacio de trabajo:
+- `ares video demo.mp4`: Reproducción fluida incrustada vía `mpv`.
+- `ares image schema.png`: Visualización de alta resolución en la celda actual.
+
+---
+
+## 📁 BROOT - Navegación Encapsulada
+
+**Broot** está integrado en TRON como módulo atómico de navegación jerárquica.
+
+### Estructura
+
+| Componente | Ubicación |
+|------------|-----------|
+| Binario | `bin/broot-core/broot-bin` |
+| Wrapper | `bin/broot` |
+| Launcher `br` | `bin/broot-core/br` |
+| Configuración | `config/broot/` |
+
+### Uso
+
+```bash
+# Navegación con función shell (recomendado)
+source ~/tron/programas/TR/bin/broot-core/br
+br          # Navegar con capacidad de cd
+br /ruta    # Navegar desde ruta específica
+
+# Ejecución directa
+broot       # Navegador jerárquico
+broot --help
+```
+
+### Configuración Personalizada
+
+- `conf.hjson`: Configuración principal (flags, skins, verbos)
+- `verbs.hjson`: Comandos personalizados
+- `*-skin.hjson`: Temas de color (gruvbox, solarized, etc.)
+
+### Integración con ARES
+
+`ares help` abre la documentación usando **broot** como navegador.
+
+---
+
+## 📐 ARQUITECTURA DE DATOS VIVA
+Los dashboards de ARES (en desarrollo) utilizan transiciones tipo **morphing** para mostrar indicadores industriales, KPIs petroleros y tendencias sociales en tiempo real, sintiéndose como un organismo vivo.
+
+---
+
+## 📚 DOCUMENTACIÓN
+
+| Archivo | Contenido |
+|---------|-----------|
+| `docs/HELP.md` | Ayuda general y referencia de comandos |
+| `docs/GEMMA_OLLAMA_GUIDE.md` | Guía completa de Gemma + Ollama |
+| `docs/DEEPSEEK_GUIDE.md` | Guía de DeepSeek API |
+| `docs/Ollama-API.md` | Referencia de API de Ollama |
+| `docs/sacar-jugo-gemma.md` | Recopilación de técnicas para Gemma |
+| `docs/Ares-Terminal/` | Configuración de terminal predeterminada |
+| `docs/Ares-Terminal/CONFIGURACION_TERMINAL_PREDETERMINADA.md` | Guía forense completa de ARES como terminal |
+| `docs/Ares-Terminal/REFERENCIA_RAPIDA.md` | Comandos y atajos rápidos |
+| **`docs/skills/INDEX.md`** | **Arsenal completo de Skills (Kung-Fu IA)** — 18 skills, 367 archivos, 9.6 MB clasificadas |
+| **`docs/QWEN.md`** | Contexto operativo para Qwen Code (v2.0) |
+| **`docs/GEMINI.cli`** | Mapa operativo para Gemini CLI (v2.0) |
+
+---
+
+## 🥋 SKILLS (ARSENAL DE KUNG-FU IA)
+
+Las **skills** son paquetes autocontenidos de conocimiento procedimental que dotan a la IA de capacidades específicas. Cada skill incluye documentación (SKILL.md), scripts ejecutables, referencias y assets.
+
+### Arsenal Completo (18 Skills, 367 Archivos, 9.6 MB)
+
+| Categoría | Skills | Archivos | Scripts | Destacado |
+|-----------|--------|----------|---------|-----------|
+| **ARES Core** | 3 | 3 | 0 | Inicialización, gestión de sesiones Kitty |
+| **Desarrollo** | 4 | 45 | 12 | MCP servers, Playwright testing, React + shadcn/ui |
+| **Doc-Processing** | 2 | 85 | 18 | Word (.docx) con redlining, PDF con formularios |
+| **Office** | 2 | 95 | 15 | PowerPoint (templates, thumbnails), Excel (fórmulas, recalc) |
+| **Multimedia** | 2 | 25 | 8 | Arte generativo p5.js, GIFs animados para Slack |
+| **IA** | 1 | 12 | 3 | Creación y packaging de skills |
+| **Comms** | 1 | 6 | 0 | Comunicación interna, newsletters, FAQs |
+| **Design** | 3 | 95 | 0 | Branding, 80+ fonts, 20 themes de color |
+
+### Estructura de Skills
+
+Cada skill contiene:
+- **SKILL.md**: Punto de entrada con propósito, triggers, flujo de ejecución
+- **scripts/**: Código ejecutable (Python, JS, Bash)
+- **reference/** o **references/**: Documentación de apoyo
+- **assets/**, **templates/**, **themes/**: Recursos reutilizables
+- **LICENSE.txt**: Términos de licencia
+
+### Cómo Usar
+
+1. **Navegar:** Leer `docs/skills/INDEX.md` para visión completa del arsenal
+2. **Identificar:** Buscar categoría y skill por trigger o descripción
+3. **Leer:** Abrir `SKILL.md` de la skill (documentación principal)
+4. **Ejecutar:** Usar scripts bajo demanda según necesidad
+
+**Principio de Carga Mínima:** Solo cargar la skill necesaria para la tarea actual (progressive disclosure).
+
+### Scripts Destacados
+
+| Script | Skill | Propósito |
+|--------|-------|-----------|
+| `init_skill.py` | ia/skill-creator | Inicializar nueva skill |
+| `package_skill.py` | ia/skill-creator | Empaquetar skill para distribuir |
+| `recalc.py` | office/xlsx | Recalcular fórmulas Excel con LibreOffice |
+| `with_server.py` | dev/webapp-testing | Gestionar servidores para testing Playwright |
+| `init-artifact.sh` | dev/web-artifacts-builder | Inicializar artifact React |
+| `bundle-artifact.sh` | dev/web-artifacts-builder | Bundlear a HTML único |
+| `thumbnail.py` | office/pptx | Generar thumbnail grids de slides |
+| `inventory.py` | office/pptx | Extraer inventario de texto de slides |
+| `replace.py` | office/pptx | Reemplazar texto masivamente con formato |
+| `rearrange.py` | office/pptx | Duplicar y reordenar slides |
+| `unpack.py` / `pack.py` | docx, pdf, pptx | Desempaquetar/empaquetar OOXML |
+| `evaluation.py` | dev/mcp-builder | Evaluar servidores MCP |
+
+---
+
+## 🔧 INSTALACIÓN
+
+### 1. Clonar o ubicar en directorio de programas
+
+```bash
+cd ~/tron/programas/TR
+```
+
+### 2. Activar entorno virtual
+
+```bash
+source .venv/bin/activate
+```
+
+### 3. Probar instalación
+
+```bash
+ares --help
+ares status
+ares gS [nombre]   # Guardar sesión actual de Kitty
+```
+
+### 4. (Opcional) Añadir al PATH
+
+```bash
+# Añadir a ~/.bashrc o ~/.zshrc
+export PATH="$HOME/tron/programas/TR/bin:$PATH"
+```
+
+---
+
+## 🛡️ SOBERANÍA Y SEGURIDAD
+
+- ✅ **Modelos locales**: Gemma vía Ollama (sin nube)
+- ✅ **Datos sensibles**: Se mantienen en tu equipo
+- ✅ **Cifrado**: Configuración y credenciales protegidas
+- ✅ **Sin dependencias externas**: Funciona offline
+
+---
+
+
+## Módulo: MPV System Injector
+
+**Ubicación:** `tron/programas/TR/scripts/MPV/inyectar_mpv.py`
+
+Este componente gestiona la configuración global de `mpv` mediante la inyección directa de archivos de configuración y lógica en el sistema operativo. Su objetivo es unificar la experiencia de usuario y añadir herramientas de edición de subtítulos en tiempo real.
+
+### Componentes Inyectados
+
+El script automatiza el despliegue en la ruta raíz `/etc/mpv/`, garantizando que las mejoras estén disponibles para todos los usuarios:
+
+* **`input.conf` (Mapping Estilo VLC):**
+* **Navegación:** Flechas direccionales para control de volumen (Arriba/Abajo) y búsqueda (Izquierda/Derecha).
+* **Reproducción:** Teclas `+`/`-` para velocidad, `a` para audio, `s` para subtítulos.
+* **Precisión:** `,` y `.` para retroceso/avance cuadro a cuadro; `[` y `]` para ciclos de bucle A-B.
+
+
+* **`fix_subdelay.lua` (Script de Sincronización):**
+* Herramienta avanzada que permite corregir desfases de subtítulos mediante la captura de dos puntos de referencia (audio vs. texto) usando la combinación `Alt+Z`.
+
+
+
+### Ejecución y Despliegue
+
+Para aplicar la configuración y sincronizar los archivos de la carpeta `TR` hacia el sistema, ejecuta:
+
+```bash
+sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
+
+```
+
+---
+
+### 📜 Registro de Cambios Funcionales
+- **2026-03-15**: AgenteDeCambio CLI añadido - Interfaz híbrida 90% Textual + 10% Ratatui.
+- **2026-03-15**: Comando `agente-de-cambio` disponible en `bin/` (run, test, install, status).
+- **2026-03-15**: Dependencias Textual + httpx agregadas a `pyproject.toml` (uv sync).
+- **2026-03-15**: Componentes Rust Ratatui en `AGENTES/sub-agentes/AgenteDeCambio/modules/ui/ratatui_components/`.
+- **2026-03-15**: Documentación completa: 9 docs, ~8,000 líneas en `docs/AgenteDeCambio/`, `docs/Ratatui/`, `docs/Textual/`.
+- **2026-03-12**: Streaming en tiempo real implementado en `ares i` con filtro think automático.
+- **2026-03-12**: Comando `ares model` mejorado para gestionar todos los modelos Ollama (listar, establecer predeterminado).
+- **2026-03-12**: Comandos interactivos añadidos: `/model`, `/think`, `/rag`, `/clear`, `/help`.
+- **2026-03-12**: Filtro think elimina etiquetas `<think></think>` en modelos no pensantes (ares:latest).
+- **2026-03-12**: Documentación técnica: `docs/STREAMING.md` con informe forense detallado.
+
+*Ares: El orquestador IA definitivo por Daniel Hung.*
+
+
+## Documento /home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md
+
+# 🧠 MEMORIA PERSISTENTE DE IA - SISTEMA ARES-TRON
+
+> **Ubicación Maestra:** `/home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md`
+> **Enlaces Duros:** `~/.qwen/QWEN.md` y `~/.gemini/GEMINI.md` son el MISMO archivo físico
+> **Principio:** Una sola IA, una sola memoria, diversidad en la unidad
+
+---
+
+## ⚠️ REGLA CRÍTICA: NO ME TOQUES LOS HUEVOS
+
+### **Verdad Fundamental**
+```
+~/.qwen/QWEN.md  ──┐
+                   ├──> MISMO INODO, MISMO ARCHIVO FÍSICO <── IA-MEMORY.md (TR)
+~/.gemini/GEMINI.md ──┘
+```
+
+**Esto significa:**
+1. **NO hay QWEN.md ni GEMINI.md separados** - Son enlaces duros al mismo archivo
+2. **NO hay duplicación de tokens** - Una sola lectura, una sola verdad
+3. **NO editar desde ~/.qwen/ o ~/.gemini/** - Solo se edita desde `TR/docs/ALMAS-IAS/`
+4. **Cualquier cambio en TR se refleja instantáneamente en ambos enlaces**
+5. **NUNCA crear, borrar o modificar los enlaces** - Solo el archivo maestro en TR
+
+### **Protocolo de Edición (OBLIGATORIO)**
+```
+1. Abrir: TR/docs/ALMAS-IAS/IA-MEMORY.md
+2. Editar: Contenido unificado (sin identificación de IA específica)
+3. Validar: git diff para constatar integridad
+4. Commit: En repositorio TR para control histórico
+```
+
+---
+
+## 📋 AGENDA DEL SISTEMA (ÚNICA)
+
+**Ubicación:** `/home/daniel/tron/programas/AGENDA/agenda.md`
+**Comando:** `agenda` (alias para `uv run --quiet --project /home/daniel/tron/programas/AGENDA python /home/daniel/tron/programas/AGENDA/main.py`)
+**Base de datos:** `/home/daniel/tron/programas/AGENDA/` (SQLite u otro)
+
+### ¿Qué es la Agenda del Sistema?
+
+La **Agenda del Sistema** es el **documento maestro único** que mantiene información relevante pero concisa sobre las tareas de **TODOS los proyectos del sistema ARES-TRON**.
+
+**Características:**
+- **AI-OPERATED:** Diseñada para ser mantenida por IAs (Qwen/Gemini)
+- **Estratégica + Táctica:** Planificación de alto nivel + tareas ejecutables
+- **Histórico permanente:** Nada se elimina, se marca como completado
+- **Trazable:** Cada tarea tiene contexto, objetivo, fase, prioridad
+
+### Diferencia: SISTEMA vs PROYECTO
+
+| Concepto | Definición | Ejemplo |
+|----------|------------|---------|
+| **SISTEMA** | El ecosistema completo ARES-TRON | Todos los proyectos interconectados |
+| **PROYECTO** | Una unidad específica dentro del sistema | `Agente-De-Cambio-Estable`, `TR`, etc. |
+
+**Jerarquía:**
+```
+SISTEMA ARES-TRON
+├── PROYECTO: Agente-De-Cambio-Estable
+│   ├── Documentación: LEEME.md, TODO-001, etc.
+│   ├── Código: modules/, apps/
+│   └── Agenda local: docs/CLAVE/estado.md (sincronizado con agenda.md)
+├── PROYECTO: TR
+│   ├── Documentación: docs/
+│   └── Módulos: modules/
+└── PROYECTO: Otros
+```
+
+### ¿Dónde se guarda la información?
+
+| Tipo de Información | Ubicación |
+|---------------------|-----------|
+| **Agenda del Sistema** | `/home/daniel/tron/programas/AGENDA/agenda.md` |
+| **Memoria de IA** | `/home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md` |
+| **Estado del Proyecto** | `/path/to/proyecto/docs/CLAVE/estado.md` |
+| **Bitácora del Proyecto** | `/path/to/proyecto/docs/CLAVE/BITACORA.md` |
+
+**Flujo de información:**
+```
+Agenda del Sistema (agenda.md)
+    ↓ (sincroniza tareas relevantes)
+Estado del Proyecto (estado.md)
+    ↓ (documenta cambios)
+Bitácora del Proyecto (BITACORA.md)
+```
+
+### Enlaces Duros de Memoria
+
+```
+~/.qwen/QWEN.md  ──┐
+                   ├──> /home/daniel/tron/programas/TR/docs/ALMAS-IAS/IA-MEMORY.md
+~/.gemini/GEMINI.md ──┘
+```
+
+**Esto significa:**
+- Qwen y Gemini comparten la MISMA memoria
+- Una sola lectura, una sola verdad
+- Editar SIEMPRE desde `TR/docs/ALMAS-IAS/IA-MEMORY.md`
+- Los cambios se reflejan instantáneamente en ambos enlaces
+
+---
+
+## 🔬 OBSERVACIÓN TÉCNICA: ENTROPÍA DE REFALIZACIÓN (NUEVA DIRECTIVA)
+
+**Problema (Entropic Refactoring Drift):** Durante procesos de modularización o refactorización de alto nivel, la IA tiende a priorizar la elegancia del código (lógica sintáctica) sobre la fidelidad del pixel (constantes geométricas), provocando "desviaciones interpretativas" que destruyen maquetaciones estables.
+
+**Para evitar:** La pérdida de "Cosas Buenas" visuales al cambiar el paradigma estructural.
+
+**Directiva-Solución (Inmutabilidad Geométrica & Decoupling):**
+1. **Decoupling de Estado:** El estado volátil (índices, contadores) NUNCA debe guardarse en archivos de configuración (YAML). Debe residir en archivos de estado volátiles (`.tmp`, `.json` en cache).
+2. **Soberanía del Usuario:** Los archivos de configuración son de solo lectura para la IA, a menos que se solicite explícitamente una modificación.
+3. **Traducción Literal:** Al encapsular lógica visual en fábricas o clases, las fórmulas matemáticas de posicionamiento deben copiarse de forma LITERAL, sin re-interpretación ni "mejoras" no solicitadas.
+
+---
+
+## 🛠️ HERRAMIENTAS TRON
+
+### INI v3.0 - Orquestador de Ciclo de Vida
+
+**Ubicación:** `/usr/bin/ini` (instalado) | `/home/daniel/tron/programas/a-DIRECTORIO/generador-de-lanzadores-python-encapsulados/ini` (fuente)
+
+**Propósito:** Gestor de entornos y publicación de binarios con variables por proyecto.
+
+**Comandos:**
+| Comando | Descripción | Headless |
+|---------|-------------|----------|
+| `ini` | Modo interactivo completo (por defecto `prod`) | No |
+| `ini init` | Crear nuevo proyecto Python con `pyproject.toml` | `-y` |
+| `ini venv` | Inicializar entorno (.venv con uv o node_modules) | No |
+| `ini prod` | Publicar binario en `/usr/bin` con wrapper bash | `-y` |
+| `ini env` | Gestionar variables de entorno del proyecto | `-y` |
+| `ini status` | Ver estado del proyecto y binarios | Sí |
+
+**Archivos que genera/manipula:**
+- `pyproject.toml` - Configuración de proyecto Python (UV)
+- `.tron.env.json` - Variables de entorno y contadores genéricos por proyecto
+- `/usr/bin/{comando}` - Wrapper bash con `TR_PROJECT_ROOT` inyectado
+
+**Estructura de `.tron.env.json`:**
+```json
+{
+  "project_name": "TR",
+  "command_name": "ares",
+  "variables": {
+    "TR_ENV": "production",
+    "TR_LOG_LEVEL": "info"
+  },
+  "generic_counters": {
+    "counter_001": 0,
+    "counter_002": 0
+  }
+}
+```
+
+**Flujo de Producción (`ini prod`):**
+1. Detecta `pyproject.toml` o `package.json` (ofrece crear si no existe)
+2. Escanea directorio buscando targets `.py` (raíz, `src/`, `modules/`)
+3. Carga `.tron.env.json` para variables y nombre del comando
+4. Valida nombre del binario (evita colisiones con `is_system_command()`)
+5. Genera wrapper bash con variables inyectadas + `TR_PROJECT_ROOT`
+6. Crea lanzador local en `bin/` (portátil)
+7. Instala en `/usr/bin` con sudo
+8. Verifica post-instalación y ofrece agregar al menú Openbox
+
+**Características clave:**
+- **CWD Sovereignty:** No hace `cd` global, respeta directorio del usuario
+- **Variables por proyecto:** Cada proyecto tiene sus variables en `.tron.env.json`
+- **Contadores genéricos:** Sistema automático de counters numerados (`counter_001`, `counter_002`...)
+- **Soporte src/:** Búsqueda automática en `src/` y `modules/`
+- **Rollback:** Limpia archivos temporales si falla la instalación
+- **Headless completo:** Flag `-y` para automatización con IAs (sin preguntas)
+
+**Ejemplo de wrapper generado:**
+```bash
+#!/bin/bash
+# Generado por 'ini' v3.0
+export TR_PROJECT_ROOT="/home/daniel/tron/programas/TR"
+export TR_ENV="production"
+export counter_001="0"
+exec env -u VIRTUAL_ENV uv run --project "$TR_PROJECT_ROOT" python "$TR_PROJECT_ROOT/main.py" "$@"
+```
+
+---
+
+(Resto de herramientas preservadas...)
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+

@@ -1,0 +1,182 @@
+#!/bin/bash
+# [Gedit Tool]
+# Name=sesiones1
+# Input=nothing
+# Output=output-panel
+# Applicability=all
+# Save-files=nothing
+# Shortcut=<Primary><Shift><Super>s
+
+#PROGRAMA TRON
+# POR ELIAS HUNG
+#elprofesorverdad@gmail.com
+#YO LUCHO POR EL USUARIO..!
+
+
+
+
+
+
+#Nombre del Usuario de Linux
+usuario=${SUDO_USER:-${USER}}
+#Ruta a la carpeta de funciones de Tron
+rutaFun="/home/$usuario/tron/tron"
+#Ruta a La librería de diálogis Javascript
+dialogJs="$rutaFun/dialogos.js"
+#ruta a la raíz de la carpeta principal de sesiones.
+raiz="/home/$usuario/tron/sesiones"
+source "/home/$usuario/tron/tron/funciones.sh"
+source "/home/$usuario/tron/tron/dialogos.sh"
+respuesta=""
+#ruta a la raíz de la carpeta principal de sesiones.
+raiz="/home/$usuario/tron/sesiones"
+respuesta=""
+
+#                  _                             _      
+#  ___  _ __   ___(_) ___  _ __   ___  ___    __| | ___ 
+# / _ \| '_ \ / __| |/ _ \| '_ \ / _ \/ __|  / _` |/ _ \
+#| (_) | |_) | (__| | (_) | | | |  __/\__ \ | (_| |  __/
+# \___/| .__/ \___|_|\___/|_| |_|\___||___/  \__,_|\___|
+#      |_|                                              
+#                            
+# _ __ ___   ___ _ __  _   _ 
+#| '_ ` _ \ / _ \ '_ \| | | |
+#| | | | | |  __/ | | | |_| |
+#|_| |_| |_|\___|_| |_|\__,_|
+
+
+#MENÚ PRINCIPAL
+
+#La variable $carpeta_de_trabajo, la mayoría de la veces es la unión de la variable raiz con
+#el nombre de la sesión activa, en tiempo de ejecución.
+
+#ans=7
+# if [ $1 -eq 7 ]; then
+if [[ -z $1 ]]; then
+	respuesta=$(dialogo 3 "TRON MENÚ PRINCIPAL" "Abrir sesion" "Nueva Sesión" "Instalar" "Añadir todos a Sesión" "Añadir Documento actual a Sesión")
+else
+	respuesta=$(dialogo 3 "TRON MENÚ PRINCIPAL" "$2" "$3" "$4" "$5" "$6")
+fi
+
+
+
+
+case $respuesta in
+		op1) #ABRIR SESIÓN
+			#Diálogo Javascript dos Botones y Texto
+			nombre=$(gjs "$dialogJs" 1 "Programa TRON" "Nombre Sesión" "Elegir de la Lista" "¿Sesión a abrir?")
+			ans=$?
+			if [ $ans -eq 1 ]; then #Eligió Abrir Sesión por nombre
+				echo TRON: abriendo Sesión por nombre
+				echo TRON: chequeando si existe carpeta de trabajo para abrir...
+				carpeta_de_trabajo="$raiz/$nombre"
+				if [ -d $carpeta_de_trabajo ];
+				then
+					ubicar
+					abrirsesion "gedit -s" "gedit --new-window" "$carpeta_de_trabajo/"
+				else #si la carpeta de sesion no existe 
+					dialogo 2 "TRON" "La sesión no existe"
+				fi
+				
+			elif [ $ans -eq 2 ]; #Eligió Abrir Sesión por Lista
+			then
+				cd $raiz
+				dialogo 5 "Seleccione la Sesión (Carpeta)" "$raiz"
+				if [ $salida -eq 0 ]
+				then
+					cd "$nombre/"
+					abrirsesion "gedit -s" "gedit --new-window" "$nombre/"
+				else
+					dialogo 2 "TRON" "Debe elegir una carpeta"
+				fi
+				
+				
+			elif [ $ans -eq 3 ]; #Eligió el botón cerrar
+			then
+				echo TRON: nunca te rindas
+			fi
+		;;
+		op4) #AÑADIR A LA SESIÓN
+			echo TRON: Anadir a sesión existente
+
+
+				echo TRON: mostrando sesiones
+				
+				
+				cd $raiz
+				dialogo 5 "¿A cual Carpeta (sesión) añadir?" "$raiz"
+				if [ $salida -eq 0 ];
+				then
+					echo guardando sesión $raiz/$nombre
+					
+					echo carpeta de trabajo:$carpeta_de_trabajo
+					echo nombre:$nombre
+					carpeta_de_trabajo=$nombre
+					echo carpeta de trabajo:$carpeta_de_trabajo
+					cd "$nombre/"
+					enlace
+				else
+					dialogo 2 "TRON" "Debe elegir una carpeta"
+					echo TRON: El último de pié es el ganador.
+				fi
+			
+
+		;;
+		op2) #NUEVA SESIÓN
+			echo TRON: Creando sesión...
+			#pregunta el nombre de la nueva sesion a través de un diálogo
+			nombre=$(gjs "$dialogJs" 1 "Programa TRON" "Nueva Sesión" "Cancelar" "¿Nombre Sesión? ")
+			ans=$?
+			if [ $ans -eq 1 ] #si no eligio el boton alternativo...
+			then #comandos si eligio el boton principal crear sesion
+			echo TRON: chequeando si existe carpeta de trabajo...
+				ubicar
+				carpeta_de_trabajo="$raiz/$nombre"
+				if [ -d $carpeta_de_trabajo ];
+				then
+					echo TRON: la carpeta de trabajo: $carpeta_de_trabajo existe
+					dialogo 2 "TRON" "La sesión existe"
+				else #si la carpeta de sesion no existe crea la sesion
+		#			el dialogo 4 pregunta:¿qué quieres hacer? , los parametros que
+		#			se le pasan a dialogo 4 son las dos únicas posibilidades
+					dialogo 4 "TRON" "Linkear Documentos Abiertos" "Nuevo Documento"
+					#crea enlaces a documentos que se encuentran dispersos en el sistema
+					#y los introduce en $carpeta_de_trabajo
+					#los documentos permanecen en sus ubicaciones originales,
+					#y son editados a través de los enlaces simbólicos
+					if [ $nombre -eq 0 ]; #acá no se da un nombre
+					then
+						echo TRON: Creando Enlaces simbólicos... en $carpeta_de_trabajo
+		#				Al a crear sesion se le pasa dos puntos para que no ejecute el primer parámetro
+		#				o para que el primer parametro sea vacio, asi solo crea la carpeta de trabajo
+		#				se debe tener en cuenta que el enlace creado en la función es un enlace duro'
+						crearsesion ":" "$carpeta_de_trabajo"
+						enlace
+						GEDIT_CURRENT_DOCUMENT_DIR="$raiz/$nombre"
+					else #acá si se da un nombre
+						echo TRON: Creando sesión..$nombre en $carpeta_de_trabajo
+						crearsesion "gedit -s" "$carpeta_de_trabajo"
+						GEDIT_CURRENT_DOCUMENT_DIR="$raiz/$nombre"
+					fi
+				fi
+			else #comandos si eligio el boton alternativo
+				echo TRON: Lucha, nunca te rindas, Yo defiendo al usuario.
+			fi
+		;;
+		op3) #INSTALAR 
+			echo TRON: enlazando archivos a gedit...
+			instalar
+			dialogo 2 "TRON" "Verifique los enlaces en la salida"
+		;;
+		op5) #AÑADIR DOCUMENTO ACTUAL A LA SESIÓN
+
+				echo TRON: enlazando archivo...
+				linkearUnArchivo
+				echo TRON: archivo enlazado
+
+		;;
+
+	esac
+
+
+

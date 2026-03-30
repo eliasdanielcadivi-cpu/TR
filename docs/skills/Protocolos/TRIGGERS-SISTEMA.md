@@ -1,4 +1,4 @@
-# 🎯 INFORME DE TRIGGERS DEL SISTEMA ARES-TRON
+-# 🎯 INFORME DE TRIGGERS DEL SISTEMA ARES-TRON
 
 **Fecha:** 2026-03-24  
 **Generado por:** Kernel Audit  

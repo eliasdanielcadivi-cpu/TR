@@ -34,3 +34,6 @@ fi
 alias ares-recuperar='source /home/daniel/tron/programas/TR/config/zsh/.zshrc'
 
 export UV_NO_WARN=1
+
+# Activa expansiones extendidas
+setopt EXTENDED_GLOB

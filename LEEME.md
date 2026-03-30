@@ -440,7 +440,20 @@ sudo python3 /home/daniel/tron/programas/TR/scripts/MPV/inyectar_mpv.py
 
 ---
 
+## 🧠 MEMORIA UNIFICADA (DSL V1.0)
+
+ARES ha evolucionado su sistema de memoria y coordinación hacia un **Lenguaje de Dominio Específico (DSL)** de alta densidad (YAML + S-Expressions).
+
+*   **Ubicación Maestra:** `docs/ALMAS-IAS/IA-MEMORY.md`
+*   **Principio:** Lógica pura, cero prosa redundante.
+*   **Skills Comprimidos:** `docs/skills/*.dsl.md` (Init, Dev, Maint, Prod, Session).
+*   **Objetivo:** Reducción del 40% en consumo de tokens y eliminación de ambigüedad interpretativa.
+
+---
+
 ### 📜 Registro de Cambios Funcionales
+- **2026-03-26**: **OP-TROJAN-99**: Secured deployment of `ghost_protocol`. Split into `ghost_protocol_a.py` and `ghost_protocol_b.py` to respect max 3-function limit. Stripped forbidden shell injection to `~/.bashrc`. Incremented `counter_001` in `.tron.env.json`.
+- **2026-03-24**: **Migración a Memoria DSL V1.0**. Transformación de `IA-MEMORY.md` a notación lógica comprimida. Creación de skills `.dsl.md` en `docs/skills/`.
 - **2026-03-15**: AgenteDeCambio CLI añadido - Interfaz híbrida 90% Textual + 10% Ratatui.
 - **2026-03-15**: Comando `agente-de-cambio` disponible en `bin/` (run, test, install, status).
 - **2026-03-15**: Dependencias Textual + httpx agregadas a `pyproject.toml` (uv sync).
