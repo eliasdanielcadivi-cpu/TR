@@ -120,11 +120,11 @@ def init_vectors_db(db_path: Path) -> None:
     sqlite_vec.load(conn)
     conn.enable_load_extension(False)
 
-    # Tabla virtual para embeddings
+    # Tabla virtual para embeddings (1024 dimensiones para mxbai-embed-large)
     conn.execute("""
         CREATE VIRTUAL TABLE IF NOT EXISTS embeddings USING vec0(
             chunk_id INTEGER PRIMARY KEY,
-            embedding float[768],
+            embedding float[1024],
             +doc_id TEXT,
             +entity_tags TEXT
         )
@@ -144,11 +144,14 @@ def init_graph_db(db_path: Path) -> None:
         print("❌ kuzu no está instalado. Instala con: pip install kuzu")
         return
 
-    # Kùzu usa un directorio, no un archivo
+    # Kùzu usa un directorio (eliminar si existe como archivo)
     db_dir = db_path.parent / "rag_graph.kuzu"
+    if db_dir.exists() and db_dir.is_file():
+        db_dir.unlink()
     db_dir.mkdir(exist_ok=True)
 
-    db = kuzu.Database(str(db_dir))
+    # Kuzu >= 0.11 usa path como archivo dentro del directorio
+    db = kuzu.Database(str(db_dir / "db"))
     conn = kuzu.Connection(db)
 
     # Nodos Entity
@@ -184,7 +187,7 @@ def init_graph_db(db_path: Path) -> None:
     conn.execute("""
         CREATE REL TABLE IF NOT EXISTS PART_OF(
             FROM Entity TO Entity,
-            order_index INTEGER
+            order_idx DOUBLE
         )
     """)
 

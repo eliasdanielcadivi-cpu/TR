@@ -1,0 +1,92 @@
+# Configuración del módulo RAG Embebido - Sistema V3
+
+# Rutas de bases de datos (relativas al proyecto TR)
+db_root: "db/rag"
+databases:
+  core: "rag_core.sqlite"
+  vectors: "rag_vectors.sqlite"
+  graph: "rag_graph.kuzu"
+
+# Tiers y umbrales de confianza
+tiers:
+  t0_cache:
+    enabled: true
+    max_size: 1000
+    ttl_seconds: 3600
+
+  t1_sql:
+    enabled: true
+    confidence_threshold: 0.90
+
+  t2_vector:
+    enabled: true
+    confidence_threshold: 0.75
+    similarity_threshold: 0.7
+
+  t3_graph:
+    enabled: true
+    confidence_threshold: 0.70
+    max_hops: 3
+
+  t4_reasoning:
+    enabled: true
+    confidence_threshold: 0.60
+    # Solo se activa con trigger explícito o flag --deep
+
+# Triggers para T4 (razonamiento profundo)
+t4_triggers:
+  - "piensa"
+  - "piénsalo"
+  - "analiza profundo"
+  - "deep dive"
+  - "modo pensamiento"
+  - "razona paso a paso"
+  - "think"
+
+# Modelos de embeddings
+embeddings:
+  model: "mxbai-embed-large:335m"  # Modelo Ollama para embeddings
+  dimensions: 1024  # mxbai-embed-large usa 1024 dimensiones
+  metric: "cosine"
+
+# Motor T4: LLM para razonamiento
+t4:
+  model_local: "gemma3:4b"          # Ollama local (soberanía)
+  model_api: "deepseek-chat"        # Fallback API
+  api_key_env: "DEEPSEEK_API_KEY"   # Variable de entorno para API key
+  max_tokens: 4096
+  temperature: 0.3                  # Baja temperatura para determinismo
+
+# Ingestión de documentos
+ingestion:
+  chunk_size: 1000                  # Caracteres por chunk
+  chunk_overlap: 200
+  supported_formats:
+    - "md"
+    - "py"
+    - "txt"
+    - "yaml"
+    - "yml"
+    - "json"
+
+# RelationGuard: Validación C1-C4
+relation_guard:
+  auto_approve_c1: true             # C1_DESCRIPTIVE auto-aprobado si confianza > 0.95
+  require_validation_c2: false      # C2_OPERATIONAL puede auto-aprobar si es parte de core
+  require_validation_c3: true       # C3_DATA_INTEGRITY requiere validación explícita
+  require_validation_c4: true       # C4_SECURITY siempre requiere validación explícita
+  validation_queue_ttl_days: 7      # TTL para relaciones en cola de validación
+
+# Integración con ARES
+ares_integration:
+  auto_enhance: false               # Enriquecer automáticamente respuestas con RAG
+  max_tier_headless: "T3_GRAPH"     # Máximo tier para ares p (sin --deep)
+  max_tier_interactive: "T4_REASONING"  # Máximo tier para ares i
+  enable_rag_commands: true         # Habilitar comandos ares rag *
+
+# Logging
+logging:
+  level: "INFO"
+  file: "logs/rag.log"
+  max_size_mb: 10
+  backup_count: 5

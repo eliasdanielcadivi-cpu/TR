@@ -132,10 +132,173 @@ class RAGOrchestrator:
     # ===== Métodos de gestión del índice =====
 
     def ingest_document(self, path: str, doc_type: Optional[str] = None) -> Dict:
-        """Indexar nuevo documento en el RAG."""
+        """
+        Indexar nuevo documento en el RAG.
+        
+        Proceso completo:
+        1. Procesar documento con ingestor
+        2. Guardar en SQLite core (documentos, chunks, entidades)
+        3. Generar y guardar embeddings en SQLite vec
+        4. Agregar entidades al grafo Kuzu
+        
+        Args:
+            path: Ruta del documento
+            doc_type: Tipo de documento (opcional)
+            
+        Returns:
+            Diccionario con estadísticas de ingesta
+        """
         from ..ingestors import get_ingestor_for
+        import sqlite3
+        import sqlite_vec
+        from datetime import datetime
+        
+        # 1. Procesar documento
         ingestor = get_ingestor_for(path, doc_type)
-        return ingestor.process(path, self.db_root)
+        processed = ingestor.process(path)
+        
+        # 2. Guardar en SQLite core
+        core_db = f"{self.db_root}/rag_core.sqlite"
+        conn_core = sqlite3.connect(core_db)
+        
+        try:
+            # Insertar documento
+            conn_core.execute("""
+                INSERT OR REPLACE INTO documents 
+                (doc_id, source_path, doc_type, title, summary, chunk_count, last_indexed)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                processed.doc_id,
+                processed.source_path,
+                processed.doc_type,
+                processed.title,
+                processed.summary,
+                processed.total_chunks,
+                datetime.now().isoformat()
+            ))
+            
+            # Insertar chunks
+            for chunk in processed.chunks:
+                conn_core.execute("""
+                    INSERT INTO chunks 
+                    (doc_id, chunk_index, content, start_line, end_line, char_count)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    processed.doc_id,
+                    chunk.chunk_index,
+                    chunk.content,
+                    chunk.start_line,
+                    chunk.end_line,
+                    chunk.char_count
+                ))
+            
+            # Insertar entidades
+            if processed.entities:
+                for ent in processed.entities:
+                    conn_core.execute("""
+                        INSERT INTO entities (name, entity_type, source_doc_id, confidence)
+                        VALUES (?, ?, ?, ?)
+                    """, (
+                        ent.get('name', ''),
+                        ent.get('entity_type', 'concept'),
+                        processed.doc_id,
+                        ent.get('confidence', 0.8)
+                    ))
+            
+            conn_core.commit()
+            
+        except Exception as e:
+            conn_core.rollback()
+            raise e
+        finally:
+            conn_core.close()
+        
+        # 3. Guardar embeddings en SQLite vec
+        vectors_db = f"{self.db_root}/rag_vectors.sqlite"
+        conn_vec = sqlite3.connect(vectors_db)
+        conn_vec.enable_load_extension(True)
+        sqlite_vec.load(conn_vec)
+        
+        try:
+            from ..engines.vector_engine import VectorEngine
+            
+            # Crear engine de embeddings (1024 dimensiones para mxbai-embed-large)
+            config = {
+                'db_path': vectors_db,
+                'embedding_model': 'mxbai-embed-large:335m',
+                'dimensions': 1024,
+                'metric': 'cosine'
+            }
+            vec_engine = VectorEngine(**config)
+            
+            # Generar y guardar embeddings para cada chunk
+            for chunk in processed.chunks:
+                # Generar embedding
+                embedding = vec_engine._generate_embedding(chunk.content)
+                
+                if embedding is None:
+                    continue  # Saltar si no se pudo generar embedding
+                
+                # Extraer tags de entidades para este chunk
+                chunk_entities = [
+                    ent['name'] for ent in (processed.entities or [])
+                ]
+                entity_tags = ','.join(chunk_entities[:10])  # Máximo 10 tags
+                
+                # Insertar en tabla virtual vec0
+                chunk_id_int = hash(chunk.chunk_id) & 0xFFFFFFFF  # Convertir a int
+                conn_vec.execute("""
+                    INSERT INTO embeddings (chunk_id, embedding, doc_id, entity_tags)
+                    VALUES (?, ?, ?, ?)
+                """, (chunk_id_int, embedding, processed.doc_id, entity_tags))
+            
+            conn_vec.commit()
+            
+        except Exception as e:
+            conn_vec.rollback()
+            # No fallar si los embeddings fallan (puede ser Ollama no disponible)
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Error generando embeddings: {e}")
+        finally:
+            conn_vec.close()
+        
+        # 4. Agregar entidades al grafo Kuzu
+        graph_db = f"{self.db_root}/rag_graph.kuzu"
+        
+        try:
+            from ..ingestors.graph_builder import GraphBuilder
+            
+            builder = GraphBuilder(graph_db)
+            
+            if processed.entities:
+                stats = builder.extract_and_link_entities(processed)
+                builder.close()
+            else:
+                # Agregar título como entidad conceptual
+                builder.add_entity(
+                    name=processed.title,
+                    entity_type='document',
+                    source_doc=processed.doc_id,
+                    validated=False
+                )
+                builder.close()
+                
+        except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Error actualizando grafo: {e}")
+        
+        # Retornar estadísticas
+        return {
+            'document_id': processed.doc_id,
+            'document_title': processed.title,
+            'doc_type': processed.doc_type,
+            'chunks_count': processed.total_chunks,
+            'entities_count': len(processed.entities) if processed.entities else 0,
+            'source_path': processed.source_path,
+            'status': 'success'
+        }
 
     def get_status(self) -> Dict:
         """Estadísticas del índice RAG."""

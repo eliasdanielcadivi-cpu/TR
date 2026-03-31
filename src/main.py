@@ -49,21 +49,6 @@ def cli(ctx, prompt, help):
 
     # --- MANEJO DE AYUDA ENRIQUECIDA (REDIRECCIÓN A AYUDA ARES) ---
     if help:
-        # Mostrar imagen ARES primero con icat (usa la misma de neofetch)
-        from rich.console import Console
-        console = Console()
-        
-        # Imagen original de neofetch: /home/daniel/tron/programas/AGENDA/ares logo.png
-        ares_image = Path("/home/daniel/tron/programas/AGENDA/ares logo.png")
-        
-        if ares_image.exists():
-            try:
-                # Usar kitten icat para mostrar imagen (una sola vez)
-                subprocess.run(["kitten", "icat", "--align", "left", str(ares_image)], check=False, timeout=2)
-                console.print()  # Nueva línea después de la imagen
-            except Exception:
-                pass  # Si falla icat, continuar sin imagen
-        
         try:
             subprocess.run(["ayuda", "ares"], check=True)
         except (subprocess.CalledProcessError, FileNotFoundError):

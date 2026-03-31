@@ -7,6 +7,7 @@ Genera embeddings de la query y busca chunks similares en la base de datos.
 """
 
 import sqlite3
+from sqlite_vec import serialize_float32
 import time
 import numpy as np
 from typing import List, Dict, Any, Optional, Tuple
@@ -39,15 +40,21 @@ class VectorEngine:
     - Cache de embeddings frecuentes
     """
 
-    def __init__(self, db_path: str, embedding_model: str = "nomic-embed-text:latest",
-                 dimensions: int = 768, metric: str = "cosine"):
+    def __init__(self, db_path: str, embedding_model: str = "mxbai-embed-large:335m",
+                 dimensions: int = 1024, metric: str = "cosine"):
         self.db_path = db_path
         self.embedding_model = embedding_model
         self.dimensions = dimensions
         self.metric = metric
         self._conn = None
+        self._core_conn = None  # Conexión a core_db para chunks
         self._embedding_cache = {}  # Cache simple de embeddings
         self._model_initialized = False
+        
+        # Inferir core_db path desde db_path
+        # db_path es algo como 'db/rag/rag_vectors.sqlite'
+        # core_db es 'db/rag/rag_core.sqlite'
+        self.core_db_path = str(db_path).replace('rag_vectors.sqlite', 'rag_core.sqlite')
 
     @property
     def conn(self):
@@ -68,6 +75,19 @@ class VectorEngine:
                 logger.error(f"❌ Error conectando a {self.db_path}: {e}")
                 raise
         return self._conn
+    
+    @property
+    def core_conn(self):
+        """Conexión lazy a core_db para obtener chunks."""
+        if self._core_conn is None:
+            try:
+                self._core_conn = sqlite3.connect(self.core_db_path)
+                self._core_conn.row_factory = sqlite3.Row
+                logger.info(f"✅ Conexión core_db establecida a {self.core_db_path}")
+            except Exception as e:
+                logger.error(f"❌ Error conectando a {self.core_db_path}: {e}")
+                raise
+        return self._core_conn
 
     def search(self, query: str, limit: int = 10,
                min_similarity: float = 0.7) -> List[VectorSearchResult]:
@@ -184,22 +204,19 @@ class VectorEngine:
     def _vector_search(self, query_embedding: np.ndarray,
                       limit: int, min_similarity: float) -> List[Tuple]:
         """Buscar embeddings similares en la base de datos."""
-        # Convertir embedding a lista para SQLite
-        embedding_list = query_embedding.tolist()
+        # Serializar embedding correctamente para sqlite-vec
+        embedding_blob = serialize_float32(query_embedding)
 
         c = self.conn.cursor()
 
         # Búsqueda por similitud usando sqlite-vec
-        # La función vec_distance_l2 calcula distancia L2, menor = más similar
-        # Para coseno, asumimos embeddings normalizados: distancia L2 ≈ sqrt(2 - 2*cos_sim)
+        # Sintaxis correcta: MATCH sin ORDER BY explícito
         c.execute("""
             SELECT chunk_id, doc_id, entity_tags,
                    vec_distance_l2(embedding, ?) as distance
             FROM embeddings
-            WHERE distance IS NOT NULL
-            ORDER BY distance ASC
-            LIMIT ?
-        """, (embedding_list, limit))
+            WHERE embedding MATCH ? AND k = ?
+        """, (embedding_blob, embedding_blob, limit))
 
         results = []
         for row in c.fetchall():
@@ -210,8 +227,8 @@ class VectorEngine:
                 similarity = max(0.0, 1.0 - (distance ** 2) / 2.0)
 
                 if similarity >= min_similarity:
-                    # Obtener contenido del chunk
-                    c2 = self.conn.cursor()
+                    # Obtener contenido del chunk desde core_db
+                    c2 = self.core_conn.cursor()
                     c2.execute("""
                         SELECT c.content, d.source_path, d.title
                         FROM chunks c

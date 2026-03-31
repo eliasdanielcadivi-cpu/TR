@@ -22,6 +22,7 @@ dependencies = [
     "httpx>=0.25.0",
     # notcurses: Usar paquete del sistema (python3-notcurses)
     # No instalar desde PyPI porque no es compatible con libnotcurses del sistema
+    "kuzu>=0.11.3",
 ]
 
 [tool.uv]
