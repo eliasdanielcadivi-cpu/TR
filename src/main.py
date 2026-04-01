@@ -83,7 +83,7 @@ def mcat_demo_cmd(obj):
 @click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter, ares, ares-think)")
 @click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
-@click.option("--rag", help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
+@click.option("--rag", is_flag=False, flag_value="default", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
 @click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
 @click.pass_obj
 def p_cmd(obj, prompt, model, template, temperature, rag, think):
