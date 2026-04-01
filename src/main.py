@@ -109,23 +109,35 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
                 # Comprimir contexto
                 context = compress_context(chunks, query=prompt, max_tokens=1500)
 
-                # Generar respuesta con contexto RAG
+                # Generar respuesta con contexto RAG (Streaming + Filtro)
+                from modules.ia.apollo.generation import generate_answer_stream
+                import sys
+                
                 llm_model = final_model if final_model else "ares:latest"
-                response = generate_answer(
+                full_response = ""
+                
+                # Ares pensando...
+                click.secho("🤖 ARES recuperando y razonando...", fg="cyan", dim=True)
+                
+                for chunk in generate_answer_stream(
                     query=prompt,
                     context=context,
                     model=llm_model,
                     temperature=temperature,
-                    apply_post_processing=True
-                )
+                    filter_think=not think # Solo mostrar think si se pide con --think
+                ):
+                    sys.stdout.write(chunk)
+                    sys.stdout.flush()
+                    full_response += chunk
+                
+                sys.stdout.write("\n")
 
                 # Añadir fuentes si existen
                 if results.get("sources"):
-                    response += "\n\n---\n**Fuentes RAG:**\n"
+                    click.secho("\n📚 Fuentes RAG:", fg="yellow", bold=True)
                     for src in results["sources"][:3]:
-                        response += f"- {src.get('path', 'Documento')}\n"
+                        click.echo(f"- {src.get('path', 'Documento')}")
                 
-                click.echo(response)
                 return
             else:
                 messenger.warn(f"No se encontró información relevante en el dataset '{rag}'.")
