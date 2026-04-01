@@ -158,9 +158,9 @@ Los módulos están agrupados jerárárquicamente en `modules/`:
 - **color/**: Identidad visual dinámica para pestañas Kitty.
 - **multimedia/**: Puppeteering de video, imagen y audio.
 - **tactico/**: Despliegue de flujos de trabajo complejos.
-- **ui/**: Estética neón y manuales dinámicos.
-- **whatsapp/**: Integración con WhatsApp.
-- **investigador/**: Exploración web e inteligencia (búsqueda, oteo).
+- **ui/**: Estética neón, manuales dinámicos y messenger reactivo.
+- **utils/**: Utilidades atómicas (comunicación, limpieza de texto).
+- **aviso/**: Sistema de recordatorios y base para la Carita de Ares.
 
 ### 🕵️ Sub-Agentes (AGENTES/)
 - **sherlok/**: Auditor de código con "ADN Técnico Industrial" usando LLM local.

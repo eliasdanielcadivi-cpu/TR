@@ -204,13 +204,19 @@
 
 ---
 
+### `utils/` - Utilidades Atómicas
+| Módulo | Funciones | Estado |
+|--------|-----------|--------|
+| `messenger.py` | `warn()`, `error()`, `success()`, `info()` | ✅ |
+| `text_cleaner.py` | `normalize_text()`, `extract_keywords_clean()` | ✅ |
+
 ### `whatsapp/` - Comunicaciones Externas
 **Estado:** 🚧 En desarrollo
 
----
-
-### `aviso/` - Notificaciones
-**Estado:** 🚧 En desarrollo
+### `aviso/` - Notificaciones (Base para Carita de Ares)
+| Módulo | Propósito | Estado |
+|--------|-----------|--------|
+| `ui_messenger.py` | Interfaz visual de avisos | 🚧 |
 
 ---
 
