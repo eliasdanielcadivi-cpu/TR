@@ -229,6 +229,82 @@ def _claim_in_context(claim: str, context: str) -> bool:
     return matches / len(claim_words) >= 0.7 if claim_words else False
 
 
+def generate_answer_stream(
+    query: str,
+    context: str,
+    model: str = "ares:latest",
+    temperature: float = 0.1,
+    max_tokens: int = 1000,
+    filter_think: bool = True
+):
+    """Generar respuesta basada en contexto con streaming.
+
+    Yields:
+        Fragmentos de la respuesta (chunks).
+    """
+    prompt = _build_rag_prompt(query, context)
+
+    try:
+        import ollama
+        import sys
+        
+        # Máquina de estados mínima para filtrar think en el flujo RAG
+        in_think = False
+        buffer = ""
+
+        stream = ollama.chat(
+            model=model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Eres un asistente preciso que responde ÚNICAMENTE con información verificada del contexto proporcionado. Si la información no está en el contexto, indica 'No encontrado en el contexto'."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            options={
+                "temperature": temperature,
+                "num_predict": max_tokens
+            },
+            stream=True
+        )
+
+        for chunk in stream:
+            content = chunk['message']['content']
+            if not content: continue
+
+            if filter_think:
+                # Normalización Unicode básica
+                content = content.replace('\\u003c', '<').replace('\\u003e', '>')
+                buffer += content
+
+                if not in_think:
+                    if '<think>' in buffer:
+                        in_think = True
+                        idx = buffer.find('<think>')
+                        yield buffer[:idx]
+                        buffer = buffer[idx:]
+                    else:
+                        yield buffer
+                        buffer = ""
+                
+                if in_think:
+                    if '</think>' in buffer:
+                        in_think = False
+                        idx = buffer.find('</think>')
+                        buffer = buffer[idx + len('</think>'):]
+                        if buffer:
+                            yield buffer
+                            buffer = ""
+            else:
+                yield content
+
+    except Exception as e:
+        yield f"Error en streaming RAG: {str(e)}"
+
+
 def apply_post_process(answer: str, model: str) -> str:
     """Aplicar post-procesamiento según modelo.
 
