@@ -3,7 +3,7 @@
 ## 🚀 Funcionalidades Críticas (Indispensables)
 - [X] Conectividad: Funciones de conexión con re-intento y manejo de bloqueos.
 - [X] **T1 SQL:** Implementar búsqueda FTS5 aislada y probar con acentos.
-- [ ] **T3 Grafo:** Implementar verificación de nodos y saltos simples en Kùzu.
+- [X] **T3 Grafo:** Implementar verificación de nodos y saltos simples en Kùzu.
 - [ ] **Fallback Vectorial:** Asegurar que si Ollama falla, el sistema no muera.
 
 ## 📈 Funcionalidades Comerciales (Rápido Valor)
@@ -23,4 +23,5 @@
 - [X] Backup inicial Git.
 - [X] Implementación de primitiva `storage/` (SQLite y Kuzu).
 - [X] Implementación de primitiva `engines/sql/` (FTS5 funcional).
-- [ ] Próximo paso: Implementar `engines/graph/` (Kuzu atómico).
+- [X] Implementación de primitiva `engines/graph/` (Kuzu funcional).
+- [ ] Próximo paso: Implementar `ingestion/` atómica.
