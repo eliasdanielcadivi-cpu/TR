@@ -129,13 +129,14 @@ class HelpManager:
         console.print(f"\n[dim]Usa 'ares help' para navegar docs/ con Broot.[/dim]")
 
     def query_ai(self, prompt: str, model_alias: Optional[str] = None,
-                 template: Optional[str] = None, **kwargs) -> None:
-        """Consulta al motor de IA.
+                 template: Optional[str] = None, think: bool = False, **kwargs) -> None:
+        """Consulta al motor de IA con streaming.
         
         Args:
             prompt: Prompt de entrada.
-            model_alias: Alias de modelo (gemma, deepseek, etc.).
+            model_alias: Alias de modelo.
             template: Nombre de plantilla YAML.
+            think: Si True, mostrar etiquetas think.
             **kwargs: Parámetros adicionales.
         """
         ai = self._get_ai_engine()
@@ -146,15 +147,32 @@ class HelpManager:
             print(response)
             return
 
-        # Modo interactivo con status
+        # Modo interactivo con streaming
         model_info = f" [{model_alias or 'default'}]" if model_alias else ""
         if template:
             model_info += f" --template {template}"
         
-        with console.status(f"[bold blue] ARES pensando{model_info}..."):
-            response = ai.ask(prompt, model_alias=model_alias, template=template, **kwargs)
+        # Filtro think: activo si no se pide explícitamente razonamiento
+        # y es un modelo 'ares'
+        current_model = model_alias or ""
+        filter_think = not think and "ares" in current_model.lower()
+        
+        if filter_think:
+            ai.reset_think_filter()
 
-        console.print(Panel(response, title="ARES", border_style="green"))
+        console.print(f"[bold cyan]🤖 ARES {model_info}:[/bold cyan]")
+        
+        full_response = ""
+        for chunk in ai.ask_stream(prompt, model_alias=model_alias, 
+                                  template=template, filter_think=filter_think, **kwargs):
+            if chunk:
+                sys.stdout.write(chunk)
+                sys.stdout.flush()
+                full_response += chunk
+        
+        print("\n")
+        # Opcional: mostrar panel final consolidado si se desea persistencia visual
+        # console.print(Panel(full_response, title="ARES", border_style="green"))
 
     def list_models(self) -> None:
         """Listar modelos disponibles por provider."""

@@ -154,7 +154,8 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
         prompt,
         model_alias=final_model,
         template=template,
-        temperature=temperature
+        temperature=temperature,
+        think=think
     )
 
 
