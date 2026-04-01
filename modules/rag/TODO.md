@@ -1,9 +1,8 @@
 # 📝 TODO - Desarrollo RAG V3
 
 ## 🚀 Funcionalidades Críticas (Indispensables)
+- [X] Conectividad: Funciones de conexión con re-intento y manejo de bloqueos.
 - [ ] **T1 SQL:** Implementar búsqueda FTS5 aislada y probar con acentos.
-- [ ] **T3 Grafo:** Implementar verificación de nodos y saltos simples en Kùzu.
-- [ ] **Conectividad:** Funciones de conexión con re-intento y manejo de bloqueos.
 - [ ] **Fallback Vectorial:** Asegurar que si Ollama falla, el sistema no muera.
 
 ## 📈 Funcionalidades Comerciales (Rápido Valor)
