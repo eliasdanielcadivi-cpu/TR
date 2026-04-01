@@ -83,18 +83,11 @@ def mcat_demo_cmd(obj):
 @click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter, ares, ares-think)")
 @click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
-@click.option("--rag", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
+@click.option("--rag", is_flag=False, flag_value="default", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
 @click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
 @click.pass_obj
 def p_cmd(obj, prompt, model, template, temperature, rag, think):
-    """🤖 Consulta Inteligente (Modo Experto).
-
-    Permite interactuar con la IA especificando el modelo, la plantilla de comportamiento
-    y la temperatura de respuesta.
-
-    Con --rag: Usa RAG para recuperar contexto del dataset especificado.
-    Con --think: Usa ares-think:latest (mantiene etiquetas <think></think>)
-    """
+    """🤖 Consulta Inteligente (Modo Experto)."""
     # Determinar modelo final
     final_model = model
     if think:
@@ -102,10 +95,10 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
     
     # Si se usa --rag, inyectar contexto RAG
     if rag:
-        from modules.ia.apollo import retrieve, compress_context, generate_answer
-
-        # Recuperar contexto del dataset
-        results = retrieve(query=prompt, k=5, mode="fused", dataset=rag)
+        from modules.utils import messenger
+        try:
+            from modules.ia.apollo import retrieve, compress_context, generate_answer
+            # ... (resto del código)
 
         # Obtener textos de chunks
         chunks = results.get("semantic", [])[:5]
