@@ -223,50 +223,57 @@ class AIEngine:
             yield provider.generate(prompt, **params)
 
     def _filter_think_chunk(self, chunk: str) -> str:
-        """Filtrar etiquetas <think> de un chunk en tiempo real."""
-        # 1. Normalización total de entrada
+        """Filtrar etiquetas <think> de un chunk en tiempo real.
+        
+        Máquina de estados simplificada: Acumula en buffer hasta decidir si es texto o tag.
+        """
+        # Normalización Unicode
         chunk = chunk.replace('\\u003c', '<').replace('\\u003e', '>')
         chunk = chunk.replace('\u003c', '<').replace('\u003e', '>')
         
-        # 2. Gestión de buffer persistente
         self._think_filter_state["buffer"] += chunk
         buffer = self._think_filter_state["buffer"]
-        in_think = self._think_filter_state["in_think_block"]
         
-        # 3. Lógica de filtrado
-        if not in_think:
-            # Buscar cualquier forma de inicio de bloque
+        if not self._think_filter_state["in_think_block"]:
             if '<think>' in buffer:
+                # Detectado inicio: entregar lo anterior y entrar en modo oculto
                 self._think_filter_state["in_think_block"] = True
-                idx = buffer.find('<think>')
-                output = buffer[:idx]
-                # Mantener el resto en el buffer para buscar el cierre
-                self._think_filter_state["buffer"] = buffer[idx:]
+                parts = buffer.split('<think>', 1)
+                before = parts[0]
+                # Mantener el resto para buscar el cierre
+                self._think_filter_state["buffer"] = parts[1]
+                # Recursión para procesar el resto del buffer inmediatamente
+                return before + self._filter_think_chunk("")
+            
+            # Si hay un '<' sospechoso al final, esperar para no romper un posible tag
+            last_angle = buffer.rfind('<')
+            if last_angle != -1 and len(buffer) - last_angle < 8:
+                # Retener la parte sospechosa en el buffer
+                output = buffer[:last_angle]
+                self._think_filter_state["buffer"] = buffer[last_angle:]
                 return output
             
-            # Si el buffer termina con parte de un tag (ej: '<th'), no entregar todavía
-            # para evitar que el tag se rompa y se imprima.
-            potential_tag_start = buffer.rfind('<')
-            if potential_tag_start != -1 and potential_tag_start > len(buffer) - 8:
-                output = buffer[:potential_tag_start]
-                self._think_filter_state["buffer"] = buffer[potential_tag_start:]
-                return output
-            
-            # No hay tags a la vista, entregar todo
+            # No hay tags: entregar todo y limpiar buffer
             self._think_filter_state["buffer"] = ""
             return buffer
         else:
-            # Estamos dentro de un bloque think, buscar el cierre
             if '</think>' in buffer:
+                # Detectado cierre: salir de modo oculto y procesar remanente
                 self._think_filter_state["in_think_block"] = False
-                idx = buffer.find('</think>')
-                # Retener lo que venga después del cierre
-                remaining = buffer[idx + len('</think>'):]
+                parts = buffer.split('</think>', 1)
+                after = parts[1]
                 self._think_filter_state["buffer"] = ""
-                # Recursión para filtrar posibles tags adicionales en el remanente
-                return self._filter_think_chunk(remaining)
+                # Recursión para procesar lo que venga después de </think>
+                return self._filter_think_chunk(after)
             
-            # Continuar en bloque think, no entregar nada
+            # Seguimos en modo oculto: limpiar buffer (consumir) y no entregar nada
+            # Pero mantenemos el buffer si termina en '<' por si es parte de '</think>'
+            last_angle = buffer.rfind('<')
+            if last_angle != -1:
+                # Mantener solo desde el último '<'
+                self._think_filter_state["buffer"] = buffer[last_angle:]
+            else:
+                self._think_filter_state["buffer"] = ""
             return ""
 
     def reset_think_filter(self):
