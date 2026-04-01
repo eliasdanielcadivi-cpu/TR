@@ -110,7 +110,10 @@ class TieredRAGRouter:
     def sql_engine(self):
         """Motor SQL lazy para T1."""
         if self._sql_engine is None:
-            from ..engines.sql_engine import SQLEngine
+            try:
+                from ..engines.sql_engine import SQLEngine
+            except (ImportError, ValueError):
+                from sql_engine import SQLEngine
             self._sql_engine = SQLEngine(self.db_paths['core'])
         return self._sql_engine
 
@@ -118,7 +121,10 @@ class TieredRAGRouter:
     def vector_engine(self):
         """Motor vectorial lazy para T2."""
         if self._vector_engine is None:
-            from ..engines.vector_engine import VectorEngine
+            try:
+                from ..engines.vector_engine import VectorEngine
+            except (ImportError, ValueError):
+                from vector_engine import VectorEngine
             embeddings_config = self.config.get('embeddings', {})
             self._vector_engine = VectorEngine(
                 db_path=self.db_paths['vectors'],
@@ -132,7 +138,10 @@ class TieredRAGRouter:
     def graph_engine(self):
         """Motor de grafo lazy para T3."""
         if self._graph_engine is None:
-            from ..engines.graph_engine import GraphEngine
+            try:
+                from ..engines.graph_engine import GraphEngine
+            except (ImportError, ValueError):
+                from graph_engine import GraphEngine
             max_hops = self.config.get('tiers', {}).get('t3_graph', {}).get('max_hops', 3)
             self._graph_engine = GraphEngine(self.db_paths['graph'], max_hops=max_hops)
         return self._graph_engine
@@ -141,7 +150,10 @@ class TieredRAGRouter:
     def llm_engine(self):
         """Motor LLM lazy para T4."""
         if self._llm_engine is None:
-            from ..engines.llm_engine import LLMEngine, ReasoningContext
+            try:
+                from ..engines.llm_engine import LLMEngine
+            except (ImportError, ValueError):
+                from llm_engine import LLMEngine
             self._llm_engine = LLMEngine(self.config)
         return self._llm_engine
 
@@ -263,8 +275,8 @@ class TieredRAGRouter:
             if not results:
                 return None
 
-            # Calcular confianza promedio de los resultados
-            avg_confidence = sum(r.relevance_score for r in results) / len(results)
+            # Calcular confianza máxima de los resultados
+            max_confidence = max(r.relevance_score for r in results)
 
             # Convertir a formato de fuentes
             sources = []
@@ -291,7 +303,7 @@ class TieredRAGRouter:
             return RetrievalResult(
                 data=data,
                 tier=Tier.T1_SQL,
-                confidence=avg_confidence,
+                confidence=max_confidence,
                 latency_ms=0,  # Se ajustará después
                 sources=sources
             )
@@ -314,8 +326,8 @@ class TieredRAGRouter:
             if not results:
                 return None
 
-            # Calcular confianza promedio (ajustada por similitud)
-            avg_similarity = sum(r.similarity_score for r in results) / len(results)
+            # Calcular confianza máxima (ajustada por similitud)
+            max_similarity = max(r.similarity_score for r in results)
 
             # Convertir a formato de fuentes
             sources = []
@@ -337,7 +349,7 @@ class TieredRAGRouter:
             # Preparar datos para respuesta
             data = {
                 'summary': f"Encontrados {len(results)} chunks semánticamente similares",
-                'avg_similarity': avg_similarity,
+                'max_similarity': max_similarity,
                 'top_matches': [r.content[:200] for r in results[:3]],
                 'embedding_model': results[0].embedding_model if results else 'unknown'
             }
@@ -345,7 +357,7 @@ class TieredRAGRouter:
             return RetrievalResult(
                 data=data,
                 tier=Tier.T2_VECTOR,
-                confidence=avg_similarity,  # Usar similitud como confianza
+                confidence=max_similarity,  # Usar similitud como confianza
                 latency_ms=0,  # Se ajustará después
                 sources=sources
             )

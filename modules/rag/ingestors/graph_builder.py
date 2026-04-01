@@ -86,8 +86,7 @@ class GraphBuilder:
         """
         Agregar relación entre entidades.
         
-        Nota: Kuzu requiere sintaxis especial para INSERT de relaciones.
-        Primero hacemos MATCH, luego INSERT separado.
+        Usa MATCH para encontrar los nodos y CREATE para la relación.
         
         Args:
             subject: Entidad sujeto
@@ -101,99 +100,63 @@ class GraphBuilder:
         try:
             conn = self._get_connection()
             
-            # Kuzu: Primero verificar que existen los nodos, luego insertar relación
-            # La sintaxis correcta es INSERT INTO rel_type VALUES (a, b, props...)
-            if relation == 'REQUIRES':
-                # Verificar que existen los nodos
-                check_query = """
-                    MATCH (a:Entity), (b:Entity)
-                    WHERE a.name = $subject AND b.name = $object
-                    RETURN count(*) as count
-                """
-                result = conn.execute(check_query, {
-                    'subject': subject,
-                    'object': object_
-                })
-                if not result.has_next() or result.get_next()[0] == 0:
-                    return False  # Nodos no existen
-                
-                # Insertar relación con propiedades
+            # Mapear tablas
+            rel_table = relation.upper()
+            if rel_table not in ['REQUIRES', 'RELATES_TO', 'PART_OF']:
+                rel_table = 'RELATES_TO'
+
+            # Construir query según la tabla
+            if rel_table == 'REQUIRES':
                 query = """
-                    INSERT INTO REQUIRES VALUES (
-                        (SELECT a FROM Entity WHERE name = $subject),
-                        (SELECT b FROM Entity WHERE name = $object),
-                        $weight, $criticality, $validated
-                    )
+                    MATCH (a:Entity {name: $subject}), (b:Entity {name: $object})
+                    CREATE (a)-[:REQUIRES {
+                        weight: $weight,
+                        criticality: $criticality,
+                        validated: $validated
+                    }]->(b)
                 """
                 params = {
                     'subject': subject,
                     'object': object_,
-                    'weight': properties.get('weight', 1.0),
-                    'criticality': properties.get('criticality', 'C2'),
-                    'validated': properties.get('validated', False)
+                    'weight': float(properties.get('weight', 1.0)),
+                    'criticality': str(properties.get('criticality', 'C2')),
+                    'validated': bool(properties.get('validated', False))
                 }
-            elif relation == 'RELATES_TO':
-                check_query = """
-                    MATCH (a:Entity), (b:Entity)
-                    WHERE a.name = $subject AND b.name = $object
-                    RETURN count(*) as count
-                """
-                result = conn.execute(check_query, {
-                    'subject': subject,
-                    'object': object_
-                })
-                if not result.has_next() or result.get_next()[0] == 0:
-                    return False
-                
+            elif rel_table == 'RELATES_TO':
                 query = """
-                    INSERT INTO RELATES_TO VALUES (
-                        (SELECT a FROM Entity WHERE name = $subject),
-                        (SELECT b FROM Entity WHERE name = $object),
-                        $relation_type, $confidence, $context
-                    )
+                    MATCH (a:Entity {name: $subject}), (b:Entity {name: $object})
+                    CREATE (a)-[:RELATES_TO {
+                        relation_type: $relation_type,
+                        confidence: $confidence,
+                        context: $context
+                    }]->(b)
                 """
                 params = {
                     'subject': subject,
                     'object': object_,
-                    'relation_type': properties.get('relation_type', 'related'),
-                    'confidence': properties.get('confidence', 0.8),
-                    'context': properties.get('context', '')
+                    'relation_type': str(properties.get('relation_type', 'related')),
+                    'confidence': float(properties.get('confidence', 0.8)),
+                    'context': str(properties.get('context', ''))
                 }
-            elif relation == 'PART_OF':
-                check_query = """
-                    MATCH (a:Entity), (b:Entity)
-                    WHERE a.name = $subject AND b.name = $object
-                    RETURN count(*) as count
-                """
-                result = conn.execute(check_query, {
-                    'subject': subject,
-                    'object': object_
-                })
-                if not result.has_next() or result.get_next()[0] == 0:
-                    return False
-                
+            elif rel_table == 'PART_OF':
                 query = """
-                    INSERT INTO PART_OF VALUES (
-                        (SELECT a FROM Entity WHERE name = $subject),
-                        (SELECT b FROM Entity WHERE name = $object),
-                        $order_idx
-                    )
+                    MATCH (a:Entity {name: $subject}), (b:Entity {name: $object})
+                    CREATE (a)-[:PART_OF {
+                        order_idx: $order_idx
+                    }]->(b)
                 """
                 params = {
                     'subject': subject,
                     'object': object_,
-                    'order_idx': properties.get('order_idx', 0.0)
+                    'order_idx': float(properties.get('order_idx', 0.0))
                 }
-            else:
-                logger.warning(f"Tipo de relación desconocida: {relation}")
-                return False
-            
+
             conn.execute(query, params)
             return True
             
         except Exception as e:
-            logger.debug(f"Error agregando relación (puede ser duplicada): {e}")
-            return False  # Silencioso - las relaciones duplicadas son OK
+            logger.debug(f"Error agregando relación {subject} -> {object}: {e}")
+            return False
     
     def process_entities(self, entities: List[Dict[str, Any]], 
                         source_doc: str) -> Dict[str, Any]:

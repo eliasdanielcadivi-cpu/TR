@@ -39,6 +39,7 @@ class SQLEngine:
     def __init__(self, db_path: str):
         self.db_path = db_path
         self._conn = None
+        self._fts_initialized = False
 
     @property
     def conn(self):
@@ -47,6 +48,29 @@ class SQLEngine:
             self._conn = sqlite3.connect(self.db_path)
             self._conn.row_factory = sqlite3.Row
         return self._conn
+
+    def _init_fts(self):
+        """Inicializar índice FTS5 para chunks si no se ha hecho en esta sesión."""
+        if self._fts_initialized:
+            return
+        
+        try:
+            c = self.conn.cursor()
+            # Crear tabla virtual FTS5 si no existe
+            c.execute("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS chunks_fts USING fts5(
+                    content,
+                    content='chunks',
+                    content_rowid='id'
+                )
+            """)
+            # Sincronizar (rebuild) para asegurar que datos existentes están indexados
+            c.execute("INSERT INTO chunks_fts(chunks_fts) VALUES('rebuild')")
+            self.conn.commit()
+            self._fts_initialized = True
+        except Exception as e:
+            # Fallback silencioso si FTS5 no está disponible en el binario de SQLite
+            pass
 
     def search(self, query: str, limit: int = 10,
                min_confidence: float = 0.5) -> List[SQLSearchResult]:
@@ -179,10 +203,65 @@ class SQLEngine:
         if not keywords:
             return []
 
-        results = []
+        # Intentar FTS5 primero
+        self._init_fts()
+        if self._fts_initialized:
+            try:
+                return self._search_fts(keywords, limit)
+            except sqlite3.OperationalError:
+                pass
+        
+        # Fallback a búsqueda LIKE tradicional
+        return self._search_by_keywords_fallback(keywords, limit)
 
-        # Construir query dinámica para múltiples keywords
-        placeholders = ', '.join(['?'] * len(keywords))
+    def _search_fts(self, keywords: List[str], limit: int) -> List[SQLSearchResult]:
+        """Búsqueda usando FTS5 MATCH para mejor relevancia."""
+        results = []
+        # Limpiar keywords para FTS5 syntax
+        clean_query = " OR ".join([f'"{kw}"' for kw in keywords])
+        
+        c = self.conn.cursor()
+        # rank es un score calculado por BM25, menores valores son mejores (más negativos)
+        c.execute("""
+            SELECT c.id, c.doc_id, c.content, d.source_path, f.rank
+            FROM chunks_fts f
+            JOIN chunks c ON f.rowid = c.id
+            JOIN documents d ON c.doc_id = d.doc_id
+            WHERE chunks_fts MATCH ?
+            ORDER BY rank ASC
+            LIMIT ?
+        """, (clean_query, limit))
+
+        for row in c.fetchall():
+            # Mapear rank a un score de relevancia (0.3 - 0.9)
+            # FTS5 rank suele ir de -10 (muy bueno) a 0 o positivo.
+            raw_rank = row['rank']
+            score = 0.8 / (1.0 + abs(raw_rank/10.0)) + 0.1 # Heurística
+            
+            # Bonus por matches exactos de keywords
+            content_lower = row['content'].lower()
+            matches = sum(1 for kw in keywords if kw in content_lower)
+            if matches == len(keywords):
+                score = max(score, 0.85)
+            elif matches > 0:
+                score += (matches / len(keywords)) * 0.1
+
+            result = SQLSearchResult(
+                doc_id=row['doc_id'],
+                chunk_id=row['id'],
+                content=row['content'],
+                relevance_score=min(0.95, score),
+                match_type='exact' if matches == len(keywords) else 'fuzzy',
+                source_path=row['source_path'],
+                entity_tags=[]
+            )
+            results.append(result)
+        
+        return results
+
+    def _search_by_keywords_fallback(self, keywords: List[str], limit: int) -> List[SQLSearchResult]:
+        """Búsqueda tradicional con LIKE como fallback."""
+        results = []
         keyword_patterns = [f'%{kw}%' for kw in keywords]
 
         c = self.conn.cursor()
@@ -194,13 +273,16 @@ class SQLEngine:
             WHERE {' OR '.join(['c.content LIKE ?'] * len(keywords))}
             ORDER BY c.chunk_index
             LIMIT ?
-        """, keyword_patterns + [limit * 3])  # Obtener más para ranking
+        """, keyword_patterns + [limit])
 
         for row in c.fetchall():
-            # Calcular score basado en matches de keywords
             content_lower = row['content'].lower()
             matches = sum(1 for kw in keywords if kw in content_lower)
-            score = matches / len(keywords) * 0.8  # Max 0.8 para contenido
+            
+            # Mejorar scoring de fallback (base 0.7 para match completo)
+            score = (matches / len(keywords)) * 0.8
+            if matches == len(keywords):
+                score = max(score, 0.85)
 
             result = SQLSearchResult(
                 doc_id=row['doc_id'],

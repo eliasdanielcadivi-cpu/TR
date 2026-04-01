@@ -78,13 +78,20 @@ class GraphEngine:
         if self._conn is None:
             try:
                 import kuzu
-                # Kùzu usa directorio, no archivo
-                if not self.db_path.endswith('.kuzu'):
-                    self.db_path = self.db_path + '.kuzu'
-
-                self._db = kuzu.Database(self.db_path)
+                import os
+                
+                # Kùzu espera una ruta que apunte al archivo de la base de datos dentro del directorio
+                db_dir = self.db_path
+                if not db_dir.endswith('.kuzu'):
+                    db_dir = db_dir + '.kuzu'
+                
+                # IMPORTANTE: Apuntar al archivo 'db' interno si el directorio existe
+                # Esto coincide con init_rag_db.py: db = kuzu.Database(str(db_dir / "db"))
+                db_full_path = os.path.join(db_dir, "db")
+                
+                self._db = kuzu.Database(db_full_path)
                 self._conn = kuzu.Connection(self._db)
-                logger.info(f"✅ Conexión Kùzu establecida a {self.db_path}")
+                logger.info(f"✅ Conexión Kùzu establecida a {db_full_path}")
             except ImportError as e:
                 logger.error(f"❌ kuzu no está instalado: {e}")
                 raise
@@ -152,43 +159,44 @@ class GraphEngine:
         """Extraer posibles nombres de entidades de una query natural."""
         entities = []
 
-        # Patrones para identificar entidades
-        patterns = [
-            # Nombres propios (inician con mayúscula, siguen con minúsculas)
-            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b',
-            # Acrónimos (múltiples mayúsculas)
-            r'\b[A-Z]{2,}\b',
-            # Términos entre comillas
-            r'"([^"]+)"',
-            # Términos específicos del dominio (ajustar según necesidad)
-        ]
+        # Palabras comunes a ignorar (stop words)
+        stop_words = {'qué', 'que', 'cuál', 'cual', 'cómo', 'como', 'cuáles', 'cuales', 'quién', 'quien',
+                     'donde', 'dónde', 'cuándo', 'cuando', 'por', 'para', 'con', 'sobre', 'entre',
+                     'bajo', 'debe', 'debería', 'tener', 'hay', 'existe', 'secciones', 'definir',
+                     'partes', 'pasos', 'donde', 'dentro', 'un', 'una', 'los', 'las', 'del', 'al'}
 
-        # Buscar con cada patrón
+        # Limpiar y tokenizar
+        words = re.findall(r'\w+', query.lower())
+        
+        # 1. Palabras individuales significativas
+        for word in words:
+            if len(word) > 4 and word not in stop_words:
+                entities.append(word)
+
+        # 2. Bigramas (dos palabras consecutivas)
+        for i in range(len(words) - 1):
+            w1, w2 = words[i], words[i+1]
+            if w1 not in stop_words and w2 not in stop_words:
+                entities.append(f"{w1} {w2}")
+
+        # 3. Patrones originales (capitalización, etc.)
+        patterns = [
+            r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b',
+            r'\b[A-Z]{2,}\b',
+            r'"([^"]+)"',
+        ]
         for pattern in patterns:
             matches = re.findall(pattern, query)
             for match in matches:
-                if isinstance(match, tuple):
-                    match = match[0]  # Para grupos de captura
-                if len(match) > 2:  # Ignorar strings muy cortos
-                    entities.append(match)
-
-        # También considerar palabras sustantivas (simplificado)
-        # Esto es básico, en producción usar NER
-        words = query.split()
-        for i, word in enumerate(words):
-            # Palabras que podrían ser entidades (sustantivos)
-            if (len(word) > 3 and word.isalpha() and
-                not word.lower() in {'con', 'para', 'desde', 'hacia', 'sobre'}):
-                # Si la palabra anterior es un artículo, podría ser entidad
-                if i > 0 and words[i-1].lower() in {'el', 'la', 'los', 'las', 'un', 'una'}:
-                    entities.append(word)
+                if isinstance(match, tuple): match = match[0]
+                if len(match) > 2: entities.append(match)
 
         # Eliminar duplicados manteniendo orden
         seen = set()
         unique_entities = []
         for ent in entities:
-            if ent not in seen:
-                seen.add(ent)
+            if ent.lower() not in seen:
+                seen.add(ent.lower())
                 unique_entities.append(ent)
 
         return unique_entities
@@ -198,13 +206,7 @@ class GraphEngine:
         nodes = []
 
         for entity in entities:
-            # Búsqueda exacta
-            exact_nodes = self._find_nodes_by_name(entity, exact=True)
-            if exact_nodes:
-                nodes.extend(exact_nodes)
-                continue
-
-            # Búsqueda parcial (LIKE)
+            # Siempre búsqueda parcial para mayor cobertura en T3
             partial_nodes = self._find_nodes_by_name(entity, exact=False)
             nodes.extend(partial_nodes)
 
@@ -261,75 +263,62 @@ class GraphEngine:
         paths = []
 
         try:
-            # Cypher query para traversia de hasta max_hops saltos
-            query = """
-                MATCH path = (start:Entity {name: $start_name})-[*1..$max_hops]-(end:Entity)
-                UNWIND relationships(path) as rel
-                RETURN
-                    nodes(path) as nodes_list,
-                    collect(DISTINCT rel) as rels_list,
-                    length(path) as path_length
-                ORDER BY path_length ASC
+            # Query ultra-compatible usando f-strings para el nombre (escapado)
+            # Kùzu parece tener problemas con parámetros en queries complejas
+            safe_name = start_node_name.replace("'", "\\'")
+            query = f"""
+                MATCH (start:Entity)-[r:RELATES_TO|REQUIRES|PART_OF*1..{max_hops}]->(end)
+                WHERE start.name = '{safe_name}'
+                RETURN start.name, start.type, end.name, end.type, end.source_doc
                 LIMIT 20
             """
 
-            result = self.conn.execute(query, {
-                "start_name": start_node_name,
-                "max_hops": max_hops
-            })
+            result = self.conn.execute(query)
 
             while result.has_next():
                 row = result.get_next()
-                nodes_list = row[0]
-                rels_list = row[1]
-                path_length = row[2]
+                s_name, s_type, e_name, e_type, e_source = row
 
-                # Convertir nodos Kùzu a GraphNode
-                graph_nodes = []
-                for kuzu_node in nodes_list:
-                    node = GraphNode(
-                        name=kuzu_node['name'],
-                        type=kuzu_node.get('type', 'unknown'),
-                        validated=bool(kuzu_node.get('validated', False)),
-                        source_doc=kuzu_node.get('source_doc')
-                    )
-                    graph_nodes.append(node)
+                graph_nodes = [
+                    GraphNode(name=s_name, type=s_type or 'unknown', validated=False),
+                    GraphNode(name=e_name, type=e_type or 'unknown', validated=False, source_doc=e_source)
+                ]
+                
+                # Relación dummy para el cálculo de relevancia
+                graph_rels = [
+                    GraphRelationship(from_node=s_name, to_node=e_name, relation_type='RELATED', 
+                                     weight=1.0, criticality='C1', validated=False)
+                ]
 
-                # Convertir relaciones Kùzu a GraphRelationship
-                graph_rels = []
-                for kuzu_rel in rels_list:
-                    rel = GraphRelationship(
-                        from_node=kuzu_rel['_src']['name'],
-                        to_node=kuzu_rel['_dst']['name'],
-                        relation_type=kuzu_rel.get('_label', 'RELATES_TO'),
-                        weight=float(kuzu_rel.get('weight', 1.0)),
-                        criticality=kuzu_rel.get('criticality', 'C1'),
-                        validated=bool(kuzu_rel.get('validated', False)),
-                        context=kuzu_rel.get('context')
-                    )
-                    graph_rels.append(rel)
-
-                # Calcular relevancia para este path
                 relevance = self._calculate_path_relevance(
-                    graph_nodes, graph_rels, query_entities, path_length
+                    graph_nodes, graph_rels, query_entities, 1
                 )
 
-                # Crear resultado
-                traversal_result = GraphTraversalResult(
+                paths.append(GraphTraversalResult(
                     path_nodes=graph_nodes,
                     path_relationships=graph_rels,
                     relevance_score=relevance,
-                    traversal_depth=path_length,
+                    traversal_depth=1,
                     query_coverage=self._calculate_query_coverage(graph_nodes, query_entities)
-                )
-
-                paths.append(traversal_result)
+                ))
 
             return paths
 
         except Exception as e:
             logger.error(f"Error en traversia desde nodo '{start_node_name}': {e}")
             return []
+
+    def _parse_kuzu_rel(self, kuzu_rel) -> GraphRelationship:
+        """Helper para parsear relación de Kùzu."""
+        return GraphRelationship(
+            from_node=kuzu_rel['_src']['name'] if '_src' in kuzu_rel else "unknown",
+            to_node=kuzu_rel['_dst']['name'] if '_dst' in kuzu_rel else "unknown",
+            relation_type=kuzu_rel.get('_label', 'RELATES_TO'),
+            weight=float(kuzu_rel.get('weight', 1.0)),
+            criticality=kuzu_rel.get('criticality', 'C1'),
+            validated=bool(kuzu_rel.get('validated', False)),
+            context=kuzu_rel.get('context')
+        )
 
     def _calculate_path_relevance(self, nodes: List[GraphNode],
                                 rels: List[GraphRelationship],

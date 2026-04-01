@@ -16,7 +16,7 @@ tiers:
 
   t1_sql:
     enabled: true
-    confidence_threshold: 0.90
+    confidence_threshold: 0.70
 
   t2_vector:
     enabled: true
@@ -45,8 +45,8 @@ t4_triggers:
 
 # Modelos de embeddings
 embeddings:
-  model: "nomic-embed-text:latest"  # Modelo Ollama para embeddings
-  dimensions: 768
+  model: "mxbai-embed-large:335m"  # Modelo Ollama para embeddings
+  dimensions: 1024  # mxbai-embed-large usa 1024 dimensiones
   metric: "cosine"
 
 # Motor T4: LLM para razonamiento
