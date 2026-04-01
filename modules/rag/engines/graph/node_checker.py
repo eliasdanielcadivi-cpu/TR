@@ -16,7 +16,7 @@ def find_entity_nodes(conn, name: str, exact: bool = False):
         else:
             query = "MATCH (e:Entity) WHERE e.name CONTAINS $name_part RETURN e.name, e.type, e.source_doc"
             params = {"name_part": clean_name}
-...
+            
         result = conn.execute(query, params)
         nodes = []
         while result.has_next():
