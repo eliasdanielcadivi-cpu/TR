@@ -116,6 +116,14 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
                 llm_model = final_model if final_model else "ares:latest"
                 full_response = ""
                 
+                # Determinar si filtrar think basado en el modelo real
+                from modules.ia.ai_engine import AIEngine
+                ai_tmp = AIEngine(obj.config['ai'], str(obj.base_path))
+                _, real_model_name = ai_tmp._resolve_provider_and_model(final_model, None)
+                
+                is_thought_model = any(x in (real_model_name or "").lower() for x in ["ares", "deepseek", "think"])
+                should_filter = not think and is_thought_model
+
                 # Ares pensando...
                 click.secho("🤖 ARES recuperando y razonando...", fg="cyan", dim=True)
                 
@@ -124,7 +132,7 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
                     context=context,
                     model=llm_model,
                     temperature=temperature,
-                    filter_think=not think # Solo mostrar think si se pide con --think
+                    filter_think=should_filter
                 ):
                     sys.stdout.write(chunk)
                     sys.stdout.flush()

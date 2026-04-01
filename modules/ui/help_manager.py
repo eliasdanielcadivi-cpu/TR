@@ -152,10 +152,13 @@ class HelpManager:
         if template:
             model_info += f" --template {template}"
         
+        # Determinar el provider y modelo real para decidir si filtrar
+        provider, real_model = ai._resolve_provider_and_model(model_alias, template)
+        
         # Filtro think: activo si no se pide explícitamente razonamiento
-        # y es un modelo 'ares'
-        current_model = model_alias or ""
-        filter_think = not think and "ares" in current_model.lower()
+        # y es un modelo 'ares' o similar
+        current_model_name = real_model or ""
+        filter_think = not think and ("ares" in current_model_name.lower() or "deepseek" in current_model_name.lower())
         
         if filter_think:
             ai.reset_think_filter()

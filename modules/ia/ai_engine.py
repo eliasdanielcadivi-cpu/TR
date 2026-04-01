@@ -223,10 +223,7 @@ class AIEngine:
             yield provider.generate(prompt, **params)
 
     def _filter_think_chunk(self, chunk: str) -> str:
-        """Filtrar etiquetas <think> de un chunk en tiempo real.
-        
-        Versión robustecida para manejar fragmentación de chunks y variantes Unicode.
-        """
+        """Filtrar etiquetas <think> de un chunk en tiempo real."""
         # 1. Normalización total de entrada
         chunk = chunk.replace('\\u003c', '<').replace('\\u003e', '>')
         chunk = chunk.replace('\u003c', '<').replace('\u003e', '>')
