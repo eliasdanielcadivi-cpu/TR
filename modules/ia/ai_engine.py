@@ -223,85 +223,54 @@ class AIEngine:
             yield provider.generate(prompt, **params)
 
     def _filter_think_chunk(self, chunk: str) -> str:
-        """Filtrar etiquetas <think>
-</think>
-
- de un chunk en tiempo real.
-
-        Usa estado para rastrear bloques think a través de múltiples chunks.
-        Maneja tanto formatos Unicode (\u003cthink\u003e) como normales (<think>).
-
-        Args:
-            chunk: Fragmento de texto.
-
-        Returns:
-            Chunk filtrado.
+        """Filtrar etiquetas <think> de un chunk en tiempo real.
+        
+        Versión robustecida para manejar fragmentación de chunks y variantes Unicode.
         """
-        # Normalizar Unicode a caracteres normales
+        # 1. Normalización total de entrada
         chunk = chunk.replace('\\u003c', '<').replace('\\u003e', '>')
         chunk = chunk.replace('\u003c', '<').replace('\u003e', '>')
         
+        # 2. Gestión de buffer persistente
+        self._think_filter_state["buffer"] += chunk
         buffer = self._think_filter_state["buffer"]
         in_think = self._think_filter_state["in_think_block"]
         
-        # Acumular chunk en buffer
-        buffer += chunk
-        
-        # Verificar si estamos en un bloque think
+        # 3. Lógica de filtrado
         if not in_think:
-            # Buscar inicio de bloque think (varias variantes)
-            think_start = -1
-            for variant in ['<think>', '<think>']:
-                idx = buffer.find(variant)
-                if idx != -1 and (think_start == -1 or idx < think_start):
-                    think_start = idx
+            # Buscar cualquier forma de inicio de bloque
+            if '<think>' in buffer:
+                self._think_filter_state["in_think_block"] = True
+                idx = buffer.find('<think>')
+                output = buffer[:idx]
+                # Mantener el resto en el buffer para buscar el cierre
+                self._think_filter_state["buffer"] = buffer[idx:]
+                return output
             
-            if think_start != -1:
-                # Verificar si hay cierre en el mismo buffer
-                think_end = -1
-                for variant in ['</think>', '</think>']:
-                    idx = buffer.find(variant, think_start)
-                    if idx != -1 and (think_end == -1 or idx < think_end):
-                        think_end = idx
-                
-                if think_end != -1:
-                    # Bloque completo en buffer, eliminarlo
-                    end_marker = '</think>' if '</think>' in buffer[think_end:think_end+10] else '</think>'
-                    filtered = buffer[:think_start] + buffer[think_end + len(end_marker):]
-                    self._think_filter_state["buffer"] = ""
-                    self._think_filter_state["in_think_block"] = False
-                    return filtered
-                else:
-                    # Inicio de bloque, pero sin cierre aún
-                    # Retener solo lo anterior a <think>
-                    output = buffer[:think_start]
-                    self._think_filter_state["buffer"] = buffer[think_start:]
-                    self._think_filter_state["in_think_block"] = True
-                    return output
-            else:
-                # No hay bloque think, retornar buffer y limpiar
-                self._think_filter_state["buffer"] = ""
-                return buffer
+            # Si el buffer termina con parte de un tag (ej: '<th'), no entregar todavía
+            # para evitar que el tag se rompa y se imprima.
+            potential_tag_start = buffer.rfind('<')
+            if potential_tag_start != -1 and potential_tag_start > len(buffer) - 8:
+                output = buffer[:potential_tag_start]
+                self._think_filter_state["buffer"] = buffer[potential_tag_start:]
+                return output
+            
+            # No hay tags a la vista, entregar todo
+            self._think_filter_state["buffer"] = ""
+            return buffer
         else:
-            # Estamos dentro de un bloque think
-            think_end = -1
-            end_marker = None
-            for variant in ['</think>', '</think>']:
-                idx = buffer.find(variant)
-                if idx != -1:
-                    think_end = idx
-                    end_marker = variant
-                    break
-            
-            if think_end != -1:
-                # Fin del bloque think
-                self._think_filter_state["buffer"] = ""
+            # Estamos dentro de un bloque think, buscar el cierre
+            if '</think>' in buffer:
                 self._think_filter_state["in_think_block"] = False
-                # Retener solo lo posterior a </think>
-                return buffer[think_end + len(end_marker):]
-            else:
-                # Continuar dentro del bloque, no retornar nada
-                return ""
+                idx = buffer.find('</think>')
+                # Retener lo que venga después del cierre
+                remaining = buffer[idx + len('</think>'):]
+                self._think_filter_state["buffer"] = ""
+                # Recursión para filtrar posibles tags adicionales en el remanente
+                return self._filter_think_chunk(remaining)
+            
+            # Continuar en bloque think, no entregar nada
+            return ""
 
     def reset_think_filter(self):
         """Resetear estado del filtro think."""
