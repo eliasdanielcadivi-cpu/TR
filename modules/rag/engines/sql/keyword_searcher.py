@@ -1,23 +1,14 @@
 import re
 from typing import List
-
-def extract_search_terms(query: str) -> List[str]:
-    """
-    Limpia y extrae términos significativos de la query.
-    Atomicidad: Limpieza de caracteres, tokenización básica.
-    """
-    # Eliminar puntuación común
-    clean = re.sub(r'[¿?¡!(),.;:]', ' ', query.lower())
-    # Tokenizar y filtrar palabras cortas
-    terms = [w for w in clean.split() if len(w) > 2]
-    return list(set(terms))
+from ...utils.text_cleaner import normalize_text, extract_keywords_clean
 
 def run_fts5_query(conn, terms: List[str], limit: int = 10):
-    """Ejecuta la búsqueda MATCH en FTS5."""
+    """Ejecuta la búsqueda MATCH en FTS5 con términos normalizados."""
     if not terms: return []
     
-    formatted_query = " OR ".join([f'"{t}"' for w in terms for t in [w, w.replace('ó','o').replace('á','a').replace('é','e').replace('í','i').replace('ú','u')]])
-    # Simplificado: si un término tiene acento, buscamos ambos.
+    # Normalizar términos para la query
+    normalized_terms = [normalize_text(t) for t in terms]
+    formatted_query = " OR ".join([f'"{t}"' for t in normalized_terms])
     
     try:
         c = conn.cursor()
