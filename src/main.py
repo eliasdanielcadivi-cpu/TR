@@ -85,8 +85,9 @@ def mcat_demo_cmd(obj):
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
 @click.option("--rag", is_flag=False, flag_value="default", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
 @click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
+@click.option("-v", "--verbose", is_flag=True, help="Mostrar depuración RAG detallada")
 @click.pass_obj
-def p_cmd(obj, prompt, model, template, temperature, rag, think):
+def p_cmd(obj, prompt, model, template, temperature, rag, think, verbose):
     """🤖 Consulta Inteligente (Modo Experto)."""
     # Determinar modelo final
     final_model = model
@@ -101,6 +102,56 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
             
             # Recuperar contexto del dataset
             results = retrieve(query=prompt, k=5, mode="fused", dataset=rag)
+            
+            # --- MODO VERBOSE (DEPURACIÓN RAG) ---
+            if verbose:
+                from rich.console import Console
+                from rich.panel import Panel
+                from rich.table import Table
+                console = Console()
+                
+                console.print(Panel(f"[bold yellow]🔍 DEPURACIÓN RAG (Dataset: {rag})[/bold yellow]", border_style="yellow"))
+                
+                # 1. Bloques Semánticos
+                sem_table = Table(title="🧠 Búsqueda Semántica (Vectorial)", box=None)
+                sem_table.add_column("Score", style="green")
+                sem_table.add_column("Fuente", style="cyan")
+                sem_table.add_column("Preview", style="white", ratio=2)
+                for r in results.get("semantic", []):
+                    preview = (r.get("text", "")[:100] + "...") if len(r.get("text", "")) > 100 else r.get("text", "")
+                    sem_table.add_row(f"{r.get('score', 0):.4f}", r.get("source", "N/A"), preview)
+                console.print(sem_table)
+                
+                # 2. Grafo de Entidades
+                graph_table = Table(title="🕸️ Búsqueda en Grafo (Entidades)", box=None)
+                graph_table.add_column("Entidad", style="magenta")
+                graph_table.add_column("Tipo", style="blue")
+                graph_table.add_column("Relaciones", style="white")
+                for e in results.get("graph", []):
+                    rels = ", ".join([f"{r['predicate']} -> {r['object_name']}" for r in e.get("relations", [])])
+                    graph_table.add_row(e.get("name", "N/A"), e.get("type", "N/A"), rels)
+                console.print(graph_table)
+                
+                # 3. Búsqueda Relacional (FTS/LIKE)
+                rel_table = Table(title="📁 Búsqueda Relacional (FTS/LIKE)", box=None)
+                rel_table.add_column("Fuente", style="cyan")
+                rel_table.add_column("Match", style="white")
+                for r in results.get("relational", []):
+                    rel_table.add_row(r.get("source", "N/A"), r.get("text", "")[:80] + "...")
+                console.print(rel_table)
+                
+                # 4. Resultados Fusionados (RRF)
+                fused_table = Table(title="🧬 Ranking Fusionado (RRF)", box=None)
+                fused_table.add_column("Score RRF", style="yellow")
+                fused_table.add_column("Chunk ID", style="cyan")
+                for r in results.get("fused", []):
+                    fused_table.add_row(f"{r.get('rrf_score', 0):.6f}", str(r.get("chunk_id", "N/A")))
+                console.print(fused_table)
+                
+                # 5. Parámetros LLM
+                params_info = f"[bold]Modelo:[/bold] {final_model or 'ares:latest'} | [bold]Temp:[/bold] {temperature} | [bold]Think Mode:[/bold] {think}"
+                console.print(Panel(params_info, title="🤖 Parámetros de Generación", border_style="blue"))
+            # -------------------------------------
             
             # Obtener textos de chunks
             chunks = results.get("semantic", [])[:5]
