@@ -288,6 +288,7 @@ alias torr='crom https://rarbgdata.org/index80.php https://thepiratebay.org/inde
 alias trans="cd ~/tron/programas/trans"
 alias tra='transmission-gtk %U'
 alias TrayectoriaProfesional='crom-notas https://lucid.app/lucidchart/436bbf51-662c-40b7-a761-26540038eb34/edit?page=0_0&invitationId=inv_b5109a0e-afc3-474e-8b14-744b464f5c8f#'
+alias triaje="/home/daniel/tron/programas/ia/mudanza/bin/ares-triage-run"
 alias umount='umount -v'
 alias updatedbed='editar /etc/updatedb.conf'
 alias var='FunVariables'
