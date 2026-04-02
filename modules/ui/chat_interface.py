@@ -28,19 +28,40 @@ def start_interactive_chat(obj, rag=None, model="ares:latest", think=False):
             if user_input.strip() in ("/quit", "/exit"): break
             if not user_input.strip(): continue
 
-            # --- GENERAR RESPUESTA (Visión IA) ---
+            # --- GENERAR RESPUESTA (Visión IA con Streaming) ---
             engine = AIEngine(obj.config['ai'], str(obj.base_path))
             
-            click.secho(f"🤖 [Pensando con {model}]...", fg="yellow", dim=True)
+            # Determinar capacidades dinámicas del modelo
+            provider, real_model = engine._resolve_provider_and_model(model, None)
+            caps = engine.get_model_capabilities(real_model)
             
-            response = engine.ask(user_input, model_alias=model)
+            # Filtrar si no se pide pensar o el modelo no es pensante
+            filter_think = not think or not caps["thinking"]
             
-            # --- RENDERIZADO FINAL CON MCAT ---
+            if filter_think:
+                engine.reset_think_filter()
+
+            click.secho(f"🤖 [ARES con {real_model or model}]...", fg="yellow", dim=True, nl=False)
+            
+            full_response = ""
+            for chunk in engine.ask_stream(user_input, model_alias=model, filter_think=filter_think):
+                if chunk:
+                    # Imprimir primer token borrando el "Pensando..."
+                    if not full_response:
+                        sys.stdout.write("\r" + " " * 40 + "\r") # Limpiar línea
+                        
+                    sys.stdout.write(chunk)
+                    sys.stdout.flush()
+                    full_response += chunk
+            
+            sys.stdout.write("\n")
+            
+            # --- RENDERIZADO FINAL CON MCAT (Contenedor Robusto) ---
             # Obtenemos el path físico desde el gestor de emojis
             ares_wow_path = get_asset_path("ares", mode="live")
             
-            # Delegación al contenedor robusto mcat
-            render_block_with_mcat(response, image_path=ares_wow_path, title="ARES-IA")
+            # Delegación al contenedor robusto mcat para el bloque final
+            render_block_with_mcat(full_response, image_path=ares_wow_path, title="ARES-IA")
 
         except (KeyboardInterrupt, EOFError):
             break

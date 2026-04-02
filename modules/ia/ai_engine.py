@@ -58,6 +58,20 @@ class AIEngine:
             "buffer": ""
         }
 
+    def get_model_capabilities(self, model_name: str) -> Dict[str, bool]:
+        """Obtiene las capacidades de un modelo desde la configuración."""
+        if not model_name:
+            return {"thinking": False, "auto_think": False}
+            
+        caps = self.config.get("model_capabilities", {})
+        thinking_list = caps.get("thinking", [])
+        auto_think_list = caps.get("auto_think", [])
+        
+        return {
+            "thinking": model_name in thinking_list or any(m in model_name for m in thinking_list),
+            "auto_think": model_name in auto_think_list or any(m in model_name for m in auto_think_list)
+        }
+
     def ask(self, prompt: str, model_alias: Optional[str] = None,
             template: Optional[str] = None, **kwargs) -> str:
         """Consultar a la IA con prompt.

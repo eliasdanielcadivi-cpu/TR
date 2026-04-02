@@ -18,8 +18,20 @@ Para garantizar la excelencia técnica y evitar el auto-engaño, seguimos este p
 8.  **Límite de Soberbia:** Si dedico tres o cuatro iteraciones y no se resuelve, pedimos auxilio al usuario con un informe en mano y documentos clave en rutas absolutas para buscar en una IA externa.
 9.  **Viveza Técnica:** Aprovechar SDKs y tecnologías intermedias (como LangChain con Kùzu) que hagan más fácil y rápido el trabajo sin agregar RAM indiscriminada.
 
+## 🤖 Política de Configuración de Modelos (Ollama & DeepSeek)
+Para evitar el "hardcodeo" y mantener la flexibilidad, seguimos esta política:
+
+1.  **Configuración vía Modelfile:** Los parámetros de comportamiento (temperatura, system prompts, stops) residen en `/config/ia/ollama/*.Modelfile`. 
+    - `ares.Modelfile`: Optimizado para respuesta directa.
+    - `ares-think.Modelfile`: Incluye la regla crítica de razonamiento forzado dentro de etiquetas `<think>`.
+2.  **Gestión de Pensamientos (Think Tags):**
+    - La visibilidad de los pensamientos depende del flag `--think` (CLI) o `/think` (Interactive).
+    - **Modelos Pensantes:** Aquellos configurados con capacidad de razonamiento (ej: `ares-think`, `deepseek-r1`). Si el flag está activo, se muestran las etiquetas. Si está inactivo, el sistema las filtra en tiempo real manteniendo el streaming.
+    - **Modelos No Pensantes:** Si generan etiquetas vacías o espurias, el sistema las filtra por defecto para mantener la limpieza visual.
+3.  **Agnosticismo de Código:** El motor de IA no busca nombres de modelos específicos ("ares", "deepseek") de forma estática. Consulta un mapeo dinámico en la configuración para determinar las capacidades del modelo.
+
 ## ⚠️ Bitácora de Errores y Erratas
 - **Parser Kùzu:** Rechaza sintaxis compleja. Solución: Atomicidad en queries de Cypher.
 - **SyntaxError en main.py:** Causado por exceso de confianza y dejar bloques `try` incompletos.
+- **Streaming de Etiquetas:** Corregido implementando un filtro con buffer que maneja fragmentación de chunks.
 - **CLI Arg Error:** `--rag` requiere un argumento explícito por diseño de Click.
-- **Borrachera de Contexto:** Tratar de resolver todo a la vez sin planificar las partes pequeñas.

@@ -3,6 +3,16 @@ ai:
   enabled: true
   gemma:
     model: ares:latest
+  model_capabilities:
+    thinking:
+      - ares-think:latest
+      - ares-think
+      - deepseek-r1:8b
+      - deepseek-r1
+      - deepseek-r1:32b
+    auto_think: # Modelos que deciden por sí mismos cuándo pensar
+      - deepseek-r1:8b
+      - deepseek-r1
 ui:
   chat:
     colors:

@@ -155,10 +155,12 @@ class HelpManager:
         # Determinar el provider y modelo real para decidir si filtrar
         provider, real_model = ai._resolve_provider_and_model(model_alias, template)
         
-        # Filtro think: activo si no se pide explícitamente razonamiento
-        # y es un modelo 'ares' o similar
-        current_model_name = real_model or ""
-        filter_think = not think and ("ares" in current_model_name.lower() or "deepseek" in current_model_name.lower())
+        # Consultar capacidades dinámicas
+        caps = ai.get_model_capabilities(real_model)
+        
+        # Filtro think: activo si no se pide explícitamente razonamiento,
+        # o si el modelo no es pensante (para limpiar posibles etiquetas vacías)
+        filter_think = not think or not caps["thinking"]
         
         if filter_think:
             ai.reset_think_filter()

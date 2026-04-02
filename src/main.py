@@ -116,13 +116,14 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think):
                 llm_model = final_model if final_model else "ares:latest"
                 full_response = ""
                 
-                # Determinar si filtrar think basado en el modelo real
+                # Determinar si filtrar think basado en las capacidades del modelo
                 from modules.ia.ai_engine import AIEngine
                 ai_tmp = AIEngine(obj.config['ai'], str(obj.base_path))
                 _, real_model_name = ai_tmp._resolve_provider_and_model(final_model, None)
                 
-                is_thought_model = any(x in (real_model_name or "").lower() for x in ["ares", "deepseek", "think"])
-                should_filter = not think and is_thought_model
+                caps = ai_tmp.get_model_capabilities(real_model_name)
+                # Filtrar si no se pide explícitamente pensar, o si el modelo genera tags vacíos (no-thinking)
+                should_filter = not think or not caps["thinking"]
 
                 # Ares pensando...
                 click.secho("🤖 ARES recuperando y razonando...", fg="cyan", dim=True)
