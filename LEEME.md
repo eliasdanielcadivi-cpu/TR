@@ -73,6 +73,9 @@ ARES es el **cerebro** que controla la terminal ares para crear flujos de trabaj
 | `ares tools` | Listar herramientas (function calling) disponibles |
 | `ares video <archivo>` | Reproduce video en terminal (mpv + protocolo gráfico) |
 | `ares image <archivo>` | Muestra imagen en terminal (icat) |
+| `ares grafo [-p PUERTO]` | 🔷 Lanza arrows.app (dibujante de grafos Neo4j) en pestaña Kitty + navegador |
+| `ares grafo --stop` | Detiene servidor arrows.app activo |
+| `ares grafo --status` | Verifica estado del servidor arrows.app |
 | `ares help` | Abre documentación navegable con Broot |
 | `ares apollo ingest <archivo>` | Ingerir documento al sistema RAG |
 | `ares apollo ingest <archivo> --extract` | Ingerir con extracción de entidades |

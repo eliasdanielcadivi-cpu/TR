@@ -169,6 +169,27 @@ commands:
     examples: "ares socket-check | ares socket-check unix:/tmp/custom --json"
     details: "Diagnostica sockets: existencia, permisos, procesos. --json para scripting."
 
+  grafo:
+    description: "🔷 Servidor arrows.app — Dibujante de Grafos Neo4j"
+    usage: "ares grafo [-p PUERTO] [--no-browser] [--stop]"
+    category: "Multimedia"
+    examples: "ares grafo | ares grafo -p 8080 | ares grafo --stop"
+    options:
+      - "-p, --port": "Puerto del servidor (default: 4200)"
+      - "--no-browser": "No abrir Chrome automáticamente"
+      - "--stop": "Detener servidor activo"
+    details: "Lanza arrows.app en pestaña Kitty + Chrome. 3 métodos de cierre: cerrar pestaña, Ctrl+C, ares grafo --stop. Permite dibujar nodos, relaciones, exportar PNG/SVG/Cypher."
+    atajos_teclado:
+      - "Ctrl+A: Seleccionar todo | Ctrl+D: Duplicar selección"
+      - "Ctrl+Z/Ctrl+Shift+Z: Deshacer/Rehacer | Supr/Retroceso: Eliminar"
+      - "Enter: Editar entidad | Escape/Ctrl+Enter: Salir edición"
+      - "Flechas: Saltar nodo vecino | Ctrl+Clic: Toggle selección"
+      - "Rueda: Pan | Ctrl+Rueda: Zoom"
+    crear_nodos:
+      - "Add Node: Botón en barra de herramientas"
+      - "Doble-clic: Editar texto de nodo/relación"
+      - "Arrastrar desde anillo: Crear relación a otro nodo o nuevo nodo+relación"
+
   help:
     description: "📚 Navegador de Documentación"
     usage: "ares help"

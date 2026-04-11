@@ -19,6 +19,11 @@ from modules.admon.boot_manager import launch_ares
 from modules.admon.init_manager import manage_config
 from modules.admon.diag_manager import show_status
 from modules.admon import session_manager
+from modules.admon.grafo_manager import (
+    start_grafo_server,
+    stop_grafo_server,
+    check_grafo_status,
+)
 from modules.tactico.plan_manager import deploy_plan
 from modules.tactico.zsh_plan_manager import deploy_zsh_plan
 from modules.tactico.mcat_demo import deploy_mcat_demo
@@ -973,6 +978,42 @@ def init(obj, **kwargs):
     el entorno local esté sincronizado con el núcleo de ARES.
     """
     manage_config(obj, **kwargs)
+
+
+# ============================================================================
+# GRAFO - Servidor arrows.app (Despachador puro → modules/admon/grafo_manager.py)
+# ============================================================================
+
+@cli.command(name="grafo")
+@click.option("--port", "-p", default=4200, help="Puerto del servidor (default: 4200)")
+@click.option("--no-browser", is_flag=True, help="No abrir navegador")
+@click.option("--stop", is_flag=True, help="Detener servidor activo")
+@click.option("--status", is_flag=True, help="Ver estado del servidor")
+@click.pass_obj
+def grafo_cmd(obj, port, no_browser, stop, status):
+    """🔷 Servidor arrows.app — Dibujante de Grafos Neo4j.
+
+    Lanza arrows.app en pestaña Kitty + abre navegador (xdg-open).
+
+    Cierre (3 métodos):
+      1) Cerrar pestaña Kitty → SIGTERM
+      2) Ctrl+C en pestaña → SIGINT
+      3) ares grafo --stop → kill PID + pgrep
+
+    Ejemplos:
+      ares grafo            # Puerto 4200, abre navegador
+      ares grafo -p 8080    # Puerto personalizado
+      ares grafo --stop     # Detener servidor
+      ares grafo --status   # Ver estado
+    """
+    if stop:
+        result = stop_grafo_server()
+    elif status:
+        result = check_grafo_status()
+    else:
+        result = start_grafo_server(obj, port=port, no_browser=no_browser)
+
+    click.echo(result.get("msg", ""))
 
 
 @cli.command()

@@ -84,31 +84,18 @@ alias crom-tienda='google-chrome --profile-directory="Profile 6"'
 alias crom='/usr/bin/google-chrome-stable %U'
 alias crush='(cd /home/daniel/tron/programas/proyectos_principales/proyecto_pizza/cli/crush/ && crush)'
 alias cualesmiiplocal="hostname -i"
-alias da='sudo apt update && sudo yt-dlp -U && yt-dlp -x -f "bestaudio" --ppa "EmbedThumbnail+ffmpeg_o:-c:v copy" --audio-quality 0'
-alias depurar='set -x; set -v; set -e' 
-alias descargarAudio='sudo yt-dlp -U; yt-dlp -x -f "bestaudio" --ppa "EmbedThumbnail+ffmpeg_o:-c:v copy" --audio-quality 0'
-alias descargarsubin='sudo yt-dlp -U; yt-dlp --impersonate Chrome-116 --sub-format srt --write-subs --write-auto-sub --sub-lang "en" --convert-subs srt --skip-download -o "%(title)s.%(ext)s"'
-alias descargarVideo="sudo yt-dlp -U; yt-dlp"
-alias descomprimir="sudo /home/daniel/Escritorio/.venv-compressor/bin/python /home/daniel/tron/programas/Admon/COMPRIMIR/descomprimir"
-alias descomprimir-todos='for archivo in *; do unar "$archivo"; done'
-alias discos='gnome-disks'
-alias discos-montar='montarDiscos'
-alias discos-mostrar='lsblk -fml'
-alias dispEntrada="xinput list"
-alias display="export DISPLAY=:0"
-alias dondeestamongo="netstat -plant | grep mongo"
-alias dondeesta="which"
-alias dondeestoy="lsblk"
-alias dor="xinput disable 9; systemctl suspend"
-alias dream="ssh tron@172.16.141"
-alias drive="autoSincroDri"
-alias dv='sudo apt update && sudo yt-dlp -U && yt-dlp'
+alias da='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh audio'
+alias descargarAudio='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh audio'
+alias descargarsubin='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh sub'
+alias descargarVideo='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh video'
+alias dv='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh video'
+alias dvf='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh full'
 # Descargar video 1080p máximo (útil para ahorrar espacio)
-alias dv1080='sudo apt update && sudo yt-dlp -U && yt-dlp -f "best[height<=1080]"'
+alias dv1080='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh video'
 # Descargar subtítulos en inglés (SRT) sin video
-alias ds='sudo apt update && sudo yt-dlp -U && yt-dlp --impersonate Chrome-116 --sub-format srt --write-subs --write-auto-sub --sub-lang "en" --convert-subs srt --skip-download -o "%(title)s.%(ext)s"'
+alias ds='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh sub'
 # Descargar audio como MP3 con metadatos completos
-alias da3='sudo apt update && sudo yt-dlp -U && yt-dlp -x --audio-format mp3 --embed-thumbnail --add-metadata --audio-quality 0'
+alias da3='bash /home/daniel/tron/programas/TR/scripts/descargar_yt.sh audio'
 alias e="cd /home/daniel/Escritorio"
 alias editaraudio="$tron_plugins/AppImage/audacity-linux-3.2.3-x64.AppImage"
 alias editar='ini="PWD"; cd /home/daniel/tron/programas/Admon; source /home/daniel/.venv/bin/activate; python3 /home/daniel/tron/programas/Admon/config_editor.py; cd "$ini"'
