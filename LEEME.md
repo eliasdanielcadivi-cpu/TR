@@ -76,6 +76,10 @@ ARES es el **cerebro** que controla la terminal ares para crear flujos de trabaj
 | `ares grafo [-p PUERTO]` | 🔷 Lanza arrows.app (dibujante de grafos Neo4j) en pestaña Kitty + navegador |
 | `ares grafo --stop` | Detiene servidor arrows.app activo |
 | `ares grafo --status` | Verifica estado del servidor arrows.app |
+| `ares mem start` | 🗃️ Inicia Docker daemon + Memgraph (Mage + Lab) |
+| `ares mem stop` | Detiene contenedores Memgraph |
+| `ares mem status` | Ver estado de Docker y contenedores Memgraph |
+| `ares mem` | Equivale a `ares mem status` |
 | `ares help` | Abre documentación navegable con Broot |
 | `ares apollo ingest <archivo>` | Ingerir documento al sistema RAG |
 | `ares apollo ingest <archivo> --extract` | Ingerir con extracción de entidades |
@@ -164,6 +168,11 @@ Los módulos están agrupados jerárárquicamente en `modules/`:
 - **ui/**: Estética neón, manuales dinámicos y messenger reactivo.
 - **utils/**: Utilidades atómicas (comunicación, limpieza de texto).
 - **aviso/**: Sistema de recordatorios y base para la Carita de Ares.
+
+### 🗃️ Infraestructura Externa (db/)
+- **db/memgraph-platform/**: Docker Compose de Memgraph (Mage + Lab).
+  - Gestión: `ares mem start` | `ares mem stop` | `ares mem status`
+  - Puertos: 7687 (Bolt), 7444 (HTTP), 3000 (Lab UI)
 
 ### 🕵️ Sub-Agentes (AGENTES/)
 - **sherlok/**: Auditor de código con "ADN Técnico Industrial" usando LLM local.

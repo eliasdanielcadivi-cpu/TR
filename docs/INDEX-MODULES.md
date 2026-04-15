@@ -32,6 +32,7 @@
 - Táctico: `ares plan`, `ares zshplan`, `ares mcat-demo`
 - Multimedia: `ares video`, `ares image`
 - Grafos: `ares grafo`, `ares grafo --stop`, `ares grafo --status`
+- **Memgraph:** `ares mem`, `ares mem start`, `ares mem stop`, `ares mem status`
 - Sistema: `ares status`, `ares config`, `ares init`, `ares socket-check`
 
 ### `config/` - Gestión de Entorno
@@ -49,8 +50,8 @@
 
 ### `admon/` - Gestión de Sistema
 
-**Estado:** ✅ ACTIVO (5 módulos)
-**Uso en main.py:** `from modules.admon.boot_manager import launch_ares`, `from modules.admon.init_manager import manage_config`, `from modules.admon.diag_manager import show_status`, `from modules.admon import session_manager`
+**Estado:** ✅ ACTIVO (6 módulos)
+**Uso en main.py:** `from modules.admon.boot_manager import launch_ares`, `from modules.admon.init_manager import manage_config`, `from modules.admon.diag_manager import show_status`, `from modules.admon import session_manager`, `from modules.admon.grafo_manager import (...)`, `from modules.admon.memgraph_manager import (...)`
 
 | Módulo | Funciones | Estado | Uso en main.py |
 |--------|-----------|--------|----------------|
@@ -60,6 +61,7 @@
 | `session_manager.py` | `capture_and_save()`, `list_sessions()`, `restore_session()`, `send_command_to_tab()` | ✅ Activo | ✅ SÍ (directo) |
 | `session_editor.py` | `edit_session_interactive()` - Edición de sesiones db/*.json | ✅ Activo | ✅ SÍ (directo) |
 | `grafo_manager.py` | `start_grafo_server()`, `stop_grafo_server()`, `check_grafo_status()` | ✅ Activo | ✅ SÍ (directo) |
+| `memgraph_manager.py` | `start_memgraph()`, `stop_memgraph()`, `memgraph_status()` | ✅ Activo | ✅ SÍ (directo) |
 
 **Comandos relacionados:**
 - `ares gs edit <nombre>` - Edita sesión en micro editor

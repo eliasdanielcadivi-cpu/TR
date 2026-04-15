@@ -24,6 +24,11 @@ from modules.admon.grafo_manager import (
     stop_grafo_server,
     check_grafo_status,
 )
+from modules.admon.memgraph_manager import (
+    start_memgraph,
+    stop_memgraph,
+    memgraph_status,
+)
 from modules.tactico.plan_manager import deploy_plan
 from modules.tactico.zsh_plan_manager import deploy_zsh_plan
 from modules.tactico.mcat_demo import deploy_mcat_demo
@@ -1013,6 +1018,55 @@ def grafo_cmd(obj, port, no_browser, stop, status):
     else:
         result = start_grafo_server(obj, port=port, no_browser=no_browser)
 
+    click.echo(result.get("msg", ""))
+
+
+# ============================================================================
+# MEM - Gestión de Memgraph (Docker + Graph Database)
+# ============================================================================
+
+@cli.group(name="mem", invoke_without_command=True)
+@click.pass_context
+def mem_cmd(ctx):
+    """🗃️  Memgraph: Graph Database + Memgraph Lab (UI).
+
+    Subcomandos:
+      start  - Iniciar Docker daemon + contenedores Memgraph
+      stop   - Detener contenedores Memgraph
+      status - Ver estado de Docker y contenedores
+
+    Servicios:
+      memgraph-mage  - Base de datos graph (bolt://localhost:7687)
+      memgraph-lab   - UI web (http://localhost:3000)
+
+    Ejemplos:
+      ares mem start    # Iniciar todo
+      ares mem stop     # Detener contenedores
+      ares mem status   # Ver estado
+      ares mem          # Equivale a: ares mem status
+    """
+    if ctx.invoked_subcommand is None:
+        ctx.invoke(mem_status_cmd)
+
+
+@mem_cmd.command(name="start")
+def mem_start_cmd():
+    """🚀 Iniciar Docker daemon + Memgraph (Mage + Lab)."""
+    result = start_memgraph()
+    click.echo(result.get("msg", ""))
+
+
+@mem_cmd.command(name="stop")
+def mem_stop_cmd():
+    """🛑 Detener contenedores Memgraph."""
+    result = stop_memgraph()
+    click.echo(result.get("msg", ""))
+
+
+@mem_cmd.command(name="status")
+def mem_status_cmd():
+    """📊 Ver estado de Docker y contenedores Memgraph."""
+    result = memgraph_status()
     click.echo(result.get("msg", ""))
 
 
