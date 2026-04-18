@@ -1,0 +1,8 @@
+#!/bin/bash
+PROJECT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+# Usamos python3 directamente o el venv si existe
+if [ -f "$PROJECT_DIR/.venv/bin/python3" ]; then
+    exec "$PROJECT_DIR/.venv/bin/python3" "$PROJECT_DIR/src/ares_mcp_bridge.py" "$@"
+else
+    exec python3 "$PROJECT_DIR/src/ares_mcp_bridge.py" "$@"
+fi

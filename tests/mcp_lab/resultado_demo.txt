@@ -1,0 +1,2 @@
+Prueba exitosa del Puente MCP Ares-Tron
+Fase 1 completada.
