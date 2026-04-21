@@ -23,6 +23,10 @@ dependencies = [
     # notcurses: Usar paquete del sistema (python3-notcurses)
     # No instalar desde PyPI porque no es compatible con libnotcurses del sistema
     "kuzu>=0.11.3",
+    "spacy>=3.8.14",
+    "spacy-layout>=0.0.12",
+    "neo4j>=6.1.0",
+    "hjson>=3.1.0",
 ]
 
 [tool.uv]

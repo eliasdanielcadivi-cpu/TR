@@ -57,15 +57,11 @@ def cli(ctx, prompt, help):
     obj = ctx.ensure_object(TRContext)
     ctx.obj = obj
 
-    # --- MANEJO DE AYUDA ENRIQUECIDA (REDIRECCIÓN A AYUDA ARES) ---
+    # --- MANEJO DE AYUDA ENRIQUECIDA (SISTEMA SOBERANO) ---
     if help:
-        try:
-            subprocess.run(["ayuda", "ares"], check=True)
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            # Fallback a ayuda visual interna si falla ayuda externa
-            HelpManager(obj).show_enhanced_help()
+        HelpManager(obj).show_enhanced_help()
         ctx.exit()
-    # -----------------------------------------------------------
+    # -----------------------------------------------------
 
     if prompt:
         HelpManager(ctx.obj).query_ai(prompt)
@@ -94,17 +90,58 @@ def mcat_demo_cmd(obj):
 @click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
 @click.option("--rag", is_flag=False, flag_value="default", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
+@click.option("--mengraph", is_flag=True, help="Usar motor RAG Memgraph (vía Grafo en RAM)")
 @click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
 @click.option("-v", "--verbose", is_flag=True, help="Mostrar depuración RAG detallada")
 @click.pass_obj
-def p_cmd(obj, prompt, model, template, temperature, rag, think, verbose):
+def p_cmd(obj, prompt, model, template, temperature, rag, mengraph, think, verbose):
     """🤖 Consulta Inteligente (Modo Experto)."""
     # Determinar modelo final
     final_model = model
     if think:
         final_model = "ares-think:latest"
     
-    # Si se usa --rag, inyectar contexto RAG
+    # Prioridad: RAG Mengraph (Si se solicita explícitamente)
+    if mengraph:
+        from modules.utils import messenger
+        from modules.rag_mengraph.core.tool import MengraphTool
+        from modules.ia.ai_engine import AIEngine
+        import json
+        import sys
+
+        try:
+            ONTOLOGY = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
+            tool = MengraphTool(ONTOLOGY)
+            
+            # Recuperar contexto del grafo vía Interfaz Universal (JSON)
+            result_json = tool.query_json(prompt)
+            data = json.loads(result_json)
+
+            if data['status'] == 'success' and data['data']:
+                context_str = "\n".join([f"Ancla: {item['ancla']} -> Relacionado: {item['relacionado']}" for item in data['data']])
+                
+                # Orquestar con AIEngine
+                ai = AIEngine(obj.config['ai'], str(obj.base_path))
+                system_instr = f"Eres ARES. Responde basándote en este contexto estructurado de GRAFOS (Memgraph):\n\n{context_str}\n\nSi el contexto no es suficiente, indícalo."
+                
+                click.secho("🧠 ARES consultando Grafo (Interfaz Universal)...", fg="magenta", bold=True)
+                
+                for chunk in ai.ask_stream(prompt, model_alias=final_model, template=template, system_instructions=system_instr):
+                    sys.stdout.write(chunk)
+                    sys.stdout.flush()
+                sys.stdout.write("\n")
+                
+                if verbose:
+                    click.secho("\n🔍 Evidencia JSON:", fg="yellow", dim=True)
+                    click.echo(result_json)
+                return
+            else:
+                messenger.warn("No se encontró información relevante en el Grafo Memgraph.")
+        except Exception as e:
+            messenger.error(f"Error en RAG Memgraph: {e}")
+            return
+
+    # Si se usa --rag tradicional (Apollo/Kuzu), inyectar contexto RAG
     if rag:
         from modules.utils import messenger
         try:
@@ -231,16 +268,17 @@ def p_cmd(obj, prompt, model, template, temperature, rag, think, verbose):
 
 @cli.command(name="i")
 @click.option("--rag", help="Dataset RAG por defecto (default, docs, skills, codigo, config)")
+@click.option("--mengraph", is_flag=True, help="Activar motor RAG Memgraph para toda la sesión")
 @click.option("--model", "-m", default="ares:latest", help="Modelo LLM")
 @click.option("--think", is_flag=True, help="Activar modo pensante (usa ares-think)")
 @click.pass_obj
-def i_cmd(obj, rag, model, think):
+def i_cmd(obj, rag, mengraph, model, think):
     """💬 Modo Interactivo ARES (Loop REPL).
     
     Delega la gestión visual y el loop interactivo al motor de producción industrial.
     """
     from modules.ui.chat_production import start_production_chat
-    start_production_chat(obj, rag=rag, model=model, think=think)
+    start_production_chat(obj, rag=rag, model=model, think=think, mengraph=mengraph)
 
 
 @cli.command(name="maq")
@@ -1239,63 +1277,104 @@ def agente_agente_de_cambio(obj, accion):
 
 
 # ============================================================================
-# RAG - Sistema de Recuperación Aumentada por Grafo
+# APOLLO - Sistema RAG T0-T4 (Kùzu / SQLite-vec)
 # ============================================================================
 
-@cli.group(name="rag")
-def rag_cmd():
-    """🧠 Sistema RAG T0-T4: Recuperación Aumentada por Grafo.
-
-    Subcomandos:
-      cartografo  - Modo conversacional para gestión del grafo de conocimiento
-      ingest      - Indexar documentos en el RAG
-      status      - Ver estadísticas del índice
+@cli.group(name="apollo")
+def apollo_cmd():
+    """🧠 Sistema RAG Apollo: Recuperación de contexto documental.
+    
+    Usa motor Kùzu + SQLite-vec para búsqueda semántica y relacional.
     """
     pass
 
-@rag_cmd.command(name="cartografo")
+@apollo_cmd.command(name="cartografo")
 @click.pass_obj
-def rag_cartografo_cmd(obj):
-    """🗺️  Modo Cartógrafo: Negociación conversacional del grafo de conocimiento."""
+def apollo_cartografo_cmd(obj):
+    """🗺️  Modo Cartógrafo: Gestión conversacional del conocimiento."""
     try:
         rag = RAGOrchestrator()
         rag.run_cartografo()
     except Exception as e:
         click.echo(f"❌ Error iniciando Cartógrafo: {e}")
-        import traceback
-        traceback.print_exc()
 
-
-@rag_cmd.command(name="ingest")
+@apollo_cmd.command(name="ingest")
 @click.argument("path")
-@click.option("--doc-type", "-t", help="Tipo de documento (auto-detected si no se especifica)")
+@click.option("--doc-type", "-t", help="Tipo de documento")
 @click.pass_obj
-def rag_ingest_cmd(obj, path, doc_type):
-    """📥 Indexar documento en el sistema RAG."""
+def apollo_ingest_cmd(obj, path, doc_type):
+    """📥 Indexar documento en el sistema RAG Apollo."""
     try:
         rag = RAGOrchestrator()
         result = rag.ingest_document(path, doc_type)
         click.echo(f"✅ Documento indexado: {result}")
     except Exception as e:
-        click.echo(f"❌ Error indexando documento: {e}")
-        import traceback
-        traceback.print_exc()
+        click.echo(f"❌ Error indexando: {e}")
 
+# ============================================================================
+# MENGRAPH - Sistema RAG de Grafos en RAM (Memgraph)
+# ============================================================================
 
-@rag_cmd.command(name="status")
+@cli.group(name="mengraph")
+def mengraph_cmd():
+    """🕸️  Sistema RAG Mengraph: Consultas estructuradas al Grafo en RAM."""
+    pass
+
+@mengraph_cmd.command(name="ingest")
+@click.argument("text")
+@click.option("--label", "-l", help="Etiqueta opcional para el nodo principal")
 @click.pass_obj
-def rag_status_cmd(obj):
-    """📊 Ver estadísticas del índice RAG."""
+def mengraph_ingest_cmd(obj, text, label):
+    """📥 Ingestar conocimiento en el Grafo (Memgraph)."""
     try:
-        rag = RAGOrchestrator()
-        status = rag.get_status()
-        click.echo("📊 Estado del sistema RAG:")
-        for key, value in status.items():
-            click.echo(f"  {key}: {value}")
+        from modules.rag_mengraph.extraction.processor import MengraphProcessor
+        ontology = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
+        processor = MengraphProcessor(ontology)
+        
+        click.echo(f"🧠 Procesando: \"{text[:50]}...\"")
+        result = processor.process_and_store(text, manual_label=label)
+        
+        if result['status'] == 'success':
+            click.secho(f"✅ Éxito: Se crearon/actualizaron {result['nodes']} nodos y {result['edges']} relaciones.", fg="green")
+        else:
+            click.echo(f"❌ Error en procesamiento: {result['message']}")
     except Exception as e:
-        click.echo(f"❌ Error obteniendo estado: {e}")
-        import traceback
-        traceback.print_exc()
+        click.echo(f"❌ Error fatal en ingesta: {e}")
+
+@mengraph_cmd.command(name="query")
+@click.argument("text")
+@click.option("--top-k", default=5, help="Número de resultados")
+@click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON puro")
+@click.pass_obj
+def mengraph_query_cmd(obj, text, top_k, as_json):
+    """🔍 Consultar el Grafo (Interfaz Universal para IAs)."""
+    from modules.rag_mengraph.core.tool import MengraphTool
+    ontology = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
+    tool = MengraphTool(ontology)
+    
+    result_json = tool.query_json(text, top_k=top_k)
+    
+    if as_json:
+        click.echo(result_json)
+    else:
+        import json
+        data = json.loads(result_json)
+        if data['status'] == 'success':
+            for item in data['data']:
+                click.secho(f"📍 {item['ancla']} -> {item['relacionado']}", fg="cyan")
+        else:
+            click.echo(f"❌ Error: {data['message']}")
+
+@mengraph_cmd.command(name="schema")
+@click.pass_obj
+def mengraph_schema_cmd(obj):
+    """📜 Mostrar el esquema MAGE del grafo."""
+    from modules.rag_mengraph.core.tool import MengraphTool
+    ontology = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
+    tool = MengraphTool(ontology)
+    click.echo(tool.get_schema_summary())
+
+
 
 # ============================================================================
 

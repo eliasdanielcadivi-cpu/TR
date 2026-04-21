@@ -17,11 +17,12 @@ from modules.ia.apollo import retrieve, compress_context
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 class ChatProduction:
-    def __init__(self, obj, model="ares:latest", rag_dataset=None, think_mode=False):
+    def __init__(self, obj, model="ares:latest", rag_dataset=None, think_mode=False, mengraph=False):
         self.obj = obj
         self.model = model
         self.rag_dataset = rag_dataset
         self.think_mode = think_mode
+        self.mengraph = mengraph
         self.engine = AIEngine(obj.config['ai'], str(obj.base_path))
         
         config_path = PROJECT_ROOT / "config" / "layout_config.yaml"
@@ -41,6 +42,8 @@ class ChatProduction:
         """Loop interactivo basado en la Triple Encapsulación."""
         sys.stdout.write("\033[H\033[2J")
         sys.stdout.write("\033[1;35m🛰️  ARES I: PROTOCOLO DE INDEPENDENCIA TOTAL ACTIVO\033[0m\n")
+        if self.mengraph:
+            sys.stdout.write("\033[1;34m🔷 MOTOR MENGRAPH ACTIVADO (Grafo en RAM)\033[0m\n")
 
         while True:
             try:
@@ -53,7 +56,23 @@ class ChatProduction:
 
                 # 2. PROCESAMIENTO
                 context = ""
-                if self.rag_dataset:
+                # Prioridad 1: Mengraph
+                if self.mengraph:
+                    from modules.rag_mengraph.core.retriever import MengraphRetriever
+                    from modules.rag_mengraph.storage.memgraph_db import MemgraphDriver
+                    try:
+                        db = MemgraphDriver()
+                        ontology_file = f"{self.obj.base_path}/config/rag_mengraph/ontology_master.json"
+                        retriever = MengraphRetriever(db, ontology_file)
+                        context_items = retriever.retrieve(user_input)
+                        db.close()
+                        if context_items:
+                            context = "CONTEXTO DE GRAFO ESTRUCTURADO:\n" + "\n".join([c['contexto'] for c in context_items])
+                    except Exception as e:
+                        sys.stdout.write(f"\n\033[31mError Memgraph: {str(e)}\033[0m\n")
+                
+                # Prioridad 2: RAG Tradicional (Si no hay contexto Mengraph)
+                elif self.rag_dataset:
                     results = retrieve(user_input, k=5, dataset=self.rag_dataset)
                     chunks = results.get("semantic", [])
                     if chunks: context = compress_context(chunks, user_input)
@@ -61,12 +80,18 @@ class ChatProduction:
                 # 3. BLOQUE IA
                 AresFactory.render_header_flow(self.layout_cfg) # Pieza 1
                 
-                # Pieza 2: Streaming Real (Sustituye al placeholder)
+                # Pieza 2: Streaming Real
+                # Para Mengraph, inyectamos como system instructions si es necesario
+                system_instr = None
+                if self.mengraph and context:
+                    system_instr = f"Responde basándote en este contexto de grafos:\n\n{context}"
+
                 text_stream = self.engine.ask_stream(
                     user_input, 
                     model_alias=self.model,
                     filter_think=not self.think_mode,
-                    context=context if context else None
+                    context=context if (context and not self.mengraph) else None,
+                    system_instructions=system_instr
                 )
                 self._stream_output(text_stream)
 
@@ -77,6 +102,6 @@ class ChatProduction:
                 sys.stdout.write(f"\n\033[31mError: {str(e)}\033[0m\n")
                 break
 
-def start_production_chat(obj, rag=None, model="ares:latest", think=False):
-    chat = ChatProduction(obj, model=model, rag_dataset=rag, think_mode=think)
+def start_production_chat(obj, rag=None, model="ares:latest", think=False, mengraph=False):
+    chat = ChatProduction(obj, model=model, rag_dataset=rag, think_mode=think, mengraph=mengraph)
     chat.start()

@@ -1,0 +1,76 @@
+{
+  "dominio_operativo": "ARES_COGNITIVE_SYSTEM",
+  "sustantivos": {
+    "AI_SKILL": {
+      "desc": "Capacidad ejecutable por un agente (Agente, Herramienta)",
+      "atributos_obligatorios": ["endpoint_api", "requiere_auth", "version"],
+      "instancias": [
+        {"pattern": "Agente Publicador", "id": "CORE"},
+        {"pattern": "Investigador Táctico", "id": "CORE"}
+      ]
+    },
+    "PROMPT_TEMPLATE": {
+      "desc": "Plantilla de inyección de contexto o instrucciones",
+      "atributos_obligatorios": ["version", "max_tokens", "temperatura"],
+      "instancias": [
+        {"pattern": "Cierre de Doble Lazo", "id": "GURU_HORMOZI"},
+        {"pattern": "Script de Epifanía", "id": "GURU_BRUNSON"}
+      ]
+    },
+    "LEAD_CRM": {
+      "desc": "Contacto comercial o prospecto en el embudo",
+      "atributos_obligatorios": ["score_cualificacion", "origen", "estado"],
+      "instancias": [
+        {"pattern": "Lead VIP", "id": "CORE"},
+        {"pattern": "Prospecto Frío", "id": "CORE"}
+      ]
+    },
+    "DOCUMENTO_CONOCIMIENTO": {
+      "desc": "Documento fuente, manual o bitácora",
+      "atributos_obligatorios": ["formato", "hash_evidencia"]
+    },
+    "CONCEPTO_GURU": {
+      "desc": "Concepto filosófico o táctico de un gurú",
+      "atributos_obligatorios": ["autor", "enfoque"]
+    }
+  },
+  "verbos_permitidos": {
+    "CUALIFICA_A": {
+      "criticidad": "C2",
+      "origen": "AI_SKILL",
+      "destino": "LEAD_CRM",
+      "trigger": "on_new_lead"
+    },
+    "USA_PROMPT": {
+      "criticidad": "C1",
+      "origen": "AI_SKILL",
+      "destino": "PROMPT_TEMPLATE"
+    },
+    "BASADO_EN": {
+      "criticidad": "C1",
+      "origen": "PROMPT_TEMPLATE",
+      "destino": "CONCEPTO_GURU"
+    },
+    "EXTRAIDO_DE": {
+      "criticidad": "C1",
+      "origen": "CONCEPTO_GURU",
+      "destino": "DOCUMENTO_CONOCIMIENTO"
+    },
+    "PUBLICA_EN_REDES": {
+      "criticidad": "C4",
+      "origen": "AI_SKILL",
+      "destino": "DOCUMENTO_CONOCIMIENTO",
+      "trigger": "on_approved"
+    }
+  },
+  "ejes_transversales_gurus": {
+    "GURU_HORMOZI": {
+      "enfoque": "Oferta irresistible, alto valor, urgencia",
+      "id_transversal": "GURU_H_001"
+    },
+    "GURU_BRUNSON": {
+      "enfoque": "Embudos, historia, epifanía",
+      "id_transversal": "GURU_B_001"
+    }
+  }
+}
