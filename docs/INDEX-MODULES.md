@@ -43,13 +43,9 @@
 |------------|-----------|
 | `core/orchestrator.py` | Orquestador del ciclo STORM (Ingesta completa). |
 | `core/retriever.py` | Motor de búsqueda híbrida (Vectorial + Grafo). |
-| `core/schema_weaver.py` | Micro-RAG de esquema para guiar al LLM. |
-| `core/serendipia_engine.py` | Inferencia de Verbos y descubrimiento de relaciones. |
-| `ingestion/spacy_engine.py` | Pipeline NLP Anti-Bloat con EntityRuler. |
-| `storage/memgraph_db.py` | Driver Bolt y gestión ontológica. |
-| `storage/ingestor.py` | Inyector inmutable con Hashes de Evidencia. |
 | `validators/relation_guard.py` | Seguridad C1-C4 y filtrado de criticidad. |
-| `validators/quarantine_manager.py`| Almacén HJSON para aprobación humana. |
+| `validators/quarantine_manager.py`| Almacén HJSON para aprobación humana de Serendipia. |
+| `storage/ingestor.py` | Inyector inmutable con Hashes de Evidencia SHA-256. |
 
 ---
 

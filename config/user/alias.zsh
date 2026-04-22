@@ -176,7 +176,6 @@ alias mount='mount -v'
 alias mpvAyuda="cat /etc/mpv/input.conf"
 alias mudanzaed="editar $programas/Mudanza/MudarSisDeExternoAHostDesdeHost.sh"
 alias mudanza="micro $programas/Mudanza/MudarSisDeExternoAHostDesdeHost.sh"
-alias musica="python3 /home/daniel/tron/programas/a-DIRECTORIO/MUSICA/mpv_tui_wrapper.py"
 alias mv='mv -v'
 alias n8n-mcp='/home/daniel/tron/programas/proyectos_principales/proyecto_pizza/mcp/n8n-mcp/run_mcp.sh'
 alias n8nWeb='crom --profile-directory="Default" http://localhost:5678/'

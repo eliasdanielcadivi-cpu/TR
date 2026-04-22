@@ -43,6 +43,16 @@ ARES-TRON introduce una capa de memoria determinista basada en el grafo Memgraph
 
 ---
 
+## 🛠️ METODOLOGÍA INDUSTRIAL
+
+### 1. Fase Forense (Mandato Absoluto)
+Queda prohibido programar lógica de integración sin una captura previa de `stdout/stderr` real. ARES utiliza la carpeta `tests/` para almacenar estas evidencias antes de cada iteración.
+
+### 2. Protocolo de Resiliencia (7-Fails)
+Todo motor crítico (Apollo/Mengraph) implementa un contador de fallos. Al llegar al umbral 7, el sistema ejecuta una auto-reparación nuclear o desvía el flujo al **Negociador** para buscar una ruta alternativa en el grafo.
+
+---
+
 ## 🚀 RESUMEN EJECUTIVO
 
 ### ¿Qué es ARES?
