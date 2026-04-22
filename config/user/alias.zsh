@@ -272,8 +272,12 @@ alias tera='fire https://www.terabox.com/main?category=all'
 alias todoed='editar $tron/1-LEGOS/0-ORGANIZACION/TODO.md'
 alias todo='xdg-open $tron/1-LEGOS/0-ORGANIZACION/TODO.md'
 alias torr='crom https://rarbgdata.org/index80.php https://thepiratebay.org/index.html https://torrentgalaxy.to https://pelistorrent.org https://pediatorrent.com https://yestorrent.org https://pelispanda.com https://mitorrent.me https://yts.mx https://1337x.to https://www.limetorrents.lol'
-alias trans="cd ~/tron/programas/trans"
-alias tra='transmission-gtk %U'
+# --- JACKETT (PROXY DE TRACKERS) ---
+alias jackett-iniciar='sudo systemctl start docker && cd /home/daniel/tron/programas/gestores-torrents/jackett && docker compose up -d && echo "🧥 Jackett iniciado en http://localhost:9117"'
+alias jackett-detener='cd /home/daniel/tron/programas/gestores-torrents/jackett && docker compose down -v && sudo systemctl stop docker docker.socket && echo "🛑 Jackett detenido, limpieza de volúmenes y servicio Docker apagado."'
+
+
+
 alias TrayectoriaProfesional='crom-notas https://lucid.app/lucidchart/436bbf51-662c-40b7-a761-26540038eb34/edit?page=0_0&invitationId=inv_b5109a0e-afc3-474e-8b14-744b464f5c8f#'
 alias triaje="/home/daniel/tron/programas/ia/mudanza/bin/ares-triage-run"
 alias umount='umount -v'

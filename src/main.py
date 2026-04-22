@@ -1009,6 +1009,30 @@ def zsh_plan_cmd(obj):
     deploy_zsh_plan(kitty, obj)
 
 
+@cli.command(name="gemini")
+@click.argument("prompt", nargs=-1, required=True)
+@click.option("--chat", "-c", default=1, type=int, help="ID de la sesión de Gemini (--resume N)")
+@click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON puro")
+@click.pass_obj
+def gemini_wrapper_cmd(obj, prompt, chat, as_json):
+    """🤖 Gemini Wrapper: Envoltorio especializado para gemini-cli.
+    
+    Gestiona sesiones deterministas y salida headless.
+    Uso: ares gemini tu prompt aqui --chat 5
+    """
+    from modules.ia.gemini_wrapper import invoke_chat, get_headless_json
+    
+    full_prompt = " ".join(prompt)
+    
+    if as_json:
+        result = get_headless_json(full_prompt, chat)
+        click.echo(result)
+    else:
+        click.secho(f"🛰️  Invocando Gemini (Sesión {chat})...", fg="cyan", dim=True)
+        result = invoke_chat(full_prompt, chat)
+        click.echo(result)
+
+
 @cli.command()
 @click.option("--link", "-l", is_flag=True, help="Enlazar configuración de Kitty con ARES")
 @click.option("--status", "-s", is_flag=True, help="Ver estado de la inicialización")
