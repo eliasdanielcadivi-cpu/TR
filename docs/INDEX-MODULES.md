@@ -11,16 +11,29 @@
 ### `src/main.py` - Despachador Puro
 **Propósito:** Punto de entrada único. Orquestación de comandos.
 
-**Nuevos Comandos Memgraph:**
+**Nuevos Comandos ARES-TRON:**
 - `ares p --mengraph`: Consulta RAG con Grafo en RAM.
 - `ares i --mengraph`: Modo interactivo con respaldo de grafos.
+- `ares gemini --mengraph`: Inicia Gemini con la ruta CARGA_SISTEMA (Identidad Soberana).
+- `ares gemini --ruta <nombre>`: Invoca una Ruta Nombrada (Wisdom) específica.
 - `ares mem [start|stop|status]`: Orquestación de contenedores Docker.
 
 ---
 
 ## 🧩 MÓDULOS (`modules/`)
 
-... (módulos anteriores omitidos para brevedad) ...
+### `core/` - Motor Transversal y Recursos
+| Sub-módulo | Propósito |
+|------------|-----------|
+| `limit_manager.py` | Gestión de hardware adaptativo (Límites 8GB RAM). |
+| `session_manager.py` | Persistencia de sesiones Kitty. |
+
+### `ia/` - Inteligencia y Negociación
+| Sub-módulo | Propósito |
+|------------|-----------|
+| `negotiator.py` | Intercepción de rechazos y navegación de Rutas Nombradas. |
+| `gemini_wrapper.py` | Integración determinista con gemini-cli. |
+| `ai_engine.py` | Orquestador multi-provider (Ollama, DeepSeek, Cloud). |
 
 ### `rag_mengraph/` - Sistema Cognitivo de Grafos (Memgraph)
 **Estado:** ✅ ACTIVO (Nuevo Estándar ARES)
