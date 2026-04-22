@@ -1010,20 +1010,42 @@ def zsh_plan_cmd(obj):
 
 
 @cli.command(name="gemini")
-@click.argument("prompt", nargs=-1, required=True)
+@click.argument("prompt", nargs=-1, required=False)
 @click.option("--chat", "-c", default=1, type=int, help="ID de la sesión de Gemini (--resume N)")
 @click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON puro")
+@click.option("--mengraph", is_flag=True, help="Usar motor RAG Memgraph (vía Grafo en RAM)")
+@click.option("--ruta", help="Nombre de la Ruta Nombrada a invocar")
 @click.pass_obj
-def gemini_wrapper_cmd(obj, prompt, chat, as_json):
+def gemini_wrapper_cmd(obj, prompt, chat, as_json, mengraph, ruta):
     """🤖 Gemini Wrapper: Envoltorio especializado para gemini-cli.
     
     Gestiona sesiones deterministas y salida headless.
     Uso: ares gemini tu prompt aqui --chat 5
     """
     from modules.ia.gemini_wrapper import invoke_chat, get_headless_json
+    from modules.ia.negotiator import Negotiator
     
-    full_prompt = " ".join(prompt)
+    full_prompt = " ".join(prompt) if prompt else ""
     
+    # Manejo de Rutas Nombradas vía Mengraph
+    if mengraph or ruta:
+        neg = Negotiator()
+        target_route = ruta if ruta else "CARGA_SISTEMA"
+        route_data = neg.get_named_route(target_route)
+        
+        if route_data["status"] == "success":
+            system_prompt = route_data["prompt"]
+            # Inyectar el prompt de la ruta como instrucción de sistema
+            full_prompt = f"INSTRUCCIÓN DE SISTEMA (RUTA {target_route}):\n{system_prompt}\n\nCONSULTA: {full_prompt}"
+            click.secho(f"🕸️  Usando Ruta Nombrada: {target_route}", fg="magenta", bold=True)
+        else:
+            click.secho(f"⚠️  {route_data['message']}", fg="yellow")
+        neg.close()
+
+    if not full_prompt:
+        click.echo("Error: Se requiere un prompt o una --ruta válida.")
+        return
+
     if as_json:
         result = get_headless_json(full_prompt, chat)
         click.echo(result)

@@ -35,6 +35,12 @@ Su diseño permite ser utilizado como:
 ARES opera bajo un modelo de decisión basado en inferencia contextual, planificación dinámica y ejecución dirigida por objetivos (goal-oriented architecture).
 
 el creador de Ares es Daniel Hung.
+### 🕸️ Arquitectura Cognitiva Soberana (ARES-TRON)
+ARES-TRON introduce una capa de memoria determinista basada en el grafo Memgraph para reemplazar la historia efímera:
+- **Rutas Nombradas**: Subgrafos que representan flujos de trabajo verificados (Crystallized Wisdom).
+- **Negociador**: Intercepta rechazos del usuario y consulta el grafo para alternativas deterministas.
+- **Hardware Adaptativo**: Límites configurables (YAML) para optimizar el uso de RAM (8GB) y GPU.
+
 ---
 
 ## 🚀 RESUMEN EJECUTIVO
@@ -51,6 +57,9 @@ ARES es el **cerebro** que controla la terminal ares para crear flujos de trabaj
 | `ares p "pregunta" --mengraph` | **RAG de Grafos:** Consulta usando Memgraph (Conocimiento Estructurado) |
 | `ares p "pregunta" --rag docs` | **RAG Documental:** Consulta usando Apollo (PDFs/Docs) |
 | `ares p "pregunta" --think` | Usa modelo pensante (ares-think:latest) |
+| `ares gemini <prompt>` | **Gemini Wrapper:** Consulta a gemini-cli con persistencia determinista |
+| `ares gemini --mengraph` | **Carga del Sistema:** Inicia Gemini con la ruta de identidad CARGA_SISTEMA |
+| `ares gemini --ruta <nombre>` | Invoca una "Ruta Nombrada" específica desde el Grafo |
 | `ares apollo ingest <file>` | **Apollo:** Ingerir documento al sistema RAG documental |
 | `ares mengraph query <text>` | **Mengraph:** Consultar el grafo de conocimiento (Salida JSON) |
 | `ares mengraph schema` | **Mengraph:** Mostrar esquema MAGE del grafo |
@@ -81,7 +90,8 @@ Basado en **Memgraph**. Ideal para conocimiento estructurado de alta fidelidad, 
 ### 🧩 Organización por Naturaleza
 Los módulos están agrupados jerárárquicamente en `modules/`:
 - **admon/**: Salud y configuración del sistema.
-- **ia/**: Inteligencia y búsqueda avanzada (multi-provider).
+- **core/**: Lógica transversal y gestión de recursos (**limit_manager.py**).
+- **ia/**: Inteligencia, búsqueda avanzada y navegación de rutas (**negotiator.py**, **gemini_wrapper.py**).
 - **rag/**: Sistema RAG híbrido T0-T4 (Kùzu).
 - **rag_mengraph/**: **Sistema RAG de Grafos en RAM (Memgraph)** con seguridad C1-C4, extracción spaCy y serendipia dirigida.
 - **color/**: Identidad visual dinámica para pestañas Kitty.

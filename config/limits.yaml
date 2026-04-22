@@ -1,0 +1,14 @@
+hardware:
+  ram_gb: 8
+  gpu_enabled: false
+  warning_threshold_ram_percent: 85
+  warning_threshold_vram_mb: 1000
+
+limits:
+  max_batch_size_spacy: 50
+  max_vector_search_results: 10
+  embedding_model_device: "cpu" # Default for 8GB RAM
+
+messages:
+  ram_warning: "⚠️ Memoria RAM cercana al límite (8GB). Optimización de batches activada."
+  gpu_not_found: "ℹ️ GPU no detectada o deshabilitada. Usando CPU para embeddings."

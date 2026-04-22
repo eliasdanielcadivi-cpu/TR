@@ -40,6 +40,15 @@ class AIEngine:
         self.default_provider = config.get("default_provider", "ollama")
         self.aliases = config.get("aliases", {})
 
+        # --- GESTOR DE LÍMITES (RAM/GPU) ---
+        from modules.core.limit_manager import LimitManager
+        import click
+        self.limit_manager = LimitManager(os.path.join(base_path, "config", "limits.yaml"))
+        warnings = self.limit_manager.check_resources()
+        for w in warnings:
+            click.secho(w, fg="yellow", bold=True)
+        # -----------------------------------
+
         # Inicializar providers
         self._providers: Dict[str, BaseProvider] = {}
         self._init_providers(config)
