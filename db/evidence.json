@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "is_focused": true,
+        "tabs": [
+            {
+                "title": "EVIDENCIA",
+                "cmd": "tail -f /home/daniel/Descargas/GenV_S02/aria2.log"
+            }
+        ]
+    }
+]

@@ -17,6 +17,14 @@
         {"pattern": "Script de Epifanía", "id": "GURU_BRUNSON"}
       ]
     },
+    "OPERADOR_SISTEMA": {
+      "desc": "Identidad maestra del sistema (Paciente Cero)",
+      "atributos_obligatorios": ["rango", "biometria_digital"],
+      "instancias": [
+        {"pattern": "Daniel", "id": "PACIENTE_CERO"},
+        {"pattern": "Paciente Cero", "id": "PACIENTE_CERO"}
+      ]
+    },
     "LEAD_CRM": {
       "desc": "Contacto comercial o prospecto en el embudo",
       "atributos_obligatorios": ["score_cualificacion", "origen", "estado"],

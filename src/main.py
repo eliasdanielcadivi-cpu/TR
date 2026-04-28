@@ -1011,48 +1011,90 @@ def zsh_plan_cmd(obj):
 
 @cli.command(name="gemini")
 @click.argument("prompt", nargs=-1, required=False)
-@click.option("--chat", "-c", default=1, type=int, help="ID de la sesión de Gemini (--resume N)")
-@click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON puro")
-@click.option("--mengraph", is_flag=True, help="Usar motor RAG Memgraph (vía Grafo en RAM)")
-@click.option("--ruta", help="Nombre de la Ruta Nombrada a invocar")
+@click.option("--chat", "-c", default=None, type=int, help="ID de la sesión (Auto-detectado)")
+@click.option("--new", "-n", is_flag=True, help="Forzar la creación de una nueva sesión")
+@click.option("--json", "as_json", is_flag=True, help="Salida JSON")
+@click.option("--mengraph", is_flag=True, help="Usar Memgraph")
+@click.option("--ruta", help="Nombre de la Ruta/Modo")
 @click.pass_obj
-def gemini_wrapper_cmd(obj, prompt, chat, as_json, mengraph, ruta):
-    """🤖 Gemini Wrapper: Envoltorio especializado para gemini-cli.
-    
-    Gestiona sesiones deterministas y salida headless.
-    Uso: ares gemini tu prompt aqui --chat 5
-    """
+def gemini_wrapper_cmd(obj, prompt, chat, new, as_json, mengraph, ruta):
+    """🤖 Gemini Wrapper: Envoltorio Soberano."""
     from modules.ia.gemini_wrapper import invoke_chat, get_headless_json
-    from modules.ia.negotiator import Negotiator
+    from modules.ia.session_mapper import get_latest_session_info, get_index_by_hash
+    from modules.core.session_db import init_db, register_session, get_ares_sessions
     
-    full_prompt = " ".join(prompt) if prompt else ""
+    init_db()
     
-    # Manejo de Rutas Nombradas vía Mengraph
-    if mengraph or ruta:
-        neg = Negotiator()
-        target_route = ruta if ruta else "CARGA_SISTEMA"
-        route_data = neg.get_named_route(target_route)
-        
-        if route_data["status"] == "success":
-            system_prompt = route_data["prompt"]
-            # Inyectar el prompt de la ruta como instrucción de sistema
-            full_prompt = f"INSTRUCCIÓN DE SISTEMA (RUTA {target_route}):\n{system_prompt}\n\nCONSULTA: {full_prompt}"
-            click.secho(f"🕸️  Usando Ruta Nombrada: {target_route}", fg="magenta", bold=True)
+    # 1. Determinar chat_id (Prioridad: Argumento -> New -> DB ARES)
+    if chat is not None:
+        chat_id = chat
+    elif new:
+        chat_id = None
+        click.secho("🆕 Creando nueva sesión de Gemini...", fg="yellow", dim=True)
+    else:
+        ares_sessions = get_ares_sessions()
+        if ares_sessions:
+            chat_id = get_index_by_hash(ares_sessions[0]["hash"])
         else:
-            click.secho(f"⚠️  {route_data['message']}", fg="yellow")
-        neg.close()
+            chat_id = None
+
+    # Guardar el prompt original para el título soberano (antes de inyecciones RAG)
+    original_user_prompt = " ".join(prompt) if prompt else "Sesión Interactiva"
+    full_prompt = original_user_prompt
+    
+    # 2. Manejo de Rutas/Modos vía Context Router (Alcance)
+    if mengraph or ruta:
+        from modules.ia.context_router import route_and_assemble
+        target_scope = ruta if ruta else "CARGA_SISTEMA"
+        full_prompt = route_and_assemble(target_scope, full_prompt)
+        if "⚠️" in full_prompt:
+            click.secho(full_prompt.split("\n\n")[0], fg="yellow")
+        else:
+            click.secho(f"🕸️  Alcance: {target_scope} (Ensamblado JIT)", fg="magenta", bold=True)
 
     if not full_prompt:
         click.echo("Error: Se requiere un prompt o una --ruta válida.")
         return
 
+    # 3. Invocación
     if as_json:
-        result = get_headless_json(full_prompt, chat)
-        click.echo(result)
+        result = get_headless_json(full_prompt, chat_id)
     else:
-        click.secho(f"🛰️  Invocando Gemini (Sesión {chat})...", fg="cyan", dim=True)
-        result = invoke_chat(full_prompt, chat)
-        click.echo(result)
+        log_msg = f"Sesión {chat_id}" if chat_id else "NUEVA SESIÓN"
+        click.secho(f"🛰️  Invocando Gemini ({log_msg})...", fg="cyan", dim=True)
+        result = invoke_chat(full_prompt, chat_id)
+        
+    # 4. Auto-registro Post-Invocación (Soberanía de Título)
+    latest_info = get_latest_session_info()
+    if latest_info:
+        # Registramos con el prompt original, no con el inyectado por el RAG
+        register_session(latest_info["hash"], original_user_prompt)
+    
+    click.echo(result)
+
+
+@cli.group(name="sessions")
+def sessions_cmd():
+    """💬 Gestión Soberana de Sesiones de Gemini (Hash-Based)."""
+    pass
+
+@sessions_cmd.command(name="list")
+def sessions_list():
+    """📋 Lista sesiones gestionadas por ARES (Formato RAW)."""
+    from modules.core.session_db import get_ares_sessions
+    from modules.ia.session_mapper import sync_with_gemini
+    
+    ares_db = get_ares_sessions()
+    cli_sessions = {s["hash"]: s["index"] for s in sync_with_gemini()}
+    
+    if not ares_db:
+        click.echo("📭 No hay sesiones en la DB de ARES.")
+        return
+
+    # Formato RAW Puro: IDX | FECHA | HASH | TITULO
+    for s in ares_db:
+        idx = cli_sessions.get(s["hash"], "N/A")
+        click.echo(f"{idx} | {s['fecha_registro']} | {s['hash']} | {s['titulo']}")
 
 
 @cli.command()

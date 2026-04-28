@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+import requests
+import argparse
+import sys
+import os
+import subprocess
+import json
+
+# --- CONFIGURACIÓN ESTATAL ---
+JACKETT_URL = "http://127.0.0.1:9117"
+API_KEY = "ma3dse1zyu23w2puqewa3ozvemddasg9"
+TRANSMISSION_CMD = "/home/daniel/tron/programas/ProyectoPizza/TRON/bin/transmission-bin/transmission-remote"
+DOWNLOAD_DIR = "/home/daniel/Descargas/GenV_S02"
+
+def buscar(query):
+    print(f"📡 Investigando en Jackett: '{query}'...")
+    params = {
+        "apikey": API_KEY,
+        "Query": query,
+        "Category[]": [2000, 5000]
+    }
+    try:
+        # Timeout agresivo de 180s para Jackett lento
+        response = requests.get(f"{JACKETT_URL}/api/v2.0/indexers/all/results", params=params, timeout=180)
+        response.raise_for_status()
+        return response.json().get("Results", [])
+    except Exception as e:
+        print(f"❌ Error de red/timeout: {e}")
+        return []
+
+# --- CONFIGURACIÓN DINÁMICA ---
+CONFIG_PATH = "/home/daniel/tron/programas/TR/config/user/favoritos_torrents.json"
+
+def cargar_favoritos():
+    try:
+        with open(CONFIG_PATH, 'r') as f:
+            return json.load(f)
+    except:
+        return {"uploaders_favoritos": ["ETHEL", "MEGUSTA"], "calidad_minima": "1080p"}
+
+def procesar_resultados(results, min_res="1080", limit=3):
+    config = cargar_favoritos()
+    uploaders_vip = [u.upper() for u in config.get("uploaders_favoritos", [])]
+    
+    candidatos = []
+    for r in results:
+        title = r.get("Title", "").upper()
+        size = r.get("Size", 0)
+        seeders = r.get("Seeders", 0)
+        magnet = r.get("MagnetUri") or r.get("Link")
+        
+        # 1. Filtro de Resolución (No 720p si config lo dice)
+        if "720P" in title and min_res == "1080":
+            continue
+            
+        # 2. Puntuación por Calidad/Uploader
+        score = seeders
+        if any(u in title for u in uploaders_vip):
+            score += 5000  # Prioridad MASIVA a tus favoritos del JSON
+        if "1080" in title or "2160" in title:
+            score += 500
+            
+        candidatos.append({
+            "title": r.get("Title"),
+            "magnet": magnet,
+            "seeders": seeders,
+            "size_gb": round(size / (1024**3), 2),
+            "score": score
+        })
+    
+    # Ordenar por puntuación (VIP + Seeders)
+    candidatos.sort(key=lambda x: x["score"], reverse=True)
+    return candidatos[:limit]
+
+from modules.multimedia.vault_logic import MultimediaMemory
+
+# --- CONFIGURACIÓN DINÁMICA ---
+CONFIG_PATH = "/home/daniel/tron/programas/TR/config/user/favoritos_torrents.json"
+MEM = MultimediaMemory()
+
+def main():
+    parser = argparse.ArgumentParser(description="TR-TORRENT: Buscador de Soberanía")
+    parser.add_argument("serie", help="Nombre de la serie")
+    parser.add_argument("termino", help="Temporada o capítulo (ej: S02, S02E01, COMPLETE)")
+    parser.add_argument("--res", default="1080", help="Resolución mínima (default: 1080)")
+    
+    args = parser.parse_args()
+    
+    # 1. FASE FORENSE INTERNA (MEMORIA)
+    log_event(f"🧠 Consultando memoria inmutable para {args.serie} {args.termino}...")
+    vehiculo = MEM.buscar_vehiculo_vivo(args.serie, "S02", args.termino) # Simplificado para el ejemplo S02
+    
+    if vehiculo:
+        print(f"✨ RECUERDO DETECTADO: Usando magnet conocido de {vehiculo['uploader']}")
+        top_torrents = [{
+            "title": f"{args.serie} {args.termino} (Desde Memoria)",
+            "magnet": vehiculo["magnet"],
+            "size_gb": vehiculo["size_gb"],
+            "seeders": vehiculo["last_seeders"]
+        }]
+    else:
+        # 2. BÚSQUEDA EXTERNA (JACKETT)
+        queries = [f"{args.serie} {args.termino}"]
+        total_results = []
+        for q in queries:
+            res = buscar(q)
+            if res: total_results.extend(res)
+            
+        if not total_results:
+            print("📭 No se halló nada nuevo.")
+            sys.exit(1)
+            
+        top_torrents = procesar_resultados(total_results, args.res)
+        
+        # 3. INMORTALIZACIÓN EN BÓVEDA
+        if top_torrents:
+            obj_id = MEM.registrar_identidad(args.serie, "S02", args.termino)
+            for t in top_torrents:
+                MEM.registrar_torrent(obj_id, t["magnet"], "ETHEL", t["size_gb"], t["seeders"])
+
+    # 4. INYECCIÓN DETERMINISTA
+    # ... resto del código de inyección ...
+    for i, t in enumerate(top_torrents):
+        print(f"[{i+1}] {t['title']} | {t['size_gb']}GB | Seeders: {t['seeders']}")
+        print(f"🧲 MAGNET: {t['magnet']}")
+        
+    # Inyectar en Transmission
+    for t in top_torrents:
+        print(f"📥 Inyectando: {t['title']}...")
+        result = subprocess.run([TRANSMISSION_CMD, "-n", "transmission:transmission", "-a", t["magnet"], "-w", DOWNLOAD_DIR], capture_output=True, text=True)
+        if result.returncode == 0:
+            print(f"✅ Éxito: {result.stdout.strip()}")
+        else:
+            # Si falla transmission, intentamos con aria2c en segundo plano como respaldo
+            print(f"⚠️ Fallo inyección Transmission. Intentando backup con aria2c...")
+            log_file = os.path.join(DOWNLOAD_DIR, "aria2.log")
+            with open(log_file, "a") as f:
+                subprocess.Popen(["aria2c", "-d", DOWNLOAD_DIR, "--bt-stop-timeout=300", t["magnet"]], stdout=f, stderr=f)
+            print(f"🚀 Aria2c lanzado en segundo plano. Logs en {log_file}")
+
+if __name__ == "__main__":
+    main()

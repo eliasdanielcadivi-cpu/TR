@@ -7,9 +7,12 @@ import subprocess
 import json
 import os
 
-def invoke_chat(prompt: str, chat_id: int, yolo: bool = True) -> str:
-    """Invoca a gemini-cli con mapeo determinista de sesión."""
-    cmd = ["gemini", "--resume", str(chat_id)]
+def invoke_chat(prompt: str, chat_id: int = None, yolo: bool = True) -> str:
+    """Invoca a gemini-cli. Si chat_id es None, crea una sesión nueva."""
+    cmd = ["gemini"]
+    if chat_id is not None:
+        cmd.extend(["--resume", str(chat_id)])
+    
     if yolo:
         cmd.append("--yolo")
     

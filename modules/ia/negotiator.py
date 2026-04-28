@@ -27,15 +27,18 @@ class Negotiator:
         """
         Recupera una 'Ruta Nombrada' desde Memgraph.
         """
-        with self.driver.session() as session:
-            result = session.run(
-                "MATCH (r:RutaNombrada {nombre: $name}) RETURN r.prompt_sistema AS prompt, r.metadata AS meta",
-                name=route_name
-            )
-            record = result.single()
-            if record:
-                return {"status": "success", "prompt": record["prompt"], "meta": record["meta"]}
-            return {"status": "error", "message": f"Ruta '{route_name}' no encontrada."}
+        try:
+            with self.driver.session() as session:
+                result = session.run(
+                    "MATCH (r:RutaNombrada {nombre: $name}) RETURN r.prompt_sistema AS prompt, r.metadata AS meta",
+                    name=route_name
+                )
+                record = result.single()
+                if record:
+                    return {"status": "success", "prompt": record["prompt"], "meta": record["meta"]}
+                return {"status": "error", "message": f"Ruta '{route_name}' no encontrada."}
+        except Exception as e:
+            return {"status": "error", "message": f"Memgraph inalcanzable: {str(e)}"}
 
     def crystallize_wisdom(self, name: str, prompt: str, metadata: str):
         """

@@ -70,4 +70,4 @@ Vamos al grano. Aquí tienes el mapa técnico de cada entorno: **quién es el cl
 
 En resumen, como desarrollador, tu caja de herramientas para imprimir la web se basa en dominar **Schema.org (JSON-LD)**, **etiquetas semánticas rígidas** y **estructuras de datos limpias (tablas/listas)**. Lo demás (los enlaces externos o que la gente hable de ti) es trabajo del vendedor.
 
-¿Te gustaría que armemos la estructura técnica (JSON-LD + HTML) para atacar uno de estos frentes en específico, como el **AEO** o el **LSO**?
+IMPORTANTE: La estructura técnica (JSON-LD + HTML) se puede armar, para atacar uno de estos frentes en específico, como el **AEO** o el **LSO**?

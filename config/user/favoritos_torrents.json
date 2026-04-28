@@ -1,0 +1,6 @@
+{
+  "uploaders_favoritos": ["ETHEL", "MEGUSTA", "MULTISUB"],
+  "calidad_minima": "1080p",
+  "resoluciones_aceptables": ["1080p", "2160p", "4K"],
+  "evitar": ["720p", "480p", "CAM", "TS"]
+}

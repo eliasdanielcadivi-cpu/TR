@@ -51,5 +51,12 @@ Para extender el sistema, sigue el **Ciclo de Vida de Desarrollo**:
     - [Anexo Técnico de Módulos](docs/RAG-V3/ANEXO-TECNICO-MODULOS.md)
     - [Biblia RAG: Final Preliminar](docs/RAG-V3/RAG-FINAL-PRELIMINAR.md)
 
+## 🎥 BÓVEDA MULTIMEDIA SOBERANA
+ARES-TRON gestiona ahora un inventario determinista de activos multimedia:
+- **Inventario:** `db/multimedia/inventario.json` (Reseñas, Calidad Real, Status).
+- **Magnets:** `db/multimedia/magnets.json` (Historial de ADN digital).
+- **Control:** Automatización de búsqueda (Jackett) + descarga (aria2c) + catalogación.
+- **Integración Futura:** TMDB para trailers, elencos y próximos estrenos.
+
 ---
 *Diseñado y Orquestado por Daniel Hung.*
