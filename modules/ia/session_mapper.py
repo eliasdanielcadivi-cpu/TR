@@ -31,6 +31,27 @@ def sync_with_gemini() -> list:
     except:
         return []
 
+def resolve_session_id(explicit_chat: int = None, force_new: bool = False) -> int:
+    """
+    Resuelve el ID de sesión según prioridad:
+    1. Chat explícito.
+    2. Nueva sesión si force_new es True.
+    3. Última sesión registrada en la DB de ARES.
+    4. Última sesión global de Gemini.
+    """
+    if explicit_chat is not None:
+        return explicit_chat
+    if force_new:
+        return None
+    
+    from modules.core.session_db import get_ares_sessions
+    ares_sessions = get_ares_sessions()
+    if ares_sessions:
+        return get_index_by_hash(ares_sessions[0]["hash"])
+    
+    latest = get_latest_session_info()
+    return latest["index"] if latest else None
+
 def get_index_by_hash(target_hash: str) -> int:
     """
     Busca el índice actual de un Hash en la CLI de Gemini.

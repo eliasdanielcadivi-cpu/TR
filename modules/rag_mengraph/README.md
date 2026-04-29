@@ -18,4 +18,4 @@ ares rag query "término" --json
 ## 🏗️ Arquitectura
 - **core/**: Lógica de recuperación y tool interface.
 - **storage/**: Driver de conexión con Memgraph (Bolt).
-- **extraction/**: NLP (spaCy) para convertir texto en nodos/relaciones.
+- **ingestion/**: NLP (spaCy) para convertir texto en nodos/relaciones.

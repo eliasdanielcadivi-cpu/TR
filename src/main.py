@@ -1011,90 +1011,58 @@ def zsh_plan_cmd(obj):
 
 @cli.command(name="gemini")
 @click.argument("prompt", nargs=-1, required=False)
-@click.option("--chat", "-c", default=None, type=int, help="ID de la sesión (Auto-detectado)")
-@click.option("--new", "-n", is_flag=True, help="Forzar la creación de una nueva sesión")
-@click.option("--json", "as_json", is_flag=True, help="Salida JSON")
-@click.option("--mengraph", is_flag=True, help="Usar Memgraph")
-@click.option("--ruta", help="Nombre de la Ruta/Modo")
+@click.option("--chat", "-c", default=None, type=int, help="ID de la sesión")
+@click.option("--new", "-n", is_flag=True, help="Forzar nueva sesión")
+@click.option("--mengraph", is_flag=True, help="Inyectar CARGA_SISTEMA")
+@click.option("--ruta", help="Ruta de Sabiduría Cristalizada")
 @click.pass_obj
-def gemini_wrapper_cmd(obj, prompt, chat, new, as_json, mengraph, ruta):
-    """🤖 Gemini Wrapper: Envoltorio Soberano."""
-    from modules.ia.gemini_wrapper import invoke_chat, get_headless_json
-    from modules.ia.session_mapper import get_latest_session_info, get_index_by_hash
-    from modules.core.session_db import init_db, register_session, get_ares_sessions
+def gemini_wrapper_cmd(obj, prompt, chat, new, mengraph, ruta):
+    """🤖 Gemini Wrapper v3: Sesiones Soberanas y Grafos."""
+    from modules.ia.session_mapper import resolve_session_id, get_latest_session_info
+    from modules.core.session_db import init_db, register_session
+    from modules.ia.gemini_wrapper import invoke_chat
     
     init_db()
+    chat_id = resolve_session_id(chat, new)
+    original_prompt = " ".join(prompt) if prompt else "Sesión Interactiva"
     
-    # 1. Determinar chat_id (Prioridad: Argumento -> New -> DB ARES)
-    if chat is not None:
-        chat_id = chat
-    elif new:
-        chat_id = None
-        click.secho("🆕 Creando nueva sesión de Gemini...", fg="yellow", dim=True)
-    else:
-        ares_sessions = get_ares_sessions()
-        if ares_sessions:
-            chat_id = get_index_by_hash(ares_sessions[0]["hash"])
-        else:
-            chat_id = None
-
-    # Guardar el prompt original para el título soberano (antes de inyecciones RAG)
-    original_user_prompt = " ".join(prompt) if prompt else "Sesión Interactiva"
-    full_prompt = original_user_prompt
-    
-    # 2. Manejo de Rutas/Modos vía Context Router (Alcance)
+    full_prompt = original_prompt
     if mengraph or ruta:
         from modules.ia.context_router import route_and_assemble
-        target_scope = ruta if ruta else "CARGA_SISTEMA"
-        full_prompt = route_and_assemble(target_scope, full_prompt)
-        if "⚠️" in full_prompt:
-            click.secho(full_prompt.split("\n\n")[0], fg="yellow")
-        else:
-            click.secho(f"🕸️  Alcance: {target_scope} (Ensamblado JIT)", fg="magenta", bold=True)
+        full_prompt = route_and_assemble(ruta or "CARGA_SISTEMA", full_prompt)
 
-    if not full_prompt:
-        click.echo("Error: Se requiere un prompt o una --ruta válida.")
-        return
-
-    # 3. Invocación
-    if as_json:
-        result = get_headless_json(full_prompt, chat_id)
-    else:
-        log_msg = f"Sesión {chat_id}" if chat_id else "NUEVA SESIÓN"
-        click.secho(f"🛰️  Invocando Gemini ({log_msg})...", fg="cyan", dim=True)
-        result = invoke_chat(full_prompt, chat_id)
-        
-    # 4. Auto-registro Post-Invocación (Soberanía de Título)
-    latest_info = get_latest_session_info()
-    if latest_info:
-        # Registramos con el prompt original, no con el inyectado por el RAG
-        register_session(latest_info["hash"], original_user_prompt)
+    click.secho(f"🛰️  Invocando Gemini (Session: {chat_id or 'NEW'})...", fg="cyan", dim=True)
+    result = invoke_chat(full_prompt, chat_id)
     
+    latest = get_latest_session_info()
+    if latest:
+        register_session(latest["hash"], original_prompt)
     click.echo(result)
 
 
-@cli.group(name="sessions")
-def sessions_cmd():
-    """💬 Gestión Soberana de Sesiones de Gemini (Hash-Based)."""
-    pass
+@cli.command(name="run")
+@click.argument("phase_id")
+@click.pass_obj
+def run_phase_cmd(obj, phase_id):
+    """🚀 Ejecutar Fase de Grafo (INIT/DEV/PROD)."""
+    from modules.core.orchestrator import run_lifecycle_phase
+    res, meta = run_lifecycle_phase(phase_id)
+    if res:
+        click.secho(f"🛰️  Fase: {phase_id}", fg="magenta", bold=True)
+        click.echo(res.get("ejecucion_soberana"))
+    else:
+        click.secho(meta, fg="red")
 
-@sessions_cmd.command(name="list")
-def sessions_list():
-    """📋 Lista sesiones gestionadas por ARES (Formato RAW)."""
+
+@cli.command(name="sessions")
+def sessions_list_cmd():
+    """📋 Listado RAW de Sesiones Gemini (Hash-Based)."""
     from modules.core.session_db import get_ares_sessions
     from modules.ia.session_mapper import sync_with_gemini
-    
     ares_db = get_ares_sessions()
-    cli_sessions = {s["hash"]: s["index"] for s in sync_with_gemini()}
-    
-    if not ares_db:
-        click.echo("📭 No hay sesiones en la DB de ARES.")
-        return
-
-    # Formato RAW Puro: IDX | FECHA | HASH | TITULO
+    cli_s = {s["hash"]: s["index"] for s in sync_with_gemini()}
     for s in ares_db:
-        idx = cli_sessions.get(s["hash"], "N/A")
-        click.echo(f"{idx} | {s['fecha_registro']} | {s['hash']} | {s['titulo']}")
+        click.echo(f"{cli_s.get(s['hash'], 'N/A')} | {s['fecha_registro']} | {s['hash']} | {s['titulo']}")
 
 
 @cli.command()
