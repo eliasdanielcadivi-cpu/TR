@@ -86,20 +86,25 @@ def mcat_demo_cmd(obj):
 @cli.command(name="p")
 @click.argument("prompt")
 @click.option("--model", "-m", help="Alias del modelo a usar (ej: gemma, gemma12b, deepseek, openrouter, ares, ares-think)")
-@click.option("--template", "-t", help="Plantilla YAML del sistema (default, chat, code, tools)")
+@click.option("--provider", "-P", help="Proveedor de IA (ollama, gemini, deepseek, openrouter)")
+@click.option("--template", "-t", default="default", help="Plantilla YAML del sistema (default, chat, code, tools)")
 @click.option("--temperature", "-T", type=float, default=0.7, help="Creatividad de la respuesta (0.0-1.0). Default: 0.7")
 @click.option("--rag", is_flag=False, flag_value="default", default=None, help="Etiqueta de dataset RAG (default, docs, skills, codigo, config)")
 @click.option("--mengraph", is_flag=True, help="Usar motor RAG Memgraph (vía Grafo en RAM)")
 @click.option("--think", is_flag=True, help="Usar modelo pensante (ares-think:latest)")
 @click.option("-v", "--verbose", is_flag=True, help="Mostrar depuración RAG detallada")
 @click.pass_obj
-def p_cmd(obj, prompt, model, template, temperature, rag, mengraph, think, verbose):
+def p_cmd(obj, prompt, model, provider, template, temperature, rag, mengraph, think, verbose):
     """🤖 Consulta Inteligente (Modo Experto)."""
     # Determinar modelo final
     final_model = model
     if think:
         final_model = "ares-think:latest"
     
+    # Orquestar con AIEngine
+    from modules.ia.ai_engine import AIEngine
+    ai = AIEngine(obj.config['ia'] if hasattr(obj, 'config') else obj['ia'], str(obj.base_path if hasattr(obj, 'base_path') else obj['base_path']))
+
     # Prioridad: RAG Mengraph (Si se solicita explícitamente)
     if mengraph:
         from modules.utils import messenger
@@ -125,7 +130,10 @@ def p_cmd(obj, prompt, model, template, temperature, rag, mengraph, think, verbo
                 
                 click.secho("🧠 ARES consultando Grafo (Interfaz Universal)...", fg="magenta", bold=True)
                 
-                for chunk in ai.ask_stream(prompt, model_alias=final_model, template=template, system_instructions=system_instr):
+                # Usar el alias del provider como modelo si se pasa explícitamente y no hay modelo
+                effective_alias = provider if provider and not final_model else final_model
+
+                for chunk in ai.ask_stream(prompt, model_alias=effective_alias, template=template, temperature=temperature):
                     sys.stdout.write(chunk)
                     sys.stdout.flush()
                 sys.stdout.write("\n")
