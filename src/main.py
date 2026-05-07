@@ -103,7 +103,7 @@ def p_cmd(obj, prompt, model, provider, template, temperature, rag, mengraph, th
     
     # Orquestar con AIEngine
     from modules.ia.ai_engine import AIEngine
-    ai = AIEngine(obj.config['ia'] if hasattr(obj, 'config') else obj['ia'], str(obj.base_path if hasattr(obj, 'base_path') else obj['base_path']))
+    ai = AIEngine(obj.config['ai'], str(obj.base_path))
 
     # Prioridad: RAG Mengraph (Si se solicita explícitamente)
     if mengraph:
