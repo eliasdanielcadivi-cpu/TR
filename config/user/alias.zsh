@@ -159,7 +159,7 @@ alias ls='ls --color=auto'
 alias mandar-audio="sudo pactl load-module module-simple-protocol-tcp source=0 record=true port=12346"
 alias MapasMentales='crom-notas https://gitmind.com/app/docs/mr8ou51a'
 alias marcadores='/usr/bin/marcadores.sh'
-alias markdown="marktext &"
+alias markdown="mdreader &"
 alias matacrom='mata="kill -9 $(pidof chrome)"; eval $mata; unset mata'
 alias memoria='sudo systemctl stop universal_embed.service qdrant.service embedding_server_daniel.service ollama.service && sudo pkill fwupd && sudo pkill -f "embedding_server.py" && echo "✅ Todo detenido. Memoria liberada."'
 alias mic='/usr//bin/micro-smart.py camel'
@@ -246,6 +246,7 @@ alias re="playerctl position 10-"
 alias ReunionHook='crom-elias1 https://www.notion.so/Reuni-n-de-Hook-54e69a382e7e40e5b1900cb7c773bd27'
 alias rm='rm -v'
 alias ruta="readlink -f " 
+alias saber="siyuan &"
 alias servicio-activar="prin=\$PWD; cd /home/daniel/tron/config/systemd; source index.sh; cd \$prin; unset prin"
 alias servicio-editar='br /etc/systemd/system/\$1'
 alias servicios='systemctl list-units --type=service'
@@ -275,7 +276,7 @@ alias torr='crom https://rarbgdata.org/index80.php https://thepiratebay.org/inde
 alias jackett-iniciar='sudo systemctl start docker && cd /home/daniel/tron/programas/gestores-torrents/jackett && docker compose up -d && echo "🧥 Jackett iniciado en http://localhost:9117"'
 alias jackett-detener='cd /home/daniel/tron/programas/gestores-torrents/jackett && docker compose down -v && sudo systemctl stop docker docker.socket && echo "🛑 Jackett detenido, limpieza de volúmenes y servicio Docker apagado."'
 
-
+alias qw='/home/daniel/tron/programas/Admon/raton/toggle_mouse.py'
 
 alias TrayectoriaProfesional='crom-notas https://lucid.app/lucidchart/436bbf51-662c-40b7-a761-26540038eb34/edit?page=0_0&invitationId=inv_b5109a0e-afc3-474e-8b14-744b464f5c8f#'
 alias triaje="/home/daniel/tron/programas/ia/mudanza/bin/ares-triage-run"
