@@ -14,6 +14,7 @@ from .providers import (
     GemmaProvider,
     DeepSeekProvider,
     OpenRouterProvider,
+    GeminiProvider,
 )
 from .templates import TemplateManager
 from .tools import ToolRegistry
@@ -395,6 +396,9 @@ class AIEngine:
             # Registrar placeholder aunque no esté en config
             self._providers["openrouter"] = OpenRouterProvider({})
 
+        # Gemini-CLI
+        self._providers["gemini"] = GeminiProvider(config.get("gemini", {}))
+
     def _resolve_provider_and_model(
         self,
         model_alias: Optional[str],
@@ -426,6 +430,8 @@ class AIEngine:
                 return self._providers.get("gemma", self._get_default_provider()), alias_lower
             elif "deepseek" in alias_lower:
                 return self._providers.get("deepseek"), alias_lower
+            elif "gemini" in alias_lower:
+                return self._providers.get("gemini"), alias_lower
             elif "phi" in alias_lower or "llama" in alias_lower or "qwen" in alias_lower or "mistral" in alias_lower or "smol" in alias_lower:
                 # Modelos Ollama genéricos
                 return self._providers.get("gemma", self._get_default_provider()), alias_lower
@@ -440,6 +446,8 @@ class AIEngine:
                 return self._providers.get("gemma", self._get_default_provider()), None
             elif template.startswith("deepseek/"):
                 return self._providers.get("deepseek"), None
+            elif template.startswith("gemini/"):
+                return self._providers.get("gemini"), None
 
         # Usar provider por defecto
         return self._get_default_provider(), None
@@ -469,6 +477,8 @@ class AIEngine:
             return "deepseek"
         elif isinstance(provider, OpenRouterProvider):
             return "openrouter"
+        elif isinstance(provider, GeminiProvider):
+            return "gemini"
         return "gemma"
 
     def _register_default_tools(self) -> None:

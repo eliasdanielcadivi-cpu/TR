@@ -7,10 +7,12 @@ from .base_provider import BaseProvider
 from .gemma_provider import GemmaProvider
 from .deepseek_provider import DeepSeekProvider
 from .openrouter_provider import OpenRouterProvider
+from .gemini_provider import GeminiProvider
 
 __all__ = [
     "BaseProvider",
     "GemmaProvider",
     "DeepSeekProvider",
     "OpenRouterProvider",
+    "GeminiProvider",
 ]
