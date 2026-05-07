@@ -6,8 +6,8 @@
 - [x] Lectura de Ares-Index y Ares-Alma.
 - [x] Análisis del Núcleo de Creación de Software V2.1.
 - [x] Verificación de enlaces duros de memoria (detectada ruptura).
-- [ ] Redacción de Introducción e Instrucciones Maestras en IA-MEMORY.md.
-- [ ] Restauración de enlace duro: `IA-MEMORY.md` <-> `~/.gemini/GEMINI.md`.
+- [x] Redacción de Introducción e Instrucciones Maestras en IA-MEMORY.md.
+- [x] Restauración de enlace duro: `IA-MEMORY.md` <-> `~/.gemini/GEMINI.md`.
 
 ## 🟡 FASE 2: EXPANSIÓN DEL GRAFO (PRÓXIMO)
 - [ ] Mapeo de relaciones entre Mengraph, spaCy y el Negociador.
