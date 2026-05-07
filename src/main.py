@@ -39,7 +39,6 @@ from modules.core.window_registry import init_db as init_window_db
 init_session_db()
 init_window_db()
 
-from modules.rag import RAGOrchestrator
 from modules.ui.help_manager import HelpManager
 from modules.multimedia.media_manager import MediaManager
 
