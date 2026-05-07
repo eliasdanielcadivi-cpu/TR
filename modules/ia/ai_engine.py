@@ -160,6 +160,7 @@ class AIEngine:
 
     def ask_stream(self, prompt: str, model_alias: Optional[str] = None,
                    template: Optional[str] = None, filter_think: bool = False,
+                   provider: Optional[str] = None,
                    **kwargs):
         """Consultar a la IA con streaming en tiempo real.
 
@@ -167,16 +168,15 @@ class AIEngine:
             prompt: Prompt de entrada.
             model_alias: Alias de modelo.
             template: Nombre de plantilla YAML.
-            filter_think: Si True, filtra etiquetas <think>
-</think>
-
- en tiempo real.
+            filter_think: Si True, filtra etiquetas <think></think> en tiempo real.
+            provider: Nombre del provider explícito.
             **kwargs: Parámetros adicionales.
 
         Yields:
             Fragmentos de respuesta (chunks).
         """
         # --- INYECCIÓN DINÁMICA DE SKILLS ---
+        # ... (lógica de skills omitida para brevedad en el prompt de reemplazo, pero debe mantenerse)
         skills_dir = os.path.join(self.base_path, "docs", "skills")
         injected_context = ""
 
@@ -213,12 +213,17 @@ class AIEngine:
             prompt = f"{injected_context}\n\n--- CONSULTA USUARIO ---\n{prompt}"
 
         # Determinar provider y modelo
-        provider, model = self._resolve_provider_and_model(model_alias, template)
+        if provider and provider in self._providers:
+            effective_provider = self._providers[provider]
+            effective_model = model_alias
+        else:
+            effective_provider, effective_model = self._resolve_provider_and_model(model_alias, template)
 
         # Aplicar plantilla si se especifica
+        provider_name = self._get_provider_name(effective_provider)
         if template:
             prompt = self.template_manager.apply(
-                provider.name if hasattr(provider, 'name') else self._get_provider_name(provider),
+                provider_name,
                 template,
                 prompt=prompt
             )
@@ -226,25 +231,24 @@ class AIEngine:
         # Obtener configuración de plantilla
         template_config = {}
         if template:
-            provider_name = self._get_provider_name(provider)
             template_config = self.template_manager.get_config(provider_name, template)
 
         # Fusionar parámetros
         params = {**template_config, **kwargs}
         params["stream"] = True
-        if model:
-            params["model"] = model
+        if effective_model:
+            params["model"] = effective_model
 
         # Ejecutar consulta con streaming
-        if hasattr(provider, 'generate_stream'):
-            for chunk in provider.generate_stream(prompt, **params):
+        if hasattr(effective_provider, 'generate_stream'):
+            for chunk in effective_provider.generate_stream(prompt, **params):
                 if filter_think:
                     chunk = self._filter_think_chunk(chunk)
                 if chunk:
                     yield chunk
         else:
             # Fallback: usar generate normal
-            yield provider.generate(prompt, **params)
+            yield effective_provider.generate(prompt, **params)
 
     def _filter_think_chunk(self, chunk: str) -> str:
         """Filtrar etiquetas <think> de un chunk en tiempo real.
