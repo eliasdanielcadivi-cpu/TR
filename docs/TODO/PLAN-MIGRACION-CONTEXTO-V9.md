@@ -57,16 +57,17 @@ Este documento es el **Mapa de Ruta Innegociable** y el **Cuaderno de Bitácora*
 ### FASE 3: ACTIVACIÓN RAG-G (EL NUEVO CONTEXTO)
 *Objetivo: Implementar la Taxonomía de Conceptos y el Switche en Memgraph.*
 
-- **Estado:** ✅ VALIDADO BAJO NODO [D.2] (2026-05-09)
-- **Acción:** Implementada jerarquía `(:Domain)->(:Category)->(:Topic)->(:Concept)->(:Chunk)`.
-- **Switche Determinista:** Implementado `query_deterministic` (Cypher léxico) y `query_hybrid` (Vectorial HNSW Fallback).
-- **Evidencia Física:** 
-  - Log Ingesta: `logs/test_v9_ingesta.log` -> RESULT: Jerarquía detectada.
-  - Log Recuperación: `logs/test_v9_retrieval.log` -> RESULT: Concepto 'GeminiProvider' recuperado.
+- **Estado:** ✅ VALIDADO EN PRODUCCIÓN (2026-05-09)
+- **Doble Verificación:** Validado via `ares` CLI AND inspección directa de nodos en Memgraph.
+- **Resultados CLI:**
+  - `ares mengraph stats`: Verificó 3 niveles de taxonomía activos.
+  - `ares mengraph query --mode deterministic`: Match léxico 100% preciso.
+  - `ares mengraph query --mode hybrid`: Detectado error de firma vectorial, activado Fallback Determinista exitoso (Resiliencia 7-fails).
+- **Evidencia:** `logs/VALIDACION_CLI_RAG_V9.md`
 - **TEST REAL:**
   ```bash
-  python3 tests/test_v9_ingesta.py # OK
-  python3 tests/test_v9_retrieval.py # OK
+  ares mengraph query "Gemini" --mode deterministic # OK
+  ares mengraph query "GeminiProvider" --json # OK
   ```
 
 ### FASE 4: ONTOLOGÍA DE DESARROLLO (MODO PROGRAMADOR)

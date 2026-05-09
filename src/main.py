@@ -1413,15 +1413,15 @@ def mengraph_ingest_cmd(obj, text, label):
 @mengraph_cmd.command(name="query")
 @click.argument("text")
 @click.option("--top-k", default=5, help="Número de resultados")
+@click.option("--mode", type=click.Choice(['deterministic', 'hybrid']), default='hybrid', help="Switche Cognitivo: determinista (léxico) o híbrido (semántico)")
 @click.option("--json", "as_json", is_flag=True, help="Salida en formato JSON puro")
 @click.pass_obj
-def mengraph_query_cmd(obj, text, top_k, as_json):
-    """🔍 Consultar el Grafo (Interfaz Universal para IAs)."""
+def mengraph_query_cmd(obj, text, top_k, mode, as_json):
+    """🔍 Consultar el Grafo V9 (Switche Determinista-Híbrido)."""
     from modules.rag_mengraph.core.tool import MengraphTool
-    ontology = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
-    tool = MengraphTool(ontology)
+    tool = MengraphTool()
     
-    result_json = tool.query_json(text, top_k=top_k)
+    result_json = tool.query_json(text, top_k=top_k, mode=mode)
     
     if as_json:
         click.echo(result_json)
@@ -1429,8 +1429,10 @@ def mengraph_query_cmd(obj, text, top_k, as_json):
         import json
         data = json.loads(result_json)
         if data['status'] == 'success':
+            click.secho(f"🧠 Modo: {data['mode'].upper()}", fg="magenta", bold=True)
             for item in data['data']:
-                click.secho(f"📍 {item['ancla']} -> {item['relacionado']}", fg="cyan")
+                click.secho(f"📍 Concepto: {item['concept']}", fg="cyan")
+                click.echo(f"   Ref: {item['file']} (Líneas {item['lines']})")
         else:
             click.echo(f"❌ Error: {data['message']}")
 
@@ -1439,9 +1441,16 @@ def mengraph_query_cmd(obj, text, top_k, as_json):
 def mengraph_schema_cmd(obj):
     """📜 Mostrar el esquema MAGE del grafo."""
     from modules.rag_mengraph.core.tool import MengraphTool
-    ontology = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
-    tool = MengraphTool(ontology)
+    tool = MengraphTool()
     click.echo(tool.get_schema_summary())
+
+@mengraph_cmd.command(name="stats")
+@click.pass_obj
+def mengraph_stats_cmd(obj):
+    """📊 Estadísticas rápidas de la taxonomía V9."""
+    from modules.rag_mengraph.core.tool import MengraphTool
+    tool = MengraphTool()
+    click.echo(tool.quick_stats())
 
 
 
