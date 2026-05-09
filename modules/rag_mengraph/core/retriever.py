@@ -1,8 +1,7 @@
 import logging
-import json
 from typing import List, Dict, Any
 from modules.rag_mengraph.storage.memgraph_db import MemgraphDriver
-from modules.ia.apollo.embeddings import embed_text
+from modules.ia.embeddings_utils import embed_text
 
 # Configuración de Logging
 logging.basicConfig(level=logging.DEBUG)

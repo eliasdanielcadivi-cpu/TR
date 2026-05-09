@@ -12,16 +12,17 @@ Filosofía atómica: máximo 3 funciones públicas principales.
 """
 
 import os
-from typing import Dict, Any, List
+import requests
+import json
+from typing import Dict, Any, List, Optional
 
 from .base_provider import BaseProvider
 
 
 class OpenRouterProvider(BaseProvider):
-    """Provider para OpenRouter API (placeholder).
+    """Provider para OpenRouter API.
     
-    Módulo reservado para futura integración con OpenRouter.
-    Actualmente no funcional - solo estructura base.
+    Permite acceso a múltiples modelos mediante la API unificada de OpenRouter.
     """
 
     def __init__(self, config: Dict[str, Any]):
@@ -32,59 +33,105 @@ class OpenRouterProvider(BaseProvider):
         """
         super().__init__(config)
         self.base_url = config.get("base_url", "https://openrouter.ai/api/v1")
-        self.default_model = config.get("model", "google/gemma-3-4b-it")
-        self.api_key_env = config.get("api_key_env", "OPENROUTER_API_KEY")
+        self.default_model = config.get("model", "google/gemma-2-9b-it")
+        self.api_key_env = config.get("api_key_env", "OPENROUTER-API-KEY")
         self.api_key = os.getenv(self.api_key_env)
-        self._initialized = False  # No inicializado hasta implementación
+        self._initialized = self.validate_config()
 
     def generate(self, prompt: str, **kwargs) -> str:
-        """Generar respuesta (placeholder).
+        """Generar respuesta usando API de OpenRouter.
         
         Args:
             prompt: Prompt de entrada.
-            **kwargs: Parámetros adicionales.
+            **kwargs: model, temperature, max_tokens, etc.
             
         Returns:
-            Mensaje de placeholder.
+            Respuesta generada por OpenRouter.
         """
-        return (
-            "⚠️ OpenRouterProvider no implementado aún.\n"
-            "Este es un placeholder para futura integración.\n"
-            "Configura OPENROUTER_API_KEY y completa la implementación."
-        )
+        model = kwargs.get("model", self.default_model)
+        temperature = kwargs.get("temperature", 0.7)
+        max_tokens = kwargs.get("max_tokens", 2048)
+
+        messages = [{"role": "user", "content": prompt}]
+        
+        return self._chat_completion(messages, model, temperature, max_tokens)
 
     def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        """Generar respuesta en modo chat (placeholder).
+        """Generar respuesta en modo chat.
         
         Args:
-            messages: Lista de mensajes.
-            **kwargs: Parámetros adicionales.
+            messages: Lista de mensajes con rol y contenido.
+            **kwargs: model, temperature, max_tokens, etc.
             
         Returns:
-            Mensaje de placeholder.
+            Respuesta del asistente.
         """
-        return (
-            "⚠️ OpenRouterProvider no implementado aún.\n"
-            "Este es un placeholder para futura integración."
-        )
+        model = kwargs.get("model", self.default_model)
+        temperature = kwargs.get("temperature", 0.7)
+        max_tokens = kwargs.get("max_tokens", 2048)
+        
+        return self._chat_completion(messages, model, temperature, max_tokens)
 
     def list_models(self) -> List[str]:
-        """Listar modelos OpenRouter disponibles (placeholder).
-        
-        Returns:
-            Lista de modelos de ejemplo.
-        """
+        """Listar modelos OpenRouter (hardcoded por ahora)."""
         return [
-            "google/gemma-3-4b-it",
-            "google/gemma-3-12b-it",
+            "google/gemma-2-9b-it",
             "deepseek/deepseek-chat",
-            "meta-llama/llama-3-70b-instruct",
+            "meta-llama/llama-3-8b-instruct",
+            "anthropic/claude-3-haiku",
         ]
 
     def validate_config(self) -> bool:
-        """Validar configuración (siempre False en placeholder).
+        """Validar configuración y API key.
         
         Returns:
-            False indicando que no está implementado.
+            True si API key está configurada.
         """
-        return False
+        return bool(self.api_key)
+
+    def _chat_completion(
+        self, 
+        messages: List[Dict[str, str]], 
+        model: str,
+        temperature: float,
+        max_tokens: int
+    ) -> str:
+        """Llamada a API de OpenRouter chat completions."""
+        if not self.api_key:
+            return "Error: API key de OpenRouter no configurada (OPENROUTER-API-KEY)"
+
+        # Asegurar que la URL sea correcta
+        url = "https://openrouter.ai/api/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "HTTP-Referer": "https://ares-tron.local",
+            "X-Title": "ARES-TRON",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
+
+        try:
+            # Depuración silenciosa
+            # print(f"DEBUG: Calling OpenRouter: {url}")
+            response = requests.post(url, json=payload, headers=headers, timeout=120)
+            
+            if response.status_code != 200:
+                return f"Error OpenRouter API: {response.status_code} - {response.text}"
+            
+            result = response.json()
+            choices = result.get("choices", [])
+            
+            if choices:
+                return choices[0]["message"]["content"]
+            return "Error: Sin respuesta de OpenRouter"
+            
+        except requests.exceptions.RequestException as e:
+            return f"Error OpenRouter API: {str(e)}"
+        except (KeyError, json.JSONDecodeError) as e:
+            return f"Error procesando respuesta: {str(e)}"

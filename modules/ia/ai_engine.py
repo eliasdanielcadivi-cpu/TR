@@ -436,6 +436,9 @@ class AIEngine:
                 return self._providers.get("deepseek"), alias_lower
             elif "gemini" in alias_lower:
                 return self._providers.get("gemini"), alias_lower
+            elif "/" in alias_lower:
+                # Modelos con slash suelen ser de OpenRouter (ej: google/gemma)
+                return self._providers.get("openrouter"), alias_lower
             elif "phi" in alias_lower or "llama" in alias_lower or "qwen" in alias_lower or "mistral" in alias_lower or "smol" in alias_lower:
                 # Modelos Ollama genéricos
                 return self._providers.get("gemma", self._get_default_provider()), alias_lower

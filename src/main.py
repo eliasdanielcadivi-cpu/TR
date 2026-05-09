@@ -14,6 +14,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(BASE_DIR))
 
+# --- CARGA DE ENTORNO ---
+from dotenv import load_dotenv
+load_dotenv(os.path.join(BASE_DIR, "config", ".env"))
+# ------------------------
+
 from config import TRContext, KittyRemote
 from modules.admon.boot_manager import launch_ares
 from modules.admon.init_manager import manage_config
@@ -269,7 +274,8 @@ def p_cmd(obj, prompt, model, provider, template, temperature, rag, mengraph, th
         model_alias=final_model,
         template=template,
         temperature=temperature,
-        think=think
+        think=think,
+        provider=provider
     )
 
 

@@ -30,7 +30,7 @@ class DeepSeekProvider(BaseProvider):
         super().__init__(config)
         self.base_url = config.get("base_url", "https://api.deepseek.com")
         self.default_model = config.get("model", "deepseek-chat")
-        self.api_key_env = config.get("api_key_env", "DEEPSEEK_API_KEY")
+        self.api_key_env = config.get("api_key_env", "DEEPSEEK-API-KEY")
         self.api_key = os.getenv(self.api_key_env)
         self._initialized = self.validate_config()
 

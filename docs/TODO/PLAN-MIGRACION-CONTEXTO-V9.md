@@ -43,13 +43,15 @@ Este documento es el **Mapa de Ruta Innegociable** y el **Cuaderno de Bitácora*
 ### FASE 2: ORQUESTACIÓN SOBERANA DE PROVEEDORES
 *Objetivo: Integrar Ollama, OpenRouter y Gemini-CLI en un único dispatcher intuitivo.*
 
-- **Acción:** Refactorizar `modules/ia/ai_engine.py` para unificar la interfaz de Ollama y OpenRouter. Integrar `gemini_wrapper.py` como provider formal.
-- **Configuración:** Parámetros posicionales intuitivos: `ares p "pregunta" -m [modelo] -p [provider]`.
+- **Estado:** ✅ VALIDADO EN PRODUCCIÓN (2026-05-09)
+- **Acción:** Refactorizado `modules/ia/ai_engine.py`. Integrado `GeminiProvider` y `OpenRouterProvider` funcional.
+- **Doble Verificación:** Validado via terminal output AND logs/system status (ollama ps).
+- **Aviso:** Se detectaron advertencias de RAM (8GB) que el sistema maneja correctamente via `LimitManager`.
 - **TEST REAL:**
   ```bash
-  ares p "Hola" -p ollama -m llama3 # Test Local
-  ares p "Hola" -p gemini # Test via Gemini-CLI
-  ares p "Hola" -p openrouter -m deepseek # Test Cloud
+  ares p "Hola" -P ollama -m ares:latest # Test Local -> EXITOSO
+  ares p "Hola" -P gemini # Test via Gemini-CLI -> EXITOSO
+  ares p "Hola" -P openrouter -m deepseek/deepseek-chat # Test Cloud -> EXITOSO
   ```
 
 ### FASE 3: ACTIVACIÓN RAG-G (EL NUEVO CONTEXTO)
