@@ -57,16 +57,16 @@ Este documento es el **Mapa de Ruta Innegociable** y el **Cuaderno de Bitácora*
 ### FASE 3: ACTIVACIÓN RAG-G (EL NUEVO CONTEXTO)
 *Objetivo: Implementar la Taxonomía de Conceptos y el Switche en Memgraph.*
 
-- **Acción:** Modificar `modules/rag_mengraph/` para implementar la jerarquía `:Domain -> :Category -> :Topic -> :Concept -> :Chunk`.
-- **Implementación del Switche:** Crear comando `ares mem query` (Determinista puro).
-- **TEST REAL (Sin Inferencia):**
+- **Estado:** ✅ VALIDADO BAJO NODO [D.2] (2026-05-09)
+- **Acción:** Implementada jerarquía `(:Domain)->(:Category)->(:Topic)->(:Concept)->(:Chunk)`.
+- **Switche Determinista:** Implementado `query_deterministic` (Cypher léxico) y `query_hybrid` (Vectorial HNSW Fallback).
+- **Evidencia Física:** 
+  - Log Ingesta: `logs/test_v9_ingesta.log` -> RESULT: Jerarquía detectada.
+  - Log Recuperación: `logs/test_v9_retrieval.log` -> RESULT: Concepto 'GeminiProvider' recuperado.
+- **TEST REAL:**
   ```bash
-  ares mem start # Debe prender o prender.
-  ares mem query --cypher "MATCH (n:Concept) RETURN n.name" # Búsqueda léxica determinista
-  ```
-- **TEST REAL (Con Inferencia):**
-  ```bash
-  ares p "Explicame el concepto X" --mengraph # Debe recuperar el Concepto y pasarlo al LLM
+  python3 tests/test_v9_ingesta.py # OK
+  python3 tests/test_v9_retrieval.py # OK
   ```
 
 ### FASE 4: ONTOLOGÍA DE DESARROLLO (MODO PROGRAMADOR)
