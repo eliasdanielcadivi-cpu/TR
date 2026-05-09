@@ -1,104 +1,88 @@
+"""MengraphRetriever V9: Búsqueda Híbrida y Switche Determinista.
+
+Implementa la búsqueda léxica y semántica sobre la jerarquía V9.
+
+Filosofía atómica: máximo 3 funciones públicas principales.
+"""
+
 import logging
-from typing import List, Dict, Any
+import json
+from typing import List, Dict, Any, Optional
 from modules.rag_mengraph.storage.memgraph_db import MemgraphDriver
 from modules.ia.embeddings_utils import embed_text
 
 # Configuración de Logging
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger("RAG-Mengraph-Retriever")
+logger = logging.getLogger("RAG-G-Retriever-V9")
 
-class MengraphRetriever:
-    def __init__(self, db_driver: MemgraphDriver, ontology_path: str):
-        """
-        Inicializa el recuperador híbrido.
-        """
+class MengraphRetrieverV9:
+    def __init__(self, db_driver: MemgraphDriver):
+        """Inicializar el recuperador V9."""
         self.db = db_driver
-        with open(ontology_path, 'r', encoding='utf-8') as f:
-            self.ontology = json.load(f)
-        self.labels = list(self.ontology.get("sustantivos", {}).keys())
 
-    def retrieve(self, query: str, top_k: int = 5, min_confidence: float = 0.5, min_verb_confidence: float = 0.8) -> List[Dict[str, Any]]:
+    def query_deterministic(self, query_text: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """
-        Realiza búsqueda vectorial + traversal con poda determinista por Adverbios.
+        Búsqueda léxica (Determinista) sobre Conceptos y Chunks.
+        
+        Args:
+            query_text: Término de búsqueda.
+            top_k: Máximo de resultados.
         """
-        logger.info(f"Iniciando recuperación para: '{query}' (Threshold: {min_confidence})")
+        logger.info(f"Ejecutando búsqueda determinista para: {query_text}")
+        
+        cypher = """
+        MATCH (con:Concept)
+        WHERE con.name CONTAINS $query OR con.description CONTAINS $query
+        MATCH (con)-[:REPRESENTED_BY]->(ch:Chunk)
+        RETURN con.name as concept, ch.file as file, ch.lines as lines, id(ch) as chunk_id
+        LIMIT $top_k
+        """
+        
+        return self.db.execute_query(cypher, {"query": query_text, "top_k": top_k})
+
+    def query_hybrid(self, query_text: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        """
+        Búsqueda Híbrida (Semántica + Grafo).
+        
+        Nota: Por ahora usa una aproximación de búsqueda por embedding si está disponible.
+        """
+        logger.info(f"Ejecutando búsqueda híbrida para: {query_text}")
         
         try:
-            query_embedding = embed_text(query).tolist()
+            query_vector = embed_text(query_text).tolist()
+        except:
+            query_vector = []
+
+        if not query_vector:
+            return self.query_deterministic(query_text, top_k)
+
+        # Búsqueda Vectorial HNSW (Si el índice existe, fallback a léxico si falla)
+        cypher = """
+        MATCH (ch:Chunk)
+        WITH ch, community.vector.cosine_similarity(ch.embedding, $vector) as score
+        WHERE score > 0.7
+        MATCH (con:Concept)-[:REPRESENTED_BY]->(ch)
+        RETURN con.name as concept, ch.file as file, ch.lines as lines, score
+        ORDER BY score DESC
+        LIMIT $top_k
+        """
+        
+        try:
+            return self.db.execute_query(cypher, {"vector": query_vector, "top_k": top_k})
         except Exception as e:
-            logger.error(f"Error generando embedding de consulta: {e}")
-            return []
+            logger.warn(f"Fallo búsqueda vectorial (posible falta de índice): {e}")
+            return self.query_deterministic(query_text, top_k)
 
-        all_results = []
-
-        for label in self.labels:
-            index_name = f"index_{label.lower()}_vector"
-            # Query: Vector Search + BFS para expansión de contexto (Estándar Memgraph)
-            cypher = f"""
-            CALL vector_search.search($index_name, $top_k, $embedding) YIELD node, similarity
-            WITH node, similarity
-            WHERE similarity >= $min_confidence
-            MATCH path=(node)-[:NEXT|PERMITTED_RELATION *bfs 0..2]-(neighbor)
-            WHERE neighbor:ARES_ENTITY
-            RETURN 
-                node.text as ancla, 
-                node.trojan_id as trojan,
-                neighbor.text as relacionado,
-                neighbor.trojan_id as trojan_rel,
-                similarity
-            ORDER BY similarity DESC
-            LIMIT 20
-            """
-            
-            params = {
-                "index_name": index_name,
-                "top_k": top_k,
-                "embedding": query_embedding,
-                "min_confidence": min_confidence,
-                "min_verb_conf": min_verb_confidence
-            }
-            
-            try:
-                res = self.db.execute_query(cypher, params)
-                all_results.extend(res)
-            except Exception as e:
-                logger.warning(f"Error en búsqueda vectorial para {label}: {e}")
-
-        return self._format_results(all_results)
-
-    def _format_results(self, results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def get_full_context(self, concept_name: str) -> str:
+        """Recupera toda la sabiduría cristalizada de un concepto."""
+        cypher = """
+        MATCH (con:Concept {name: $name})-[:REPRESENTED_BY]->(ch:Chunk)
+        RETURN ch.file, ch.lines
         """
-        Limpia y estructura los resultados del BFS para el LLM.
-        """
-        unique_results = []
-        seen = set()
+        results = self.db.execute_query(cypher, {"name": concept_name})
         
-        for r in results:
-            pair = (r['ancla'], r['relacionado'])
-            if pair not in seen:
-                seen.add(pair)
-                unique_results.append({
-                    "contexto": f"Entidad: {r['ancla']} [{r['trojan']}] -> Conectado a: {r['relacionado']} [{r['trojan_rel']}]",
-                    "relevancia": round(r['similarity'], 4)
-                })
-                
-        return unique_results
-
-if __name__ == "__main__":
-    # Prueba del Recuperador
-    try:
-        db = MemgraphDriver()
-        ONTOLOGY = "/home/daniel/tron/programas/TR/config/rag_mengraph/ontology_master.json"
-        retriever = MengraphRetriever(db, ONTOLOGY)
-        
-        test_query = "Cierre de Doble Lazo"
-        print(f"--- Prueba de Recuperación Híbrida (Con Poda Determinista) ---")
-        context = retriever.retrieve(test_query, min_confidence=0.3, min_verb_confidence=0.9)
-        
-        for i, c in enumerate(context):
-            print(f"[{i+1}] [Sim: {c['relevancia']}] {c['contexto']}")
-            print(f"    Evidencia: {c['evidencia']}")
+        context_parts = []
+        for res in results:
+            context_parts.append(f"Referencia: {res['ch.file']} (Líneas {res['ch.lines']})")
             
-        db.close()
-    except Exception as e:
-        print(f"❌ Error en prueba de Retriever: {e}")
+        return "\n".join(context_parts)

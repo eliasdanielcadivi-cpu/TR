@@ -1,143 +1,120 @@
+"""MengraphIngestor V9: Ingesta Ontológica y Jerárquica.
+
+Implementa el descenso granular: (:Domain) -> (:Category) -> (:Topic) -> (:Concept) -> (:Chunk)
+con punteros físicos deterministas.
+
+Filosofía atómica: máximo 3 funciones públicas principales.
+"""
+
 import logging
 import hashlib
-import json
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from modules.rag_mengraph.storage.memgraph_db import MemgraphDriver
-from modules.ia.apollo.embeddings import embed_text
+from modules.ia.embeddings_utils import embed_text
 
 # Configuración de Logging
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger("RAG-Mengraph-Ingestor")
+logger = logging.getLogger("RAG-G-Ingestor-V9")
 
-class MengraphIngestor:
+class MengraphIngestorV9:
     def __init__(self, db_driver: MemgraphDriver):
-        """
-        Inicializa el inyector de Memgraph.
-        """
+        """Inicializar el inyector V9."""
         self.db = db_driver
 
-    def _generate_evidence_hash(self, content: str) -> str:
+    def ingest_taxonomy(self, structure: Dict[str, Any]):
         """
-        Genera un hash SHA-256 para trazabilidad de evidencia.
-        """
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()
-
-    def ingest_entities(self, entities: List[Dict[str, Any]], source_doc: str = "unknown"):
-        """
-        Inyecta entidades con encadenamiento secuencial (:NEXT) y modo analítico.
-        """
-        logger.info(f"Ingestando {len(entities)} entidades con encadenamiento :NEXT...")
+        Inyecta la jerarquía taxonómica (Domain -> Category -> Topic -> Concept).
         
-        # 1. Activar modo analítico para velocidad (Estándar Memgraph)
-        try:
-            self.db.execute_query("STORAGE MODE IN_MEMORY_ANALYTICAL")
-        except:
-            pass
-
-        last_node_id = None
+        Args:
+            structure: Dict con la jerarquía completa.
+        """
+        logger.info("Ingestando jerarquía taxonómica V9...")
         
-        for ent in entities:
-            label = ent['label']
-            text = ent['text']
-            trojan_id = ent['id']
-            
-            try:
-                embedding = embed_text(text).tolist()
-            except:
-                embedding = []
+        domain_name = structure.get("domain")
+        categories = structure.get("categories", [])
 
-            # MERGE con etiqueta raíz ARES_ENTITY (Corregido: SET dentro de bloques ON)
-            query = f"""
-            MERGE (n:{label} {{text: $text}})
-            ON CREATE SET 
-                n:ARES_ENTITY,
-                n.trojan_id = $trojan_id,
-                n.source_doc = $source_doc,
-                n.embedding = $embedding,
-                n.created_at = timestamp()
-            ON MATCH SET
-                n:ARES_ENTITY,
-                n.embedding = $embedding,
-                n.last_seen = timestamp()
-            RETURN id(n) as node_id
-            """
-            
-            res = self.db.execute_query(query, {
-                "text": text, "trojan_id": trojan_id, 
-                "source_doc": source_doc, "embedding": embedding
-            })
-            
-            current_node_id = res[0]['node_id'] if res else None
+        # 1. Crear Dominio Raíz
+        self.db.execute_query(
+            "MERGE (d:Domain {name: $name}) ON CREATE SET d.created_at = timestamp()",
+            {"name": domain_name}
+        )
 
-            # 2. Crear relación secuencial :NEXT (Encadenamiento Lógico)
-            if last_node_id is not None and current_node_id is not None:
+        for cat in categories:
+            cat_name = cat.get("name")
+            # 2. Vincular Categoría
+            self.db.execute_query(
+                """
+                MATCH (d:Domain {name: $domain})
+                MERGE (c:Category {name: $cat_name})
+                MERGE (d)-[:HAS_CATEGORY]->(c)
+                """,
+                {"domain": domain_name, "cat_name": cat_name}
+            )
+
+            for topic in cat.get("topics", []):
+                topic_name = topic.get("name")
+                # 3. Vincular Topic
                 self.db.execute_query(
-                    "MATCH (a), (b) WHERE id(a) = $id1 AND id(b) = $id2 MERGE (a)-[:NEXT]->(b)",
-                    {"id1": last_node_id, "id2": current_node_id}
+                    """
+                    MATCH (c:Category {name: $cat_name})
+                    MERGE (t:Topic {name: $topic_name})
+                    MERGE (c)-[:HAS_TOPIC]->(t)
+                    """,
+                    {"cat_name": cat_name, "topic_name": topic_name}
                 )
-            
-            last_node_id = current_node_id
 
-        # Retornar a modo transaccional
+                for concept in topic.get("concepts", []):
+                    # 4. Vincular Concepto
+                    self._ingest_concept(topic_name, concept)
+
+    def ingest_chunk(self, concept_name: str, chunk_data: Dict[str, Any]):
+        """
+        Inyecta un puntero físico (:Chunk) vinculado a un Concepto.
+        
+        Args:
+            concept_name: Nombre del concepto padre.
+            chunk_data: Dict con 'file', 'start_line', 'end_line', 'text'.
+        """
+        text = chunk_data.get("text", "")
+        evidence_hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+        
         try:
-            self.db.execute_query("STORAGE MODE IN_MEMORY_TRANSACTIONAL")
-        except:
-            pass
+            embedding = embed_text(text).tolist()
+        except Exception as e:
+            logger.error(f"Error generando embedding para chunk: {e}")
+            embedding = []
 
-    def ingest_relationships(self, relations: List[Dict[str, Any]], source_text: str = ""):
+        query = """
+        MATCH (con:Concept {name: $concept_name})
+        MERGE (ch:Chunk {hash: $hash})
+        ON CREATE SET 
+            ch.file = $file,
+            ch.lines = $lines,
+            ch.embedding = $embedding,
+            ch.created_at = timestamp()
+        MERGE (con)-[:REPRESENTED_BY]->(ch)
         """
-        Inyecta relaciones (Verbos) entre entidades existentes.
-        Incluye Adverbio de Evidencia (Hash).
-        """
-        logger.info(f"Ingestando {len(relations)} relaciones...")
-        evidence_hash = self._generate_evidence_hash(source_text)
         
-        for rel in relations:
-            # Query Cypher: Vincular nodos existentes por texto
-            query = f"""
-            MATCH (a {{text: $origen}})
-            MATCH (b {{text: $destino}})
-            MERGE (a)-[r:{rel['verbo']}]->(b)
-            ON CREATE SET
-                r.confianza = $confianza,
-                r.evidence_hash = $evidence_hash,
-                r.razonamiento = $razonamiento,
-                r.created_at = timestamp()
+        params = {
+            "concept_name": concept_name,
+            "hash": evidence_hash,
+            "file": chunk_data.get("file"),
+            "lines": f"{chunk_data.get('start_line')}-{chunk_data.get('end_line')}",
+            "embedding": embedding
+        }
+        
+        self.db.execute_query(query, params)
+        logger.info(f"Chunk inyectado para concepto: {concept_name}")
+
+    def _ingest_concept(self, topic_name: str, concept_data: Dict[str, Any]):
+        """Helper interno para inyectar conceptos."""
+        concept_name = concept_data.get("name")
+        self.db.execute_query(
             """
-            
-            params = {
-                "origen": rel['origen'],
-                "destino": rel['destino'],
-                "confianza": rel.get('confianza', 1.0),
-                "evidence_hash": evidence_hash,
-                "razonamiento": rel.get('razonamiento', "")
-            }
-            
-            try:
-                self.db.execute_query(query, params)
-            except Exception as e:
-                logger.error(f"Error inyectando relación '{rel['verbo']}': {e}")
-
-if __name__ == "__main__":
-    # Prueba del Ingestor
-    try:
-        db = MemgraphDriver()
-        ingestor = MengraphIngestor(db)
-        
-        # Simulación de salida de spaCy + Serendipia
-        test_entities = [
-            {"text": "Cierre de Doble Lazo", "label": "PROMPT_TEMPLATE", "id": "ARES|HORMOZI"},
-            {"text": "Agente Publicador", "label": "AI_SKILL", "id": "ARES|CORE"}
-        ]
-        
-        test_relations = [
-            {"origen": "Agente Publicador", "verbo": "USA_PROMPT", "destino": "Cierre de Doble Lazo", "confianza": 0.99}
-        ]
-        
-        print("--- Prueba de MengraphIngestor ---")
-        ingestor.ingest_entities(test_entities, source_doc="manual_hormozi.txt")
-        ingestor.ingest_relationships(test_relations, source_text="El Agente usa el cierre...")
-        
-        db.close()
-    except Exception as e:
-        print(f"❌ Error en prueba de Ingestor: {e}")
+            MATCH (t:Topic {name: $topic_name})
+            MERGE (con:Concept {name: $concept_name})
+            ON CREATE SET con.created_at = timestamp()
+            MERGE (t)-[:HAS_CONCEPT]->(con)
+            """,
+            {"topic_name": topic_name, "concept_name": concept_name}
+        )
