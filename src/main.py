@@ -100,175 +100,58 @@ def mcat_demo_cmd(obj):
 @click.option("-v", "--verbose", is_flag=True, help="Mostrar depuración RAG detallada")
 @click.pass_obj
 def p_cmd(obj, prompt, model, provider, template, temperature, rag, mengraph, think, verbose):
-    """🤖 Consulta Inteligente (Modo Experto)."""
-    # Determinar modelo final
+    """🤖 Consulta Inteligente (Modo Experto V9)."""
+    # 1. Resolver Modelo y Provider
     final_model = model
     if think:
         final_model = "ares-think:latest"
     
-    # Orquestar con AIEngine
     from modules.ia.ai_engine import AIEngine
     ai = AIEngine(obj.config['ai'], str(obj.base_path))
 
-    # Prioridad: RAG Mengraph (Si se solicita explícitamente)
+    # 2. Flujo RAG-G (Prioridad Soberana)
     if mengraph:
-        from modules.utils import messenger
         from modules.rag_mengraph.core.tool import MengraphTool
-        from modules.ia.ai_engine import AIEngine
         import json
+        import os
         import sys
 
         try:
-            ONTOLOGY = f"{obj.base_path}/config/rag_mengraph/ontology_master.json"
-            tool = MengraphTool(ONTOLOGY)
-            
-            # Recuperar contexto del grafo vía Interfaz Universal (JSON)
-            result_json = tool.query_json(prompt)
+            tool = MengraphTool()
+            result_json = tool.query_json(prompt, mode='hybrid')
             data = json.loads(result_json)
 
             if data['status'] == 'success' and data['data']:
-                context_str = "\n".join([f"Ancla: {item['ancla']} -> Relacionado: {item['relacionado']}" for item in data['data']])
+                physical_context = []
+                for item in data['data']:
+                    file_path = os.path.join(obj.base_path, item['file'])
+                    lines = item['lines'].split('-')
+                    if os.path.exists(file_path):
+                        try:
+                            start, end = int(lines[0]), int(lines[1])
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                snippet = "".join(f.readlines()[start-1:end]).strip()
+                                physical_context.append(f"--- CONCEPTO: {item['concept']} ---\nArchivo: {item['file']}\nContenido:\n{snippet}")
+                        except: pass
                 
-                # Orquestar con AIEngine
-                ai = AIEngine(obj.config['ai'], str(obj.base_path))
-                system_instr = f"Eres ARES. Responde basándote en este contexto estructurado de GRAFOS (Memgraph):\n\n{context_str}\n\nSi el contexto no es suficiente, indícalo."
-                
-                click.secho("🧠 ARES consultando Grafo (Interfaz Universal)...", fg="magenta", bold=True)
-                
-                # Usar el alias del provider como modelo si se pasa explícitamente y no hay modelo
-                effective_alias = provider if provider and not final_model else final_model
-
-                for chunk in ai.ask_stream(prompt, model_alias=effective_alias, template=template, temperature=temperature):
-                    sys.stdout.write(chunk)
-                    sys.stdout.flush()
-                sys.stdout.write("\n")
-                
-                if verbose:
-                    click.secho("\n🔍 Evidencia JSON:", fg="yellow", dim=True)
-                    click.echo(result_json)
-                return
-            else:
-                messenger.warn("No se encontró información relevante en el Grafo Memgraph.")
+                if physical_context:
+                    context_str = "\n\n".join(physical_context)
+                    system_instr = f"Eres ARES. Responde basándote en esta EVIDENCIA FÍSICA extraída vía GRAFO (Memgraph):\n\n{context_str}\n\nUsa los datos técnicos exactos."
+                    click.secho("🧠 ARES recuperando Sabiduría Cristalizada V9...", fg="magenta", bold=True)
+                    
+                    effective_alias = provider if provider and not final_model else final_model
+                    for chunk in ai.ask_stream(prompt, model_alias=effective_alias, template=template, temperature=temperature, system_instructions=system_instr):
+                        sys.stdout.write(chunk)
+                        sys.stdout.flush()
+                    sys.stdout.write("\n")
+                    return
+            
+            click.secho("⚠️ No se encontró evidencia en el grafo. Inferencia pura activada.", fg="yellow", dim=True)
         except Exception as e:
-            messenger.error(f"Error en RAG Memgraph: {e}")
-            return
+            click.secho(f"⚠️ Fallo RAG-G: {e}", fg="red", dim=True)
 
-    # Si se usa --rag tradicional (Apollo/Kuzu), inyectar contexto RAG
-    if rag:
-        from modules.utils import messenger
-        try:
-            from modules.ia.apollo import retrieve, compress_context, generate_answer
-            
-            # Recuperar contexto del dataset
-            results = retrieve(query=prompt, k=5, mode="fused", dataset=rag)
-            
-            # --- MODO VERBOSE (DEPURACIÓN RAG) ---
-            if verbose:
-                from rich.console import Console
-                from rich.panel import Panel
-                from rich.table import Table
-                console = Console()
-                
-                console.print(Panel(f"[bold yellow]🔍 DEPURACIÓN RAG (Dataset: {rag})[/bold yellow]", border_style="yellow"))
-                
-                # 1. Bloques Semánticos
-                sem_table = Table(title="🧠 Búsqueda Semántica (Vectorial)", box=None)
-                sem_table.add_column("Score", style="green")
-                sem_table.add_column("Fuente", style="cyan")
-                sem_table.add_column("Preview", style="white", ratio=2)
-                for r in results.get("semantic", []):
-                    preview = (r.get("text", "")[:100] + "...") if len(r.get("text", "")) > 100 else r.get("text", "")
-                    sem_table.add_row(f"{r.get('score', 0):.4f}", r.get("source", "N/A"), preview)
-                console.print(sem_table)
-                
-                # 2. Grafo de Entidades
-                graph_table = Table(title="🕸️ Búsqueda en Grafo (Entidades)", box=None)
-                graph_table.add_column("Entidad", style="magenta")
-                graph_table.add_column("Tipo", style="blue")
-                graph_table.add_column("Relaciones", style="white")
-                for e in results.get("graph", []):
-                    rels = ", ".join([f"{r['predicate']} -> {r['object_name']}" for r in e.get("relations", [])])
-                    graph_table.add_row(e.get("name", "N/A"), e.get("type", "N/A"), rels)
-                console.print(graph_table)
-                
-                # 3. Búsqueda Relacional (FTS/LIKE)
-                rel_table = Table(title="📁 Búsqueda Relacional (FTS/LIKE)", box=None)
-                rel_table.add_column("Fuente", style="cyan")
-                rel_table.add_column("Match", style="white")
-                for r in results.get("relational", []):
-                    rel_table.add_row(r.get("source", "N/A"), r.get("text", "")[:80] + "...")
-                console.print(rel_table)
-                
-                # 4. Resultados Fusionados (RRF)
-                fused_table = Table(title="🧬 Ranking Fusionado (RRF)", box=None)
-                fused_table.add_column("Score RRF", style="yellow")
-                fused_table.add_column("Chunk ID", style="cyan")
-                for r in results.get("fused", []):
-                    fused_table.add_row(f"{r.get('rrf_score', 0):.6f}", str(r.get("chunk_id", "N/A")))
-                console.print(fused_table)
-                
-                # 5. Parámetros LLM
-                params_info = f"[bold]Modelo:[/bold] {final_model or 'ares:latest'} | [bold]Temp:[/bold] {temperature} | [bold]Think Mode:[/bold] {think}"
-                console.print(Panel(params_info, title="🤖 Parámetros de Generación", border_style="blue"))
-            # -------------------------------------
-            
-            # Obtener textos de chunks
-            chunks = results.get("semantic", [])[:5]
-
-            if chunks:
-                # Comprimir contexto
-                context = compress_context(chunks, query=prompt, max_tokens=1500)
-
-                # Generar respuesta con contexto RAG (Streaming + Filtro)
-                from modules.ia.apollo.generation import generate_answer_stream
-                import sys
-                
-                llm_model = final_model if final_model else "ares:latest"
-                full_response = ""
-                
-                # Determinar si filtrar think basado en las capacidades del modelo
-                from modules.ia.ai_engine import AIEngine
-                ai_tmp = AIEngine(obj.config['ai'], str(obj.base_path))
-                _, real_model_name = ai_tmp._resolve_provider_and_model(final_model, None)
-                
-                caps = ai_tmp.get_model_capabilities(real_model_name)
-                # Filtrar si no se pide explícitamente pensar, o si el modelo genera tags vacíos (no-thinking)
-                should_filter = not think or not caps["thinking"]
-
-                # Ares pensando...
-                click.secho("🤖 ARES recuperando y razonando...", fg="cyan", dim=True)
-                
-                for chunk in generate_answer_stream(
-                    query=prompt,
-                    context=context,
-                    model=llm_model,
-                    temperature=temperature,
-                    filter_think=should_filter
-                ):
-                    sys.stdout.write(chunk)
-                    sys.stdout.flush()
-                    full_response += chunk
-                
-                sys.stdout.write("\n")
-
-                # Añadir fuentes si existen
-                if results.get("sources"):
-                    click.secho("\n📚 Fuentes RAG:", fg="yellow", bold=True)
-                    for src in results["sources"][:3]:
-                        click.echo(f"- {src.get('path', 'Documento')}")
-                
-                return
-            else:
-                messenger.warn(f"No se encontró información relevante en el dataset '{rag}'.")
-                
-        except Exception as e:
-            if "connection" in str(e).lower() or "ollama" in str(e).lower():
-                messenger.error("Ollama no está corriendo. No se puede realizar búsqueda semántica.")
-            else:
-                messenger.error(f"Error en RAG: {e}")
-            return
-
-    # Consulta normal sin RAG
+    # 3. Flujo Normal
+    from modules.ui.help_manager import HelpManager
     HelpManager(obj).query_ai(
         prompt,
         model_alias=final_model,

@@ -19,7 +19,12 @@ class GeminiProvider(BaseProvider):
         """Generar respuesta usando gemini-cli."""
         chat_id = kwargs.get("chat_id")
         yolo = kwargs.get("yolo", True)
+        system_instr = kwargs.get("system_instructions")
         
+        # Prepend system instructions if provided
+        if system_instr:
+            prompt = f"{system_instr}\n\n[CONSULTA USUARIO]\n{prompt}"
+
         cmd = ["gemini"]
         if chat_id is not None:
             cmd.extend(["--resume", str(chat_id)])
