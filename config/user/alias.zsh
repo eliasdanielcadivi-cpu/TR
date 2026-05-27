@@ -247,6 +247,7 @@ alias ReunionHook='crom-elias1 https://www.notion.so/Reuni-n-de-Hook-54e69a382e7
 alias rm='rm -v'
 alias ruta="readlink -f " 
 alias saber="siyuan &"
+alias ahora="date +"%A_%d_de_%B_de_%Y---%I_y_%M_%p" | tr 'A-Z' 'a-z'"
 alias servicio-activar="prin=\$PWD; cd /home/daniel/tron/config/systemd; source index.sh; cd \$prin; unset prin"
 alias servicio-editar='br /etc/systemd/system/\$1'
 alias servicios='systemctl list-units --type=service'
